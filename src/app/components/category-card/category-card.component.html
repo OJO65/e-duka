@@ -2,8 +2,8 @@
   <div class="card-inner">
     <!-- Front -->
     <div class="card-front">
-      <img [src]="image" alt="" />
-      <h2>{{ title }}</h2>
+      <img [src]="category.image?.url" alt="" />
+      <h2 class="font-advent text-2xl font-semibold">{{ category.title }}</h2>
     </div>
 
     <!-- Back -->
