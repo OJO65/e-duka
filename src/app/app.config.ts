@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
 
       return {
         link: httpLink.create({
-          uri: 'https://api.escuelajs.co/graphql',
+          uri: 'https://mock.shop/api',
         }),
         cache: new InMemoryCache(),
       };
