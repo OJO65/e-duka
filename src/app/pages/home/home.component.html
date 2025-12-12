@@ -1,8 +1,22 @@
-<div class="grid">
-  <app-category-card
-    *ngFor="let c of categories"
-    [title]="c.title"
-    [image]="c.image"
-  ></app-category-card>
-</div>
 
+<div *ngIf="loading">Loading...</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+  <!-- Show products if search is active, else show categories -->
+  <ng-container *ngIf="showProducts; else categoriesTemplate">
+    <app-category-card
+      *ngFor="let product of products"
+      [category]="{
+        title: product.title,
+        image: product.images.nodes[0]
+      }"
+    ></app-category-card>
+  </ng-container>
+
+  <ng-template #categoriesTemplate>
+    <app-category-card
+      *ngFor="let c of categories"
+      [category]="c"
+    ></app-category-card>
+  </ng-template>
+</div>
