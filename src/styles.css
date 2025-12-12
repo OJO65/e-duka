@@ -1,2 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+.font-advent {
+  font-family: "Advent Pro", sans-serif;
+}
+
+.font-poiret {
+  font-family: "Poiret One", cursive;
+}
