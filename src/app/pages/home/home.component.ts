@@ -5,19 +5,22 @@ import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/productService/product.service';
 import { Subscription } from 'rxjs';
 import { SearchService } from '../../services/searchService/search.service';
+import { ProductCardComponent } from '../../components/product-card/product-card.component';
+import { SkeletonCardComponent } from '../../components/skeleton-card/skeleton-card.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   standalone: true,
-  imports: [CommonModule, CategoryCardComponent],
+  imports: [CommonModule, CategoryCardComponent, ProductCardComponent, SkeletonCardComponent],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   categories: any[] = [];
   products: any[] = [];
   showProducts: boolean = false;
   loading: boolean = true;
+  initialLoadComplete: boolean = false;
   private searchSubscription?: Subscription;
 
   constructor(
@@ -35,8 +38,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (!query || query.trim() === '') {
         
         this.showProducts = false;
-        this.loading = false; 
-        
+        if (this.initialLoadComplete) {
+          this.loading = false;
+        }
         return;
       }
 
@@ -59,14 +63,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadCategories(): void {
     this.loading = true;
+    this.initialLoadComplete = false;
+
     this.categoryService.getCollections().subscribe({
       next: (result: any) => {
         this.categories = result.data.collections.nodes;
         this.loading = false;
+        this.initialLoadComplete = true;
       },
       error: (error) => {
         console.error('Category loading error:', error);
         this.loading = false;
+        this.initialLoadComplete = true;
       }
     });
   }
