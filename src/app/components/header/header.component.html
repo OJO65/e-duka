@@ -79,12 +79,15 @@
       <input
         type="text"
         placeholder="Search products"
-        [(ngModel)] ="searchQuery"
+        [(ngModel)]="searchQuery"
         (input)="onSearchInput()"
         (keyup.enter)="searchProducts()"
         class="flex-1 border border-gray-300 px-3 py-2 rounded-l-md outline-none text-sm"
       />
-      <button (click)="searchProducts()" class="bg-orange-500 text-white px-4 py-2 rounded-r-md">
+      <button
+        (click)="searchProducts()"
+        class="bg-orange-500 text-white px-4 py-2 rounded-r-md"
+      >
         <svg
           class="w-5 h-5"
           fill="none"
@@ -127,7 +130,10 @@
         (keyup.enter)="searchProducts()"
         class="flex-1 border border-gray-300 px-4 py-2 rounded-l-md outline-none"
       />
-      <button (click)="searchProducts()" class="bg-orange-500 text-white px-6 py-2 rounded-r-md">
+      <button
+        (click)="searchProducts()"
+        class="bg-orange-500 text-white px-6 py-2 rounded-r-md"
+      >
         Search
       </button>
     </div>
