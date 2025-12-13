@@ -1,3 +1,40 @@
-<p>
-  product-card works!
-</p>
+<div class="card">
+  <div class="card-inner">
+    <!-- Front -->
+    <div class="card-front">
+      <!-- Image Loading State -->
+      <div class="image-container">
+        <div class="image-placeholder" *ngIf="!imageLoaded">
+          <div class="spinner"></div>
+        </div>
+        <img 
+          [src]="productImage" 
+          [alt]="product.title"
+          (load)="onImageLoad()"
+          (error)="onImageError()"
+          [class.loaded]="imageLoaded"
+        />
+      </div>
+      <div class="product-info">
+        <h3 class="product-title font-advent">{{ product.title }}</h3>
+        <p class="product-price">{{ formattedPrice }}</p>
+      </div>
+    </div>
+
+    <!-- Back -->
+    <div class="card-back">
+      <div class="back-content">
+        <h3 class="back-title font-advent">{{ product.title }}</h3>
+        <p class="back-price">{{ formattedPrice }}</p>
+        <div class="button-group">
+          <button class="btn-primary" (click)="onAddToCart()">
+            <i class="fa fa-shopping-cart"></i> Add to Cart
+          </button>
+          <button class="btn-secondary" (click)="onViewDetails()">
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
