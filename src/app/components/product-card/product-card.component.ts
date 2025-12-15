@@ -15,9 +15,9 @@ export class ProductCardComponent {
     priceRange: {
       minVariantPrice: {
         amount: string;
-        currencyCode: string;
-      }
-    }
+        currencyCode?: string; // optional for search products
+      };
+    };
   };
 
   imageLoaded: boolean = false;
@@ -32,23 +32,30 @@ export class ProductCardComponent {
     this.imageLoaded = false;
   }
 
-  // Helper method to get the first image
   get productImage(): string {
     return this.product?.images?.nodes?.[0]?.url || 'assets/placeholder.jpg';
   }
 
-  // Helper method to format price
+  // Robust, consistent price formatting for all products
   get formattedPrice(): string {
-    const amount = this.product?.priceRange?.minVariantPrice?.amount || '0';
+    const amount = Number(this.product?.priceRange?.minVariantPrice?.amount || 0);
     const currency = this.product?.priceRange?.minVariantPrice?.currencyCode || 'USD';
-    
-    // Format based on currency
-    if (currency === 'USD') {
-      return `$${parseFloat(amount)}`;
-    } else if (currency === 'KES') {
-      return `KSh ${parseFloat(amount)}`;
+
+    // Intl.NumberFormat for proper currency symbol handling
+    let formatted = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      currencyDisplay: 'symbol',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+
+    // Optional: strip country code prefix for CAD if you prefer just '$'
+    if (currency === 'CAD') {
+      formatted = formatted.replace(/^CA/, '');
     }
-    return `${currency} ${parseFloat(amount)}`;
+
+    return formatted;
   }
 
   onAddToCart() {
