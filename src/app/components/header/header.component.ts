@@ -60,4 +60,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onSearchInput() {
     this.searchSubject.next(this.searchQuery.trim());
   }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchEvent.emit('');
+  }
 }
