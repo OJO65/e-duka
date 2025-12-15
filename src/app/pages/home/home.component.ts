@@ -7,13 +7,20 @@ import { Subscription } from 'rxjs';
 import { SearchService } from '../../services/searchService/search.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { SkeletonCardComponent } from '../../components/skeleton-card/skeleton-card.component';
+import { CategorySkeletonComponent } from '../../components/category-skeleton/category-skeleton.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   standalone: true,
-  imports: [CommonModule, CategoryCardComponent, ProductCardComponent, SkeletonCardComponent],
+  imports: [
+    CommonModule,
+    CategoryCardComponent,
+    ProductCardComponent,
+    SkeletonCardComponent,
+    CategorySkeletonComponent,
+  ],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   categories: any[] = [];
@@ -29,14 +36,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     private searchService: SearchService
   ) {}
 
-   ngOnInit(): void {
-   
+  ngOnInit(): void {
     this.loadCategories();
 
-    
     this.searchSubscription = this.searchService.search$.subscribe((query) => {
       if (!query || query.trim() === '') {
-        
         this.showProducts = false;
         if (this.initialLoadComplete) {
           this.loading = false;
@@ -44,7 +48,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         return;
       }
 
-    
       this.loading = true;
       this.showProducts = true;
       this.productService.searchProducts(query).subscribe({
@@ -55,8 +58,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Search error:', error);
           this.loading = false;
-          this.showProducts = false; 
-        }
+          this.showProducts = false;
+        },
       });
     });
   }
@@ -75,7 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.error('Category loading error:', error);
         this.loading = false;
         this.initialLoadComplete = true;
-      }
+      },
     });
   }
 
