@@ -1,0 +1,114 @@
+<div class="shop-container">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs">
+    <span class="breadcrumb-link" (click)="goHome()">Home</span>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">{{ categoryTitle || 'Shop' }}</span>
+  </nav>
+
+  <div class="shop-layout">
+    <!-- SIDEBAR FILTERS (Desktop) -->
+    <app-filter-sidebar
+      *ngIf="!loading"
+      class="hidden lg:block"
+      [filterOptions]="filterOptions"
+      [activeFilters]="activeFilters"
+      [isMobile]="false"
+      (filtersChanged)="onFiltersChanged($event)"
+      (clearFilters)="onClearFilters()"
+    ></app-filter-sidebar>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+      <!-- Category Header -->
+      <div class="category-header">
+        <div>
+          <h1 class="category-title font-advent">{{ categoryTitle }}</h1>
+          <p class="category-description" *ngIf="categoryDescription">
+            {{ categoryDescription }}
+          </p>
+          <p class="product-count" *ngIf="!loading">
+            {{ filteredProducts.length }} product{{ filteredProducts.length !== 1 ? 's' : '' }}
+          </p>
+        </div>
+
+        <!-- Sort & Mobile Filter Button -->
+        <div class="header-actions">
+          <!-- Mobile Filters Button -->
+          <button 
+            class="mobile-filter-btn lg:hidden"
+            (click)="toggleMobileFilters()"
+            *ngIf="!loading"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Filters
+            <span *ngIf="activeFilterCount > 0" class="filter-badge">
+              {{ activeFilterCount }}
+            </span>
+          </button>
+
+          <!-- Sort Dropdown -->
+          <select 
+            [(ngModel)]="sortBy"
+            (change)="onSortChange()"
+            class="sort-select"
+            *ngIf="!loading"
+          >
+            <option value="default">Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="product-grid">
+        <app-skeleton-card *ngFor="let i of [1,2,3,4,5,6,7,8]"></app-skeleton-card>
+      </div>
+
+      <!-- Products Grid -->
+      <div *ngIf="!loading && filteredProducts.length > 0" class="product-grid">
+        <app-product-card 
+          *ngFor="let product of filteredProducts" 
+          [product]="product"
+        ></app-product-card>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && filteredProducts.length === 0" class="empty-state">
+        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h3>No products found</h3>
+        <p>Try adjusting your filters</p>
+        <button (click)="onClearFilters()" class="clear-filters-cta">
+          Clear All Filters
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MOBILE FILTER MODAL -->
+<div 
+  *ngIf="mobileFiltersOpen" 
+  class="mobile-filter-overlay lg:hidden"
+  (click)="closeMobileFilters()"
+>
+  <div class="mobile-filter-container" (click)="$event.stopPropagation()">
+    <app-filter-sidebar
+      [filterOptions]="filterOptions"
+      [activeFilters]="activeFilters"
+      [isMobile]="true"
+      (filtersChanged)="onFiltersChanged($event)"
+      (clearFilters)="onClearFilters()"
+      (closeModal)="closeMobileFilters()"
+    ></app-filter-sidebar>
+  </div>
+</div>
