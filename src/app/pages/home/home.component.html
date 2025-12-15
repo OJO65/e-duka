@@ -1,8 +1,13 @@
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
   
-  <!-- Show SKELETON LOADING when fetching data -->
-  <ng-container *ngIf="loading">
+  <!-- Show PRODUCT SKELETON when loading products -->
+  <ng-container *ngIf="loading && showProducts">
     <app-skeleton-card *ngFor="let i of [1,2,3,4,5,6,7,8]"></app-skeleton-card>
+  </ng-container>
+  
+  <!-- Show CATEGORY SKELETON when loading categories -->
+  <ng-container *ngIf="loading && !showProducts">
+    <app-category-skeleton *ngFor="let i of [1,2,3,4,5,6,7,8]"></app-category-skeleton>
   </ng-container>
   
   <!-- Show PRODUCTS when searching (and not loading) -->
