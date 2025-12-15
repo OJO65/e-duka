@@ -75,31 +75,45 @@
 
   <!-- Mobile Search (below header) -->
   <div class="mt-3 lg:hidden">
-    <div class="flex">
+    <div class="relative">
       <input
         type="text"
-        placeholder="Search products"
+        placeholder="Search products..."
         [(ngModel)]="searchQuery"
         (input)="onSearchInput()"
-        (keyup.enter)="searchProducts()"
-        class="flex-1 border border-gray-300 px-3 py-2 rounded-l-md outline-none text-sm"
+        class="w-full border-2 border-gray-200 px-4 py-2.5 pr-24 rounded-lg outline-none text-sm transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
       />
-      <button
-        (click)="searchProducts()"
-        class="bg-orange-500 text-white px-4 py-2 rounded-r-md"
+      
+      <!-- Search Icon -->
+      <svg
+        class="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
+        [class.text-orange-500]="searchQuery"
+        [class.text-gray-400]="!searchQuery"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+      
+      <!-- Clear Button (shows when typing) -->
+      <button
+        *ngIf="searchQuery"
+        (click)="clearSearch()"
+        class="absolute right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-all hover:scale-110 p-1"
+        title="Clear search"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          ></path>
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          />
         </svg>
       </button>
     </div>
@@ -121,21 +135,49 @@
     </div>
 
     <!-- Search bar -->
-    <div class="flex flex-1 mx-10 max-w-[620px]">
+    <div class="flex flex-1 mx-10 max-w-[620px] relative group">
       <input
         type="text"
-        placeholder="Search products, brands and categories"
+        placeholder="Search products, brands and categories..."
         [(ngModel)]="searchQuery"
         (input)="onSearchInput()"
-        (keyup.enter)="searchProducts()"
-        class="flex-1 border border-gray-300 px-4 py-2 rounded-l-md outline-none"
+        class="flex-1 border-2 border-gray-200 px-5 py-3 pr-28 rounded-lg outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100 focus:shadow-md"
       />
-      <button
-        (click)="searchProducts()"
-        class="bg-orange-500 text-white px-6 py-2 rounded-r-md"
-      >
-        Search
-      </button>
+      
+      <!-- Search Icon -->
+      <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-3">
+        <!-- Clear Button -->
+        <button
+          *ngIf="searchQuery"
+          (click)="clearSearch()"
+          class="text-gray-400 hover:text-gray-600 transition-all hover:scale-110"
+          title="Clear search"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        
+        <!-- Search Icon (default state) -->
+        <svg
+          *ngIf="!searchQuery"
+          class="w-5 h-5 text-gray-400 pointer-events-none transition-colors group-focus-within:text-orange-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+      </div>
     </div>
 
     <!-- Icons with text -->
