@@ -1,0 +1,37 @@
+   <div class="shop-skeleton-container">
+      <!-- Breadcrumb Skeleton -->
+      <div class="breadcrumb-skeleton"></div>
+
+      <div class="shop-skeleton-layout">
+        <!-- Sidebar Skeleton (Desktop only) -->
+        <aside class="sidebar-skeleton hidden lg:block">
+          <!-- Header -->
+          <div class="skeleton-header">
+            <div class="skeleton-title"></div>
+          </div>
+
+          <!-- Filter Sections -->
+          <div class="filter-section-skeleton" *ngFor="let i of [1,2,3]">
+            <div class="skeleton-filter-title"></div>
+            <div class="skeleton-filter-option" *ngFor="let j of [1,2,3]"></div>
+          </div>
+        </aside>
+
+        <!-- Main Content Skeleton -->
+        <main class="main-skeleton">
+          <!-- Header Skeleton -->
+          <div class="category-header-skeleton">
+            <div>
+              <div class="skeleton-page-title"></div>
+              <div class="skeleton-description"></div>
+              <div class="skeleton-count"></div>
+            </div>
+            <div class="skeleton-controls">
+              <div class="skeleton-button"></div>
+              <div class="skeleton-dropdown"></div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
