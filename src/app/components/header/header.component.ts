@@ -9,6 +9,7 @@ import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isMobileMenuOpen = false;
   isAccountMenuOpen = false;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.searchSubscription = this.searchSubject
@@ -64,5 +65,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   clearSearch() {
     this.searchQuery = '';
     this.searchEvent.emit('');
+  }
+
+  goHome() {
+    this.router.navigate(['/']);
   }
 }
