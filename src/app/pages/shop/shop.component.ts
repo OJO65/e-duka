@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/productService/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
-import { SkeletonCardComponent } from '../../components/skeleton-card/skeleton-card.component';
+
+import { ShopSkeletonComponent } from '../../components/shop-skeleton/shop-skeleton.component';
 import {
   FilterSidebarComponent,
   FilterOptions,
@@ -33,8 +34,9 @@ interface Product {
     CommonModule,
     FormsModule,
     ProductCardComponent,
-    SkeletonCardComponent,
+    
     FilterSidebarComponent,
+    ShopSkeletonComponent,
   ],
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.css'],
@@ -99,37 +101,44 @@ ngOnInit(): void {
 
 
   loadProducts(): void {
-    this.loading = true;
-
-    this.productService.getProductsByCollection(this.categoryId).subscribe({
-      next: (result: any) => {
-        const collection = result.data.collection;
-
-        if (!collection) {
-          console.error('Collection not found');
-          this.loading = false;
-          return;
-        }
-
-        this.categoryTitle = collection.title;
-        this.categoryDescription = collection.description || '';
-        this.allProducts = collection.products.nodes;
-
-        // Extract filter options from products
-        this.extractFilterOptions();
-
-        // Apply filters (initially shows all)
-        this.applyFilters();
-
+  this.loading = true;
+  this.allProducts = [];
+  this.filteredProducts = [];
+  
+  const startTime = Date.now();
+  const minLoadingTime = 500; // Minimum 500ms to show skeleton
+  
+  this.productService.getProductsByCollection(this.categoryId).subscribe({
+    next: (result: any) => {
+      const collection = result.data.collection;
+      
+      if (!collection) {
+        console.error('Collection not found');
         this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading products:', error);
+        return;
+      }
+      
+      this.categoryTitle = collection.title;
+      this.categoryDescription = collection.description || '';
+      this.allProducts = collection.products.nodes;
+      
+      this.extractFilterOptions();
+      this.applyFilters();
+      
+      // Ensure minimum loading time for smooth UX
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+      
+      setTimeout(() => {
         this.loading = false;
-      },
-    });
-  }
-
+      }, remainingTime);
+    },
+    error: (error) => {
+      console.error('Error loading products:', error);
+      this.loading = false;
+    }
+  });
+}
   extractFilterOptions(): void {
     // Extract unique brands
     this.filterOptions.brands = [
