@@ -13,7 +13,7 @@
 </div>
 
 <!-- MAIN HEADER -->
-<header class="w-full bg-white border-b px-4 md:px-6 py-4">
+<header class="w-full bg-white border-b px-4 md:px-6 py-4 sticky top-0 z-50">
   <!-- Mobile Header -->
   <div class="flex items-center justify-between lg:hidden">
     <!-- Burger Menu -->
@@ -34,7 +34,7 @@
     </button>
 
     <!-- Logo -->
-    <div class="text-2xl font-bold tracking-wide flex-1 font-advent">
+    <div (click)="goHome()" class="cursor-pointer text-2xl font-bold tracking-wide flex-1 font-advent">
       E-DUKA<span class="text-orange-500">*</span>
     </div>
 
@@ -122,7 +122,7 @@
   <!-- Desktop Header -->
   <div class="hidden lg:flex items-center justify-around">
     <!-- Logo -->
-    <div class="relative inline-block">
+    <div (click)="goHome()" class="relative inline-block cursor-pointer">
       <!-- IMAGE -->
       <img src="undraw_shopping-app_b80f.svg" alt="shopping" class="h-28" />
 
