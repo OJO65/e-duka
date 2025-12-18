@@ -5,16 +5,17 @@ import {
   EventEmitter,
   OnDestroy,
 } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { NgIf, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { CartService } from '../../services/cartService/cart.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIf, FormsModule],
+  imports: [NgIf, FormsModule, CommonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
@@ -28,7 +29,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isMobileMenuOpen = false;
   isAccountMenuOpen = false;
 
-  constructor(private router: Router) {}
+  cartItemCount: number = 0;
+  private cartSubscription?: Subscription;
+
+  constructor(private router: Router, private cartService: CartService) {}
 
   ngOnInit() {
     this.searchSubscription = this.searchSubject
@@ -36,10 +40,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((searchQuery) => {
         this.searchEvent.emit(searchQuery);
       });
+      this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+        this.cartItemCount = cart.itemCount;
+      })
   }
 
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
+    this.cartSubscription?.unsubscribe();
   }
 
   toggleMobileMenu() {
@@ -69,5 +77,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goHome() {
     this.router.navigate(['/']);
+  }
+
+  goToCart() {
+    this.router.navigate(['/cart']);
   }
 }
