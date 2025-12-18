@@ -1,3 +1,10 @@
+<div
+  *ngIf="showToast"
+  class="fixed top-6 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 animate-fade-in"
+>
+  {{ toastMessage }}
+</div>
+
 <div class="card">
   <div class="card-inner">
     <!-- Front -->
@@ -7,8 +14,8 @@
         <div class="image-placeholder" *ngIf="!imageLoaded">
           <div class="spinner"></div>
         </div>
-        <img 
-          [src]="productImage" 
+        <img
+          [src]="productImage"
           [alt]="product.title"
           (load)="onImageLoad()"
           (error)="onImageError()"
