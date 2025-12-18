@@ -15,11 +15,42 @@
 <!-- MAIN HEADER -->
 <header class="w-full bg-white border-b px-4 md:px-6 py-4 sticky top-0 z-50">
   <!-- Mobile Header -->
-  <div class="flex items-center justify-between lg:hidden">
-    <!-- Burger Menu -->
-    <button (click)="toggleMobileMenu()" class="text-2xl mr-3">
+  <!-- Mobile Header -->
+<div class="flex items-center justify-between lg:hidden relative">
+  <!-- Burger Menu -->
+  <button (click)="toggleMobileMenu()" class="text-2xl mr-3">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h16"
+      ></path>
+    </svg>
+  </button>
+
+  <!-- Logo -->
+  <div
+    (click)="goHome()"
+    class="cursor-pointer text-2xl font-bold tracking-wide flex-1 font-advent"
+  >
+    E-DUKA<span class="text-orange-500">*</span>
+  </div>
+
+  <!-- Mobile Icons -->
+  <div class="flex items-center gap-3">
+    <!-- Account -->
+    <button
+      class="cursor-pointer"
+      (click)="toggleAccountMenu()"
+    >
       <svg
-        class="w-6 h-6"
+        class="w-5 h-5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -28,67 +59,18 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M4 6h16M4 12h16M4 18h16"
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
         ></path>
       </svg>
     </button>
 
-    <!-- Logo -->
-    <div (click)="goHome()" class="cursor-pointer text-2xl font-bold tracking-wide flex-1 font-advent">
-      E-DUKA<span class="text-orange-500">*</span>
-    </div>
-
-    <!-- Mobile Icons -->
-    <div class="flex items-center gap-3">
-      <button class="cursor-pointer">
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          ></path>
-        </svg>
-      </button>
-      <button class="cursor-pointer relative">
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Mobile Search (below header) -->
-  <div class="mt-3 lg:hidden">
-    <div class="relative">
-      <input
-        type="text"
-        placeholder="Search products..."
-        [(ngModel)]="searchQuery"
-        (input)="onSearchInput()"
-        class="w-full border-2 border-gray-200 px-4 py-2.5 pr-24 rounded-lg outline-none text-sm transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-      />
-      
-      <!-- Search Icon -->
+    <!-- Cart -->
+    <button
+      class="cursor-pointer relative"
+      (click)="goToCart()"
+    >
       <svg
-        class="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
-        [class.text-orange-500]="searchQuery"
-        [class.text-gray-400]="!searchQuery"
+        class="w-5 h-5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -97,27 +79,35 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
         ></path>
       </svg>
-      
-      <!-- Clear Button (shows when typing) -->
-      <button
-        *ngIf="searchQuery"
-        (click)="clearSearch()"
-        class="absolute right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-all hover:scale-110 p-1"
-        title="Clear search"
+
+      <!-- Cart Badge -->
+      <span
+        *ngIf="cartItemCount > 0"
+        class="absolute -top-2 -right-2 bg-orange-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
       >
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </button>
-    </div>
+        {{ cartItemCount }}
+      </span>
+    </button>
   </div>
+
+  <!-- Mobile Account Dropdown -->
+  <div
+    *ngIf="isAccountMenuOpen"
+    class="absolute top-14 right-4 bg-white border shadow-lg rounded-md min-w-40 z-50"
+  >
+    <button
+      class="bg-orange-500 text-white font-semibold py-2 px-4 w-full"
+    >
+      Sign In
+    </button>
+    <a class="block px-4 py-2 hover:bg-gray-100">My Account</a>
+    <a class="block px-4 py-2 hover:bg-gray-100">Orders</a>
+    <a class="block px-4 py-2 hover:bg-gray-100">Wishlist</a>
+  </div>
+</div>
 
   <!-- Desktop Header -->
   <div class="hidden lg:flex items-center justify-around">
@@ -143,9 +133,11 @@
         (input)="onSearchInput()"
         class="flex-1 border-2 border-gray-200 px-5 py-3 pr-28 rounded-lg outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100 focus:shadow-md"
       />
-      
+
       <!-- Search Icon -->
-      <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-3">
+      <div
+        class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-3"
+      >
         <!-- Clear Button -->
         <button
           *ngIf="searchQuery"
@@ -161,7 +153,7 @@
             />
           </svg>
         </button>
-        
+
         <!-- Search Icon (default state) -->
         <svg
           *ngIf="!searchQuery"
@@ -205,9 +197,20 @@
       <a class="cursor-pointer hover:text-orange-500"
         >Help<i class="fa fa-question ml-2" aria-hidden="true"></i
       ></a>
-      <a class="cursor-pointer hover:text-orange-500"
-        >Cart<i class="fa fa-shopping-cart ml-2" aria-hidden="true"></i
-      ></a>
+      <!-- Cart Icon with Badge -->
+      <a
+        class="cursor-pointer hover:text-orange-500 relative"
+        (click)="goToCart()"
+      >
+        Cart
+        <i class="fa fa-shopping-cart ml-2" aria-hidden="true"></i>
+        <span
+          *ngIf="cartItemCount > 0"
+          class="absolute -top-3 -right-4 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+        >
+          {{ cartItemCount }}
+        </span>
+      </a>
     </div>
   </div>
 </header>
