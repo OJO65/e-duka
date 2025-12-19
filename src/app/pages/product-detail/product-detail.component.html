@@ -1,0 +1,140 @@
+<!-- Toast Notification -->
+<div
+  *ngIf="showToast"
+  class="fixed top-6 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in"
+>
+  {{ toastMessage }}
+</div>
+
+<!-- Loading State -->
+<app-product-detail-skeleton *ngIf="loading"></app-product-detail-skeleton>
+
+<!-- Product Detail -->
+<div *ngIf="!loading && product" class="product-detail-container">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs">
+    <span class="breadcrumb-link" (click)="goBack()">Home</span>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">{{ product.title }}</span>
+  </nav>
+
+  <div class="product-detail-grid">
+    <!-- Image Gallery -->
+    <div class="image-gallery">
+      <!-- Main Image -->
+      <div class="main-image">
+        <img [src]="selectedImage" [alt]="product.title" />
+      </div>
+
+      <!-- Thumbnail Images -->
+      <div class="thumbnail-list" *ngIf="product.images.nodes.length > 1">
+        <div
+          *ngFor="let image of product.images.nodes; let i = index"
+          class="thumbnail"
+          [class.active]="i === selectedImageIndex"
+          (click)="selectImage(i)"
+        >
+          <img [src]="image.url" [alt]="product.title" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <!-- Vendor -->
+      <p class="product-vendor" *ngIf="product.vendor">{{ product.vendor }}</p>
+
+      <!-- Title -->
+      <h1 class="product-title font-advent">{{ product.title }}</h1>
+
+      <!-- Price -->
+      <p class="product-price">{{ displayPrice }}</p>
+
+      <!-- Availability -->
+      <p
+        class="availability"
+        [class.in-stock]="selectedVariant?.availableForSale"
+      >
+        <span class="availability-dot"></span>
+        {{ selectedVariant?.availableForSale ? "In Stock" : "Out of Stock" }}
+      </p>
+
+      <!-- Description -->
+      <div class="product-description">
+        <h3>Description</h3>
+        <div [innerHTML]="product.descriptionHtml || product.description"></div>
+      </div>
+
+      <!-- Variants (if multiple options) -->
+      <div class="variants-section" *ngIf="product.variants.nodes.length > 1">
+        <h4>Options</h4>
+        <div class="variant-options">
+          <button
+            *ngFor="let variant of product.variants.nodes"
+            class="variant-btn"
+            [class.active]="variant.id === selectedVariant?.id"
+            [class.unavailable]="!variant.availableForSale"
+            (click)="selectVariant(variant)"
+          >
+            {{ variant.title }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="quantity-section">
+        <label>Quantity</label>
+        <div class="quantity-controls">
+          <button
+            (click)="decreaseQuantity()"
+            class="qty-btn"
+            [disabled]="quantity <= 1"
+          >
+            −
+          </button>
+          <input
+            type="number"
+            [(ngModel)]="quantity"
+            min="1"
+            class="qty-input"
+            readonly
+          />
+          <button (click)="increaseQuantity()" class="qty-btn">+</button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button
+          (click)="addToCart()"
+          class="btn-add-cart"
+          [disabled]="!selectedVariant?.availableForSale"
+        >
+          <i class="fa fa-shopping-cart"></i>
+          Add to Cart
+        </button>
+        <button
+          (click)="buyNow()"
+          class="btn-buy-now"
+          [disabled]="!selectedVariant?.availableForSale"
+        >
+          Buy Now
+        </button>
+      </div>
+
+      <!-- Product Meta -->
+      <div class="product-meta">
+        <div class="meta-item" *ngIf="product.productType">
+          <span class="meta-label">Category:</span>
+          <span>{{ product.productType }}</span>
+        </div>
+        <div class="meta-item" *ngIf="product.tags.length > 0">
+          <span class="meta-label">Tags:</span>
+          <span class="tags">
+            <span *ngFor="let tag of product.tags" class="tag">{{ tag }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
