@@ -1,0 +1,249 @@
+.skeleton-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-skeleton {
+      height: 16px;
+      width: 200px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 32px;
+    }
+
+    /* Grid Layout */
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    @media (max-width: 968px) {
+      .skeleton-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    /* Image Gallery */
+    .image-gallery-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .main-image-skeleton {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 12px;
+    }
+
+    .thumbnail-list-skeleton {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .thumbnail-skeleton {
+      aspect-ratio: 1;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Product Info */
+    .product-info-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .skeleton-vendor {
+      height: 14px;
+      width: 100px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .skeleton-title {
+      height: 32px;
+      width: 100%;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-title.short {
+      width: 70%;
+    }
+
+    .skeleton-price {
+      height: 28px;
+      width: 150px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .skeleton-availability {
+      height: 14px;
+      width: 120px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    /* Description Section */
+    .skeleton-description-section {
+      padding: 24px 0;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .skeleton-description-title {
+      height: 18px;
+      width: 120px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .skeleton-description-line {
+      height: 16px;
+      width: 100%;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-description-line.short {
+      width: 80%;
+    }
+
+    /* Variants */
+    .skeleton-variants {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .skeleton-variant-title {
+      height: 16px;
+      width: 80px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .skeleton-variant-options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .skeleton-variant-btn {
+      height: 40px;
+      width: 100px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Quantity */
+    .skeleton-quantity {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .skeleton-quantity-label {
+      height: 14px;
+      width: 70px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .skeleton-quantity-control {
+      height: 44px;
+      width: 148px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Action Buttons */
+    .skeleton-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .skeleton-button {
+      flex: 1;
+      height: 52px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Meta */
+    .skeleton-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .skeleton-meta-line {
+      height: 14px;
+      width: 250px;
+      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    /* Animation */
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .thumbnail-list-skeleton {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .skeleton-buttons {
+        flex-direction: column;
+      }
+    }
