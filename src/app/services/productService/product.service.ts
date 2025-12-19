@@ -75,4 +75,67 @@ export class ProductService {
       variables: { id: collectionId }
     });
   }
+
+// Add this method to your ProductService
+getProductById(productId: string): Observable<any> {
+  const query = `
+    query GetProduct($id: ID!) {
+      product(id: $id) {
+        id
+        title
+        description
+        descriptionHtml
+        vendor
+        productType
+        tags
+        availableForSale
+        options {
+          id
+          name
+          values
+        }
+        variants(first: 10) {
+          nodes {
+            id
+            title
+            availableForSale
+            quantityAvailable
+            priceV2 {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+            image {
+              url
+            }
+          }
+        }
+        images(first: 10) {
+          nodes {
+            url
+            altText
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+          maxVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  `;
+  
+  return this.apollo.query({
+    query: gql(query),
+    variables: { id: productId }
+  });
+}
 }
