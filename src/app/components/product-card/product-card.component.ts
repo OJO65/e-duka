@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cartService/cart.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-card',
@@ -11,6 +12,7 @@ import { CartService } from '../../services/cartService/cart.service';
 })
 export class ProductCardComponent {
   @Input() product!: {
+    id: string;
     title: string;
     images: { nodes: Array<{ url: string }> };
     priceRange: {
@@ -28,7 +30,7 @@ export class ProductCardComponent {
 
   private toastTimeout: any;
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService, private router: Router) {}
 
   onImageLoad() {
     this.imageLoaded = true;
@@ -92,7 +94,7 @@ export class ProductCardComponent {
   }
 
   onViewDetails() {
+    this.router.navigate(['/product', this.product.id]);
     console.log('View details:', this.product.title);
-    // TODO: Navigate to product detail page
   }
 }
