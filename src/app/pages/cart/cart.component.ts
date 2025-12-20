@@ -10,25 +10,22 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.css']
+  styleUrls: ['./cart.component.css'],
 })
 export class CartComponent implements OnInit, OnDestroy {
   cart: Cart = {
     items: [],
     itemCount: 0,
     subtotal: 0,
-    currency: 'USD'
+    currency: 'USD',
   };
 
   private cartSubscription?: Subscription;
 
-  constructor(
-    private cartService: CartService,
-    private router: Router
-  ) {}
+  constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
-    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+    this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
       this.cart = cart;
     });
   }
@@ -69,8 +66,7 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   proceedToCheckout(): void {
-    // TODO: Implement Shopify checkout integration
-    alert('Checkout coming soon!');
+    this.router.navigate(['/checkout']);
   }
 
   formatPrice(price: number, currency: string): string {
@@ -81,7 +77,7 @@ export class CartComponent implements OnInit, OnDestroy {
       currency: curr,
       currencyDisplay: 'symbol',
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(price);
 
     if (curr === 'CAD') {
