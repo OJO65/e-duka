@@ -1,8 +1,8 @@
-<app-shop-skeleton *ngIf="loading"></app-shop-skeleton>
+<app-shop-skeleton *ngIf="isLoading"></app-shop-skeleton>
 
 <div class="shop-container">
   <!-- Breadcrumbs -->
-  <nav class="breadcrumbs" *ngIf="!loading">
+  <nav class="breadcrumbs" *ngIf="!isLoading">
     <span class="breadcrumb-link" (click)="goHome()">Home</span>
     <span class="breadcrumb-separator">›</span>
     <span class="breadcrumb-current">{{ categoryTitle || "Shop" }}</span>
@@ -11,7 +11,7 @@
   <div class="shop-layout">
     <!-- SIDEBAR FILTERS (Desktop) -->
     <app-filter-sidebar
-      *ngIf="!loading"
+      *ngIf="!isLoading"
       class="hidden lg:block"
       [filterOptions]="filterOptions"
       [activeFilters]="activeFilters"
@@ -29,7 +29,7 @@
           <p class="category-description" *ngIf="categoryDescription">
             {{ categoryDescription }}
           </p>
-          <p class="product-count" *ngIf="!loading">
+          <p class="product-count" *ngIf="!isLoading">
             {{ filteredProducts.length }} product{{
               filteredProducts.length !== 1 ? "s" : ""
             }}
@@ -42,7 +42,7 @@
           <button
             class="mobile-filter-btn lg:hidden"
             (click)="toggleMobileFilters()"
-            *ngIf="!loading"
+            *ngIf="!isLoading"
           >
             <svg
               class="w-5 h-5"
@@ -68,7 +68,7 @@
             [(ngModel)]="sortBy"
             (change)="onSortChange()"
             class="sort-select"
-            *ngIf="!loading"
+            *ngIf="!isLoading"
           >
             <option value="default">Default</option>
             <option value="price-low">Price: Low to High</option>
@@ -80,7 +80,7 @@
       </div>
 
       <!-- Products Grid -->
-      <div *ngIf="!loading && filteredProducts.length > 0" class="product-grid">
+      <div *ngIf="!isLoading && filteredProducts.length > 0" class="product-grid">
         <app-product-card
           *ngFor="let product of filteredProducts"
           [product]="product"
@@ -89,7 +89,7 @@
 
       <!-- Empty State -->
       <div
-        *ngIf="!loading && filteredProducts.length === 0"
+        *ngIf="!isLoading && filteredProducts.length === 0"
         class="empty-state"
       >
         <svg
