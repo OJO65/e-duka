@@ -11,6 +11,7 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cartService/cart.service';
+import { SearchService } from '../../services/searchService/search.service';
 
 @Component({
   selector: 'app-header',
@@ -32,17 +33,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartItemCount: number = 0;
   private cartSubscription?: Subscription;
 
-  constructor(private router: Router, private cartService: CartService) {}
+  constructor(
+    private router: Router,
+    private cartService: CartService,
+    private searchService: SearchService
+  ) {}
 
   ngOnInit() {
     this.searchSubscription = this.searchSubject
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe((searchQuery) => {
-        this.searchEvent.emit(searchQuery);
+        this.searchService.setSearch(searchQuery);
       });
-      this.cartSubscription = this.cartService.cart$.subscribe(cart => {
-        this.cartItemCount = cart.itemCount;
-      })
+    this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
+      this.cartItemCount = cart.itemCount;
+    });
   }
 
   ngOnDestroy() {
@@ -72,7 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   clearSearch() {
     this.searchQuery = '';
-    this.searchEvent.emit('');
+    this.searchService.setSearch('');
   }
 
   goHome() {
