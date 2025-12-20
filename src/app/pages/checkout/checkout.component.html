@@ -1,0 +1,157 @@
+<div class="checkout-container">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs">
+    <span class="breadcrumb-link" (click)="continueShopping()">Home</span>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-link" (click)="goToCart()">Cart</span>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">Checkout</span>
+  </nav>
+
+  <!-- Page Title -->
+  <h1 class="checkout-title font-advent">Checkout</h1>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <p>{{ error }}</p>
+  </div>
+
+  <div class="checkout-grid">
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h2 class="section-title font-advent">Order Summary</h2>
+
+      <!-- Cart Items -->
+      <div class="checkout-items">
+        <div *ngFor="let item of cart.items" class="checkout-item">
+          <img [src]="item.image" [alt]="item.title" class="item-image" />
+          
+          <div class="item-details">
+            <h3 class="item-title">{{ item.title }}</h3>
+            <p class="item-vendor" *ngIf="item.vendor">{{ item.vendor }}</p>
+            <p class="item-quantity">Qty: {{ item.quantity }}</p>
+          </div>
+
+          <div class="item-price">
+            <p class="price">{{ formatPrice(getItemTotal(item), item.currency) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Totals -->
+      <div class="order-totals">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span>{{ formatPrice(cart.subtotal, cart.currency) }}</span>
+        </div>
+        
+        <div class="total-row">
+          <span>Shipping</span>
+          <span>Calculated at checkout</span>
+        </div>
+
+        <div class="total-row">
+          <span>Tax</span>
+          <span>Calculated at checkout</span>
+        </div>
+
+        <div class="total-divider"></div>
+
+        <div class="total-row total">
+          <span>Total</span>
+          <span class="total-amount">{{ formatPrice(cart.subtotal, cart.currency) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout Actions -->
+    <div class="checkout-actions">
+      <div class="info-card">
+        <div class="info-header">
+          <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <h3>Secure Checkout</h3>
+        </div>
+        <p>You'll be redirected to Shopify's secure checkout to complete your purchase.</p>
+      </div>
+
+      <!-- Checkout Button -->
+      <button 
+        (click)="proceedToShopifyCheckout()" 
+        class="checkout-btn"
+        [disabled]="loading || cart.items.length === 0"
+      >
+        <span *ngIf="!loading">
+          <i class="fa fa-lock"></i>
+          Proceed to Secure Checkout
+        </span>
+        <span *ngIf="loading" class="loading-spinner">
+          Processing...
+        </span>
+      </button>
+
+      <!-- Back to Cart -->
+      <button (click)="goToCart()" class="back-btn" [disabled]="loading">
+        Back to Cart
+      </button>
+
+      <!-- Trust Badges -->
+      <div class="trust-section">
+        <h4>Why shop with us?</h4>
+        <div class="trust-badges">
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <div>
+              <strong>Secure Payment</strong>
+              <p>SSL encrypted checkout</p>
+            </div>
+          </div>
+
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+            </svg>
+            <div>
+              <strong>Free Shipping</strong>
+              <p>On orders over $50</p>
+            </div>
+          </div>
+
+          <div class="badge">
+            <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            <div>
+              <strong>Easy Returns</strong>
+              <p>30-day return policy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="payment-methods">
+        <p>Accepted payment methods:</p>
+        <div class="payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-apple-pay"></i>
+          <i class="fab fa-google-pay"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
