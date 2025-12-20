@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { SearchService } from '../../services/searchService/search.service';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class CategoryCardComponent {
   imageLoaded: boolean = false;
   imageError: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private searchService: SearchService) {}
 
   get categoryImage(): string {
     return this.category?.image?.url || 'assets/placeholder.jpg';
@@ -33,6 +34,7 @@ export class CategoryCardComponent {
   }
 
   toShop() {
+    this.searchService.setSearch('');
     this.router.navigate(['/shop'], {
       queryParams: { collectionId: this.category.id }
     });
