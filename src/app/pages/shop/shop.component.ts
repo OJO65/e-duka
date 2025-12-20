@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/productService/product.service';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
-
+import { SearchService } from '../../services/searchService/search.service';
 import { ShopSkeletonComponent } from '../../components/shop-skeleton/shop-skeleton.component';
 import {
   FilterSidebarComponent,
@@ -12,7 +12,6 @@ import {
   ActiveFilters,
 } from '../../components/filter-sidebar/filter-sidebar.component';
 import { ActivatedRoute, Router } from '@angular/router';
-
 
 interface Product {
   id: string;
@@ -34,7 +33,7 @@ interface Product {
     CommonModule,
     FormsModule,
     ProductCardComponent,
-    
+
     FilterSidebarComponent,
     ShopSkeletonComponent,
   ],
@@ -50,6 +49,7 @@ export class ShopComponent implements OnInit, OnDestroy {
   filteredProducts: Product[] = [];
 
   loading: boolean = true;
+  searching: boolean = false;
   mobileFiltersOpen: boolean = false;
 
   // Filter options extracted from Shopify data
@@ -76,69 +76,110 @@ export class ShopComponent implements OnInit, OnDestroy {
   sortBy: string = 'default';
 
   private routeSubscription?: Subscription;
+  private searchSubscription?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private searchService: SearchService
   ) {}
 
-ngOnInit(): void {
-  this.routeSubscription = this.route.queryParams.subscribe((params) => {
-    const collectionId = params['collectionId'];
+  ngOnInit(): void {
+    this.routeSubscription = this.route.queryParams.subscribe((params) => {
+      const collectionId = params['collectionId'];
 
-    if (!collectionId) {
-      console.error('No collectionId provided in query params');
-      return;
-    }
-
-    // This is already a valid Shopify GID
-    this.categoryId = collectionId;
-
-    this.loadProducts();
-  });
-}
-
-
-  loadProducts(): void {
-  this.loading = true;
-  this.allProducts = [];
-  this.filteredProducts = [];
-  
-  const startTime = Date.now();
-  const minLoadingTime = 500; // Minimum 500ms to show skeleton
-  
-  this.productService.getProductsByCollection(this.categoryId).subscribe({
-    next: (result: any) => {
-      const collection = result.data.collection;
-      
-      if (!collection) {
-        console.error('Collection not found');
-        this.loading = false;
+      if (!collectionId) {
+        console.error('No collectionId provided in query params');
         return;
       }
-      
-      this.categoryTitle = collection.title;
-      this.categoryDescription = collection.description || '';
-      this.allProducts = collection.products.nodes;
-      
-      this.extractFilterOptions();
-      this.applyFilters();
-      
-      // Ensure minimum loading time for smooth UX
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-      
-      setTimeout(() => {
+
+      // This is already a valid Shopify GID
+      this.categoryId = collectionId;
+
+      this.loadProducts();
+    });
+
+    this.searchSubscription = this.searchService.search$.subscribe((query) => {
+      // Only trigger search loading if products are already loaded
+      if (!this.loading && this.allProducts.length > 0) {
+        if (query && query.trim() !== '') {
+          this.searching = true; // Show skeleton
+
+          // Simulate minimum search time for smooth UX
+          setTimeout(() => {
+            this.filterBySearchQuery(query);
+            this.searching = false;
+          }, 300);
+        } else {
+          // Clear search
+          this.searching = true;
+          setTimeout(() => {
+            this.applyFilters();
+            this.searching = false;
+          }, 300);
+        }
+      }
+    });
+  }
+
+  filterBySearchQuery(query: string): void {
+    const searchLower = query.toLowerCase();
+
+    this.applyFilters();
+
+    this.filteredProducts = this.filteredProducts.filter(
+      (product) =>
+        product.title.toLowerCase().includes(searchLower) ||
+        product.vendor.toLowerCase().includes(searchLower) ||
+        (product.tags &&
+          product.tags.some((tag) => tag.toLowerCase().includes(searchLower)))
+    );
+  }
+
+  get isLoading(): boolean {
+    return this.loading || this.searching;
+  }
+
+  loadProducts(): void {
+    this.loading = true;
+    this.allProducts = [];
+    this.filteredProducts = [];
+
+    const startTime = Date.now();
+    const minLoadingTime = 500; // Minimum 500ms to show skeleton
+
+    this.productService.getProductsByCollection(this.categoryId).subscribe({
+      next: (result: any) => {
+        const collection = result.data.collection;
+
+        if (!collection) {
+          console.error('Collection not found');
+          this.loading = false;
+          return;
+        }
+
+        this.categoryTitle = collection.title;
+        this.categoryDescription = collection.description || '';
+        this.allProducts = collection.products.nodes;
+
+        this.extractFilterOptions();
+        this.applyFilters();
+
+        // Ensure minimum loading time for smooth UX
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+
+        setTimeout(() => {
+          this.loading = false;
+        }, remainingTime);
+      },
+      error: (error) => {
+        console.error('Error loading products:', error);
         this.loading = false;
-      }, remainingTime);
-    },
-    error: (error) => {
-      console.error('Error loading products:', error);
-      this.loading = false;
-    }
-  });
-}
+      },
+    });
+  }
   extractFilterOptions(): void {
     // Extract unique brands
     this.filterOptions.brands = [
@@ -308,5 +349,6 @@ ngOnInit(): void {
 
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
+    this.searchSubscription?.unsubscribe();
   }
 }
