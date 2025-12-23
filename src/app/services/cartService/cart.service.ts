@@ -6,135 +6,185 @@ import { CartItem, Cart } from '../../models/cart.model';
   providedIn: 'root',
 })
 export class CartService {
-  private readonly STORAGE_KEY = 'eduka_cart';
+  private readonly GUEST_KEY = 'eduka_cart_guest';
 
-  // BehaviorSubject holds the cart state
-  private cartSubject = new BehaviorSubject<Cart>(this.loadFromStorage());
+  private currentUserId: number | null = null;
 
-  // Observable that components can subscribe to
+  private cartSubject = new BehaviorSubject<Cart>(this.createEmptyCart());
   public cart$: Observable<Cart> = this.cartSubject.asObservable();
 
   constructor() {
-    // Save to localStorage whenever cart changes
-    this.cart$.subscribe((cart) => this.saveToStorage(cart));
+    // Load initial cart (guest by default)
+    const initialCart = this.loadFromStorage();
+    this.cartSubject.next(initialCart);
+
+    // Persist cart on every change
+    this.cart$.subscribe(cart => {
+      this.saveToStorage(cart);
+    });
   }
 
-  // Get current cart value (synchronous)
+  /* ========================
+     PUBLIC API (UNCHANGED)
+     ======================== */
+
   getCurrentCart(): Cart {
     return this.cartSubject.value;
   }
 
-  // Add product to cart
   addToCart(product: any, quantity: number = 1): void {
     const cart = this.getCurrentCart();
+
     const existingItem = cart.items.find(
-      (item) => item.productId === product.id
+      item => item.productId === product.id
     );
 
     if (existingItem) {
-      // Increase quantity
       existingItem.quantity += quantity;
     } else {
-      // Ensure we have a valid variant
       const variant = product.variants?.nodes?.[0];
 
       if (!variant || !variant.id) {
-        console.error('Product missing variants:', product);
-        // Show user-friendly error instead of throwing
-        alert(
-          `Sorry, "${product.title}" cannot be added to cart. Please try refreshing the page.`
-        );
+        alert(`"${product.title}" cannot be added to cart.`);
         return;
       }
 
-      // Add new item using variant data
       const newItem: CartItem = {
         productId: product.id,
-        variantId: variant.id, // Use actual variant ID
+        variantId: variant.id,
         title: product.title,
         vendor: product.vendor || '',
         image: product.images.nodes[0]?.url || '',
         price: parseFloat(
-          variant.priceV2?.amount || product.priceRange.minVariantPrice.amount
+          variant.priceV2?.amount ||
+            product.priceRange.minVariantPrice.amount
         ),
         currency:
           variant.priceV2?.currencyCode ||
           product.priceRange.minVariantPrice.currencyCode,
-        quantity: quantity,
-        availableForSale: product.availableForSale && variant.availableForSale,
+        quantity,
+        availableForSale:
+          product.availableForSale && variant.availableForSale,
       };
+
       cart.items.push(newItem);
     }
 
     this.updateCart(cart);
   }
 
-  // Remove item from cart
   removeFromCart(productId: string): void {
     const cart = this.getCurrentCart();
-    cart.items = cart.items.filter((item) => item.productId !== productId);
+    cart.items = cart.items.filter(
+      item => item.productId !== productId
+    );
     this.updateCart(cart);
   }
 
-  // Update quantity
   updateQuantity(productId: string, quantity: number): void {
     const cart = this.getCurrentCart();
-    const item = cart.items.find((item) => item.productId === productId);
+    const item = cart.items.find(
+      item => item.productId === productId
+    );
 
-    if (item) {
-      if (quantity <= 0) {
-        this.removeFromCart(productId);
-      } else {
-        item.quantity = quantity;
-        this.updateCart(cart);
-      }
+    if (!item) return;
+
+    if (quantity <= 0) {
+      this.removeFromCart(productId);
+    } else {
+      item.quantity = quantity;
+      this.updateCart(cart);
     }
   }
 
-  // Clear entire cart
   clearCart(): void {
-    const emptyCart: Cart = {
-      items: [],
-      itemCount: 0,
-      subtotal: 0,
-      currency: 'USD',
-    };
-    this.updateCart(emptyCart);
+    this.updateCart(this.createEmptyCart());
   }
 
-  // Private: Update cart and recalculate totals
+  /* ========================
+     AUTH INTEGRATION
+     ======================== */
+
+  setUser(userId: number | null): void {
+    this.currentUserId = userId;
+    const cart = this.loadFromStorage();
+    this.cartSubject.next(cart);
+  }
+
+  mergeGuestCartIntoUser(userId: number): void {
+    const guestCart = this.getStoredCart(this.GUEST_KEY);
+    if (!guestCart || guestCart.items.length === 0) return;
+
+    const userKey = this.getUserKey(userId);
+    const userCart =
+      this.getStoredCart(userKey) || this.createEmptyCart();
+
+    guestCart.items.forEach(guestItem => {
+      const existing = userCart.items.find(
+        item => item.variantId === guestItem.variantId
+      );
+
+      if (existing) {
+        existing.quantity += guestItem.quantity;
+      } else {
+        userCart.items.push(guestItem);
+      }
+    });
+
+    this.updateCart(userCart);
+    localStorage.setItem(userKey, JSON.stringify(userCart));
+    localStorage.removeItem(this.GUEST_KEY);
+  }
+
+  /* ========================
+     INTERNAL HELPERS
+     ======================== */
+
   private updateCart(cart: Cart): void {
-    cart.itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    cart.itemCount = cart.items.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
     cart.subtotal = cart.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
+
     cart.currency = cart.items[0]?.currency || 'USD';
-
-    this.cartSubject.next(cart);
+    this.cartSubject.next({ ...cart });
   }
 
-  // Private: Save to localStorage
   private saveToStorage(cart: Cart): void {
+    const key = this.currentUserId
+      ? this.getUserKey(this.currentUserId)
+      : this.GUEST_KEY;
+
+    localStorage.setItem(key, JSON.stringify(cart));
+  }
+
+  private loadFromStorage(): Cart {
+    const key = this.currentUserId
+      ? this.getUserKey(this.currentUserId)
+      : this.GUEST_KEY;
+
+    return this.getStoredCart(key) || this.createEmptyCart();
+  }
+
+  private getStoredCart(key: string): Cart | null {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cart));
-    } catch (error) {
-      console.error('Failed to save cart to localStorage:', error);
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
     }
   }
 
-  // Private: Load from localStorage
-  private loadFromStorage(): Cart {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (error) {
-      console.error('Failed to load cart from localStorage:', error);
-    }
+  private getUserKey(userId: number): string {
+    return `eduka_cart_user_${userId}`;
+  }
 
-    // Return empty cart if nothing saved
+  private createEmptyCart(): Cart {
     return {
       items: [],
       itemCount: 0,
