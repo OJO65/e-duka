@@ -12,6 +12,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cartService/cart.service';
 import { SearchService } from '../../services/searchService/search.service';
+import { AuthService } from '../../services/authService/auth.service';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -33,10 +35,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartItemCount: number = 0;
   private cartSubscription?: Subscription;
 
+  isLoggedIn: boolean = false;
+  currentUser: User | null = null;
+  private authSubscription?: Subscription;
+  private userSubscription?: Subscription;
+
   constructor(
     private router: Router,
     private cartService: CartService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -48,11 +56,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
       this.cartItemCount = cart.itemCount;
     });
+    this.authSubscription = this.authService.isLoggedIn$.subscribe(loggedIn => {
+      this.isLoggedIn = loggedIn;
+    });
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();
     this.cartSubscription?.unsubscribe();
+    this.authSubscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();
   }
 
   toggleMobileMenu() {
@@ -65,6 +81,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleAccountMenu() {
     this.isAccountMenuOpen = !this.isAccountMenuOpen;
+  }
+
+  closeAccountMenu() {
+    this.isAccountMenuOpen = false;
   }
 
   searchProducts() {
@@ -86,5 +106,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goToCart() {
     this.router.navigate(['/cart']);
+  }
+
+  goToLogin() {
+    this.closeAccountMenu();
+    this.router.navigate(['/login']);
+  }
+
+  goToRegister() {
+    this.closeAccountMenu();
+    this.router.navigate(['/register']);
+  }
+
+  signOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+      this.authService.logout();
+      this.closeAccountMenu();
+      this.router.navigate(['/']);
+    }
   }
 }
