@@ -9,7 +9,7 @@ import { NgIf, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cartService/cart.service';
 import { SearchService } from '../../services/searchService/search.service';
 import { AuthService } from '../../services/authService/auth.service';
@@ -18,7 +18,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIf, FormsModule, CommonModule],
+  imports: [NgIf, FormsModule, CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
