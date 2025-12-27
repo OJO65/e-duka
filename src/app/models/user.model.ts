@@ -8,12 +8,14 @@ export interface User {
   createdAt?: string;
 }
 
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered';
+
 export interface Order {
   id: string;
   date: string;
   total: number;
   currency: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  status: OrderStatus;
   items: OrderItem[];
 }
 
