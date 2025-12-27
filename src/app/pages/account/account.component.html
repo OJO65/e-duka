@@ -1,0 +1,407 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-5xl mx-auto px-4">
+    <!-- Success Message -->
+    <div
+      *ngIf="successMessage"
+      class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start"
+    >
+      <svg
+        class="w-5 h-5 mr-2 shrink-0 mt-0.5"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Sidebar - Quick Stats -->
+      <div class="lg:col-span-1">
+        <!-- Profile Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div class="text-center">
+            <!-- Avatar -->
+            <div
+              class="mx-auto w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-4"
+            >
+              <svg
+                class="w-12 h-12 text-orange-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+
+            <h2 class="text-xl font-bold text-gray-900 mb-1">
+              {{ currentUser?.username }}
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">{{ currentUser?.email }}</p>
+
+            <div class="text-xs text-gray-500">
+              <span class="flex items-center justify-center gap-1">
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Member since {{ memberSince }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+
+          <div class="space-y-4">
+            <!-- Orders -->
+            <div
+              class="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-gray-700"
+                  >Total Orders</span
+                >
+              </div>
+              <span class="text-lg font-bold text-blue-600">{{
+                orderCount
+              }}</span>
+            </div>
+
+            <!-- Wishlist -->
+            <div
+              class="flex items-center justify-between p-3 bg-red-50 rounded-lg"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-red-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-gray-700"
+                  >Wishlist Items</span
+                >
+              </div>
+              <span class="text-lg font-bold text-red-600">{{
+                wishlistCount
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h3>
+
+          <div class="space-y-2">
+            <button
+              (click)="goToOrders()"
+              class="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-3"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <span class="text-sm font-medium text-gray-700">View Orders</span>
+            </button>
+
+            <button
+              (click)="goToWishlist()"
+              class="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-3"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+              <span class="text-sm font-medium text-gray-700"
+                >View Wishlist</span
+              >
+            </button>
+
+            <button
+              (click)="signOut()"
+              class="w-full text-left px-4 py-3 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-3"
+            >
+              <svg
+                class="w-5 h-5 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span class="text-sm font-medium text-red-600">Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Content - Profile Details -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <!-- Header with Edit Button -->
+          <div class="flex items-center justify-between mb-6 pb-4 border-b">
+            <h2 class="text-xl font-bold text-gray-900">Profile Information</h2>
+            <button
+              *ngIf="!isEditMode"
+              (click)="toggleEditMode()"
+              class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Edit Profile
+            </button>
+          </div>
+
+          <!-- Error Message -->
+          <div
+            *ngIf="errorMessage"
+            class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start"
+          >
+            <svg
+              class="w-5 h-5 mr-2 shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- View Mode -->
+          <div *ngIf="!isEditMode" class="space-y-6">
+            <!-- Username -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 mb-2"
+                >Username</label
+              >
+              <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">
+                {{ currentUser?.username }}
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 mb-2"
+                >Email Address</label
+              >
+              <div class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">
+                {{ currentUser?.email }}
+              </div>
+            </div>
+
+            <!-- Account ID -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 mb-2"
+                >Account ID</label
+              >
+              <div
+                class="px-4 py-3 bg-gray-50 rounded-lg text-gray-900 font-mono text-sm"
+              >
+                #{{ currentUser?.id }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <form
+            *ngIf="isEditMode"
+            (ngSubmit)="saveProfile()"
+            #profileForm="ngForm"
+          >
+            <div class="space-y-6">
+              <!-- Username -->
+              <div>
+                <label
+                  for="username"
+                  class="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  [(ngModel)]="editedUsername"
+                  required
+                  minlength="3"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  [disabled]="isLoading"
+                />
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label
+                  for="email"
+                  class="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  [(ngModel)]="editedEmail"
+                  required
+                  email
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  [disabled]="isLoading"
+                />
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  [disabled]="isLoading || !profileForm.valid"
+                  class="flex-1 bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  <span *ngIf="!isLoading">Save Changes</span>
+                  <span *ngIf="isLoading" class="flex items-center">
+                    <svg
+                      class="animate-spin h-5 w-5 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Saving...
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  (click)="toggleEditMode()"
+                  [disabled]="isLoading"
+                  class="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Security Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">Security</h2>
+
+          <div
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Password</h3>
+              <p class="text-sm text-gray-600">••••••••</p>
+            </div>
+            <button
+              (click)="goToForgotPassword()"
+              class="px-4 py-2 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-semibold text-sm"
+            >
+              Change Password
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
