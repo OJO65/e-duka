@@ -2,9 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cartService/cart.service';
-import { ProductService } from '../../services/productService/product.service';
+import { AuthService } from '../../services/authService/auth.service';
+import { OrderService } from '../../services/orderService/order.service';
 import { Cart, CartItem } from '../../models/cart.model';
 import { Subscription } from 'rxjs';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-checkout',
@@ -21,18 +23,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     currency: 'USD',
   };
 
+  currentUser: User | null = null;
   loading: boolean = false;
   error: string = '';
 
   private cartSubscription?: Subscription;
+  private userSubscription?: Subscription;
 
   constructor(
     private cartService: CartService,
-    private productService: ProductService,
+    private authService: AuthService,
+    private orderService: OrderService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to cart
     this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
       this.cart = cart;
 
@@ -41,10 +47,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.router.navigate(['/cart']);
       }
     });
+
+    // Subscribe to current user
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   ngOnDestroy(): void {
     this.cartSubscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();
   }
 
   formatPrice(price: number, currency?: string): string {
@@ -69,110 +81,52 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return item.price * item.quantity;
   }
 
-  async proceedToShopifyCheckout(): Promise<void> {
-    if (this.cart.items.length === 0) {
-      this.error = 'Your cart is empty';
-      return;
-    }
+  /**
+   * Place order locally (no external payment processing)
+   */
+  placeOrder(): void {
+  console.log('1. placeOrder called');
+  console.log('Cart items:', this.cart.items);
+  console.log('Current user:', this.currentUser);
 
-    this.loading = true;
-    this.error = '';
+  if (this.cart.items.length === 0) {
+    this.error = 'Your cart is empty';
+    return;
+  }
 
+  if (!this.currentUser) {
+    console.log('No user found, redirecting to login');
+    this.error = 'You must be logged in to place an order';
+    this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+    return;
+  }
+
+  this.loading = true;
+  this.error = '';
+
+  console.log('2. Starting order creation timeout');
+
+  setTimeout(() => {
     try {
-      // Validate all cart items before checkout
-      const validItems = [];
-      const invalidItems = [];
+      console.log('3. Creating order...');
+      const order = this.orderService.createOrder(this.cart, this.currentUser!.id);
+      console.log('4. Order created:', order);
 
-      for (const item of this.cart.items) {
-        try {
-          // Verify product still exists and is available
-          const result = await this.productService
-            .getProductById(item.productId)
-            .toPromise();
-
-          if (result?.data?.product && result.data.product.availableForSale) {
-            const variant =
-              result.data.product.variants.nodes.find(
-                (v: any) => v.id === item.variantId
-              ) || result.data.product.variants.nodes[0];
-
-            if (variant && variant.availableForSale) {
-              // Use fresh variant data from API
-              validItems.push({
-                ...item,
-                variantId: variant.id,
-                availableForSale: variant.availableForSale,
-              });
-            } else {
-              invalidItems.push(item);
-            }
-          } else {
-            invalidItems.push(item);
-          }
-        } catch (error) {
-          console.error(`Failed to validate product ${item.productId}:`, error);
-          invalidItems.push(item);
-        }
-      }
-
-      // Handle invalid items
-      if (invalidItems.length > 0) {
-        // Remove invalid items from cart
-        for (const item of invalidItems) {
-          this.cartService.removeFromCart(item.productId);
-        }
-
-        this.error = `${invalidItems.length} item(s) are no longer available and have been removed from your cart.`;
-        this.loading = false;
-
-        // If all items were invalid, redirect to cart
-        if (validItems.length === 0) {
-          setTimeout(() => {
-            this.router.navigate(['/cart']);
-          }, 2000);
-        }
-        return;
-      }
-
-      // Proceed with checkout using valid items
-      const result = await this.productService
-        .createShopifyCart(validItems)
-        .toPromise();
-
-      // Check for user errors from Shopify
-      if (result?.data?.cartCreate?.userErrors?.length > 0) {
-        const errors = result.data.cartCreate.userErrors
-          .map((e: any) => e.message)
-          .join(', ');
-        throw new Error(errors);
-      }
-
-      const checkoutUrl = result?.data?.cartCreate?.cart?.checkoutUrl;
-
-      if (!checkoutUrl) {
-        throw new Error('Failed to create checkout URL');
-      }
-
-      // Clear local cart before redirecting
+      console.log('5. Clearing cart...');
       this.cartService.clearCart();
 
-      // Redirect to Shopify checkout
-      window.location.href = checkoutUrl;
+      this.loading = false;
+      console.log('6. Navigating to confirmation...');
+
+      this.router.navigate(['/order-confirmation', order.id]);
+      console.log('7. Navigation called');
     } catch (error: any) {
-      console.error('Checkout error:', error);
-
-      // Provide more specific error messages
-      if (error.message?.includes('Invalid id')) {
-        this.error =
-          'Some items in your cart are no longer available. Please refresh and try again.';
-      } else {
-        this.error =
-          error.message || 'Failed to proceed to checkout. Please try again.';
-      }
-
+      console.error('Order creation error:', error);
+      this.error = 'Failed to place order. Please try again.';
       this.loading = false;
     }
-  }
+  }, 1000);
+}
 
   goToCart(): void {
     this.router.navigate(['/cart']);
