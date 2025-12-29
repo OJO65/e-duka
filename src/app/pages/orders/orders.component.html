@@ -1,0 +1,132 @@
+<div class="orders-container">
+  <!-- Page Header -->
+  <div class="orders-header">
+    <div>
+      <h1 class="page-title font-advent">My Orders</h1>
+      <p class="page-subtitle">View and track your order history</p>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button 
+      class="filter-tab"
+      [class.active]="selectedFilter === 'all'"
+      (click)="filterOrders('all')"
+    >
+      All Orders
+      <span class="filter-count">{{ getFilterCount('all') }}</span>
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="selectedFilter === 'pending'"
+      (click)="filterOrders('pending')"
+    >
+      Pending
+      <span class="filter-count">{{ getFilterCount('pending') }}</span>
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="selectedFilter === 'processing'"
+      (click)="filterOrders('processing')"
+    >
+      Processing
+      <span class="filter-count">{{ getFilterCount('processing') }}</span>
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="selectedFilter === 'shipped'"
+      (click)="filterOrders('shipped')"
+    >
+      Shipped
+      <span class="filter-count">{{ getFilterCount('shipped') }}</span>
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="selectedFilter === 'delivered'"
+      (click)="filterOrders('delivered')"
+    >
+      Delivered
+      <span class="filter-count">{{ getFilterCount('delivered') }}</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <svg class="animate-spin h-12 w-12 text-orange-500" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!loading && filteredOrders.length > 0" class="orders-list">
+    <div *ngFor="let order of filteredOrders" class="order-card" (click)="viewOrderDetails(order.id)">
+      <!-- Order Header -->
+      <div class="order-card-header">
+        <div class="order-info">
+          <h3 class="order-id">{{ order.id }}</h3>
+          <p class="order-date">{{ formatDate(order.date) }}</p>
+        </div>
+        <div class="order-status-container">
+          <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+            <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getStatusIcon(order.status)"/>
+            </svg>
+            {{ order.status }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Order Items Preview -->
+      <div class="order-items-preview">
+        <div *ngFor="let item of order.items.slice(0, 3)" class="item-preview">
+          <img [src]="item.image" [alt]="item.title" class="item-preview-image" />
+        </div>
+        <div *ngIf="order.items.length > 3" class="more-items">
+          +{{ order.items.length - 3 }} more
+        </div>
+      </div>
+
+      <!-- Order Footer -->
+      <div class="order-card-footer">
+        <div class="order-total">
+          <span class="total-label">Total:</span>
+          <span class="total-amount">{{ formatPrice(order.total, order.currency) }}</span>
+        </div>
+        <div class="order-actions">
+          <button class="view-details-btn" (click)="viewOrderDetails(order.id); $event.stopPropagation()">
+            View Details
+            <svg class="btn-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredOrders.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+    </div>
+    <h2 class="empty-title">
+      <span *ngIf="selectedFilter === 'all'">No Orders Yet</span>
+      <span *ngIf="selectedFilter !== 'all'">No {{ selectedFilter | titlecase }} Orders</span>
+    </h2>
+    <p class="empty-subtitle">
+      <span *ngIf="selectedFilter === 'all'">Start shopping to see your orders here</span>
+      <span *ngIf="selectedFilter !== 'all'">You don't have any {{ selectedFilter }} orders at the moment</span>
+    </p>
+    <button (click)="continueShopping()" class="shop-now-btn">
+      <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      Start Shopping
+    </button>
+  </div>
+</div>
