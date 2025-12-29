@@ -8,6 +8,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { AccountComponent } from './pages/account/account.component';
+import { OrdersComponent } from './pages/orders/orders.component';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -26,8 +27,8 @@ export const routes: Routes = [
     // Protected routes
     {path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard]},
     {path: 'account', component: AccountComponent, canActivate: [AuthGuard]},
-    {path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard]},  // ← ADD THIS
-    // {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},  // ← We'll add this when we build Orders page
+    {path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard]},
+    {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},  // ← We'll add this when we build Orders page
     
     {path: '**', redirectTo: 'home' }
 ];
