@@ -3,6 +3,66 @@
   height: 300px;
   perspective: 1000px;
   cursor: pointer;
+  position: relative; /* CRITICAL: Makes wishlist button position relative to card */
+}
+
+/* Wishlist Heart Button */
+.wishlist-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1000; /* Above everything */
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+.wishlist-btn:hover {
+  transform: scale(1.15);
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.wishlist-btn:active {
+  transform: scale(0.95);
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.wishlist-btn:hover .heart-icon {
+  color: #ff6b35;
+}
+
+.wishlist-btn.in-wishlist .heart-icon {
+  color: #ff6b35;
+  animation: heartPop 0.4s ease;
+}
+
+.wishlist-btn.in-wishlist {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.wishlist-btn.in-wishlist:hover {
+  background: rgba(255, 107, 53, 0.15);
+}
+
+@keyframes heartPop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
 }
 
 .card-inner {
@@ -211,12 +271,21 @@
   animation: fade-in 0.3s ease-out;
 }
 
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .card {
     width: 100%;
     height: 280px;
+  }
+  
+  .wishlist-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .heart-icon {
+    width: 18px;
+    height: 18px;
   }
   
   .product-title, .back-title {
