@@ -10,6 +10,7 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { AccountComponent } from './pages/account/account.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
+import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -29,6 +30,6 @@ export const routes: Routes = [
     {path: 'account', component: AccountComponent, canActivate: [AuthGuard]},
     {path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard]},
     {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},  // ← We'll add this when we build Orders page
-    
+    {path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard]},
     {path: '**', redirectTo: 'home' }
 ];
