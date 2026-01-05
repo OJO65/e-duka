@@ -159,7 +159,7 @@ export class ProductCardComponent implements OnInit, OnDestroy {
 
     this.toastTimeout = setTimeout(() => {
       this.showToast = false;
-    }, 800);
+    }, 1000);
   }
 
   onViewDetails() {

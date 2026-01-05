@@ -8,3 +8,21 @@
 .font-poiret {
   font-family: "Poiret One", cursive;
 }
+
+* {
+  touch-action: manipulation;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+input, textarea {
+  font-size: 16px; /* Prevents auto-zoom */
+}
