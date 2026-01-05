@@ -82,6 +82,14 @@
   height: fit-content;
 }
 
+/* Remove sticky positioning on mobile */
+@media (max-width: 968px) {
+  .image-gallery {
+    position: relative;
+    top: auto;
+  }
+}
+
 .main-image {
   width: 100%;
   aspect-ratio: 1;
