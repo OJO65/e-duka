@@ -4,18 +4,37 @@ import {
   OnDestroy,
   AfterViewInit,
   ElementRef,
-  QueryList,
-  ViewChildren,
+  ViewChild,
 } from '@angular/core';
-import { CategoryService } from '../../services/categoryService/category.service';
-import { CategoryCardComponent } from '../../components/category-card/category-card.component';
 import { CommonModule } from '@angular/common';
-import { ProductService } from '../../services/productService/product.service';
 import { Subscription } from 'rxjs';
+import { CategoryService } from '../../services/categoryService/category.service';
+import { ProductService } from '../../services/productService/product.service';
 import { SearchService } from '../../services/searchService/search.service';
+import { CategoryCardComponent } from '../../components/category-card/category-card.component';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { SkeletonCardComponent } from '../../components/skeleton-card/skeleton-card.component';
 import { CategorySkeletonComponent } from '../../components/category-skeleton/category-skeleton.component';
+
+interface Product {
+  id: string;
+  title: string;
+  images: {
+    nodes: Array<{ url: string }>;
+  };
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode?: string;
+    };
+  };
+}
+
+interface Category {
+  id: string;
+  title: string;
+  image: { url: string } | null;
+}
 
 @Component({
   selector: 'app-home',
@@ -31,115 +50,122 @@ import { CategorySkeletonComponent } from '../../components/category-skeleton/ca
   ],
 })
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
-  categories: any[] = [];
-  products: any[] = [];
-  showProducts: boolean = false;
-  loading: boolean = true;
-  initialLoadComplete: boolean = false;
+  categories: Category[] = [];
+  products: Product[] = [];
+  showProducts = false;
+  loading = true;
+
+  readonly skeletonCount = 8;
+
   private searchSubscription?: Subscription;
-  private observer!: IntersectionObserver;
+  private observer?: IntersectionObserver;
 
-  @ViewChildren('revealCard') revealCards!: QueryList<ElementRef>;
-
-  @ViewChildren('revealCategory') revealCategories!: QueryList<ElementRef>;
+  @ViewChild('gridContainer', { static: false })
+  gridContainer?: ElementRef<HTMLDivElement>;
 
   constructor(
-    private categoryService: CategoryService,
-    private productService: ProductService,
-    private searchService: SearchService
+    private readonly categoryService: CategoryService,
+    private readonly productService: ProductService,
+    private readonly searchService: SearchService,
   ) {}
 
   ngOnInit(): void {
     this.loadCategories();
-
-    this.searchSubscription = this.searchService.search$.subscribe((query) => {
-      if (!query || query.trim() === '') {
-        this.showProducts = false;
-        if (this.initialLoadComplete) {
-          this.loading = false;
-        }
-        return;
-      }
-
-      this.loading = true;
-      this.showProducts = true;
-      this.productService.searchProducts(query).subscribe({
-        next: (result: any) => {
-          this.products = result.data.products.nodes;
-          this.loading = false;
-          setTimeout(() => this.observeCards());
-        },
-        error: (error) => {
-          console.error('Search error:', error);
-          this.loading = false;
-          this.showProducts = false;
-        },
-      });
-    });
+    this.subscribeToSearch();
   }
 
   ngAfterViewInit(): void {
-    this.setupObserver();
-
-    this.revealCards?.changes.subscribe(() => this.observeCards());
-    this.revealCategories?.changes.subscribe(() => this.observeCards());
-  }
-
-  private setupObserver(): void {
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('opacity-100', 'translate-y-0');
-            entry.target.classList.remove('opacity-0', 'translate-y-6');
-          } else {
-            entry.target.classList.add('opacity-0', 'translate-y-6');
-            entry.target.classList.remove('opacity-100', 'translate-y-0');
-          }
-        });
-      },
-      {
-        threshold: 0.15, // 15% visible
-        rootMargin: '0px 0px -50px 0px',
-      }
-    );
-  }
-
-  private observeCards(): void {
-    if (this.revealCards) {
-      this.revealCards.forEach((card) =>
-        this.observer.observe(card.nativeElement)
-      );
-    }
-
-    if (this.revealCategories) {
-      this.revealCategories.forEach((category) =>
-        this.observer.observe(category.nativeElement)
-      );
-    }
-  }
-
-  private loadCategories(): void {
-    this.loading = true;
-    this.initialLoadComplete = false;
-
-    this.categoryService.getCollections().subscribe({
-      next: (result: any) => {
-        this.categories = result.data.collections.nodes;
-        this.loading = false;
-        this.initialLoadComplete = true;
-
-        setTimeout(() => this.observeCards());
-      },
-      error: (error) => {
-        console.error('Category loading error:', error);
-        this.loading = false;
-        this.initialLoadComplete = true;
-      },
-    });
+    this.initializeObserver();
   }
 
   ngOnDestroy(): void {
     this.searchSubscription?.unsubscribe();
+    this.observer?.disconnect();
+  }
+
+  private initializeObserver(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+      },
+      {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px',
+      },
+    );
+
+    this.observeCards();
+  }
+
+  private observeCards(): void {
+    if (!this.gridContainer?.nativeElement || !this.observer) return;
+
+    const cards =
+      this.gridContainer.nativeElement.querySelectorAll('.reveal-card');
+    cards.forEach((card) => this.observer!.observe(card));
+  }
+
+  private subscribeToSearch(): void {
+    this.searchSubscription = this.searchService.search$.subscribe({
+      next: (query) => this.handleSearch(query),
+      error: (error) => console.error('Search subscription error:', error),
+    });
+  }
+
+  private handleSearch(query: string | null): void {
+    const trimmedQuery = query?.trim();
+
+    if (!trimmedQuery) {
+      this.resetToCategories();
+      return;
+    }
+
+    this.loading = true;
+    this.showProducts = true;
+
+    this.productService.searchProducts(trimmedQuery).subscribe({
+      next: (result: any) => {
+        this.products = result.data.products.nodes;
+        this.loading = false;
+        // Re-observe cards after new products load
+        setTimeout(() => this.observeCards(), 0);
+      },
+      error: (error) => {
+        console.error('Product search error:', error);
+        this.loading = false;
+        this.products = [];
+      },
+    });
+  }
+
+  private resetToCategories(): void {
+    this.showProducts = false;
+    this.loading = false;
+  }
+
+  private loadCategories(): void {
+    this.categoryService.getCollections().subscribe({
+      next: (result: any) => {
+        this.categories = result.data.collections.nodes;
+        this.loading = false;
+        // Re-observe cards after categories load
+        setTimeout(() => this.observeCards(), 0);
+      },
+      error: (error) => {
+        console.error('Category loading error:', error);
+        this.loading = false;
+        this.categories = [];
+      },
+    });
+  }
+
+  trackByProductId(_index: number, product: Product): string {
+    return product.id;
+  }
+
+  trackByCategoryId(_index: number, category: Category): string {
+    return category.id;
   }
 }
