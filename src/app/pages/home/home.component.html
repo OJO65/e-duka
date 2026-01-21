@@ -1,46 +1,36 @@
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
-  <!-- Show PRODUCT SKELETON when loading products -->
-  <ng-container *ngIf="loading && showProducts">
-    <app-skeleton-card
-      *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]"
-    ></app-skeleton-card>
-  </ng-container>
+<div #gridContainer class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+  @if (loading && showProducts) {
+    @for (_ of [].constructor(skeletonCount); track $index) {
+      <app-skeleton-card />
+    }
+  }
 
-  <!-- Show CATEGORY SKELETON when loading categories -->
-  <ng-container *ngIf="loading && !showProducts">
-    <app-category-skeleton
-      *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8]"
-    ></app-category-skeleton>
-  </ng-container>
+  @if (loading && !showProducts) {
+    @for (_ of [].constructor(skeletonCount); track $index) {
+      <app-category-skeleton />
+    }
+  }
 
-  <!-- Show PRODUCTS when searching (and not loading) -->
-  <ng-container *ngIf="showProducts && !loading">
-    <div
-      *ngFor="let product of products"
-      #revealCard
-      class="opacity-0 translate-y-6 transition-all duration-700 ease-out"
-    >
-      <app-product-card [product]="product"></app-product-card>
-    </div>
-  </ng-container>
+  @if (showProducts && !loading) {
+    @for (product of products; track trackByProductId($index, product)) {
+      <div class="reveal-card">
+        <app-product-card [product]="product" />
+      </div>
+    }
+  }
 
-  <!-- Show CATEGORIES when not searching (and not loading) -->
-  <ng-container *ngIf="!showProducts && !loading">
-    <div
-      *ngFor="let category of categories"
-      #revealCategory
-      class="opacity-0 translate-y-6 transition-all duration-700 ease-out"
-    >
-      <app-category-card [category]="category"></app-category-card>
-    </div>
-  </ng-container>
+  @if (!showProducts && !loading) {
+    @for (category of categories; track trackByCategoryId($index, category)) {
+      <div class="reveal-card">
+        <app-category-card [category]="category" />
+      </div>
+    }
+  }
 </div>
 
-<!-- Empty state when no results -->
-<div
-  *ngIf="showProducts && !loading && products.length === 0"
-  class="text-center py-20"
->
-  <p class="text-xl text-gray-500 font-advent">No products found</p>
-  <p class="text-gray-400 mt-2">Try searching for something else</p>
-</div>
+@if (showProducts && !loading && products.length === 0) {
+  <div class="text-center py-20">
+    <p class="text-xl text-gray-500 font-advent">No products found</p>
+    <p class="text-gray-400 mt-2">Try searching for something else</p>
+  </div>
+}
