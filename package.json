@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "mock": "node mock-server.js",
+    "dev": "npm run mock & ng serve"
   },
   "private": true,
   "dependencies": {
@@ -17,12 +19,9 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
-    "@apollo/client": "^4.0.1",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@tailwindcss/postcss": "^4.1.17",
-    "apollo-angular": "^12.1.0",
-    "graphql": "^16",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.1.17",
     "tslib": "^2.3.0",
