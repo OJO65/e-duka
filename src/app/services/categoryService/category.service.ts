@@ -16,6 +16,11 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Replaces Shopify `collections(first: 10)` GraphQL query.
+   * Wraps response in { data: { collections: { nodes: [...] } } }
+   * so HomeComponent.loadCategories() needs zero changes.
+   */
   getCollections(): Observable<any> {
     return this.http
       .get<{ collections: ApiCollection[] }>(`${this.baseUrl}/collections`)
