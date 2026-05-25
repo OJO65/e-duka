@@ -1,28 +1,37 @@
 import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+interface ApiCollection {
+  id: string;
+  title: string;
+  handle: string;
+  image_url?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class CategoryService {
-  constructor(private apollo: Apollo) {}
+  private readonly baseUrl = environment.apiUrl;
 
-  getCollections() {
-    return this.apollo.query({
-      query: gql`
-        query GetCollections {
-          collections(first: 10) {
-            nodes {
-              id
-              title
-              handle
-              image {
-                url
-              }
-            }
-          }
-        }
-      `,
-    });
+  constructor(private http: HttpClient) {}
+
+  getCollections(): Observable<any> {
+    return this.http
+      .get<{ collections: ApiCollection[] }>(`${this.baseUrl}/collections`)
+      .pipe(
+        map(res => ({
+          data: {
+            collections: {
+              nodes: (res.collections ?? []).map(c => ({
+                id: c.id,
+                title: c.title,
+                handle: c.handle,
+                image: c.image_url ? { url: c.image_url } : null,
+              })),
+            },
+          },
+        }))
+      );
   }
 }
