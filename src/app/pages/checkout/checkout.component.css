@@ -21,7 +21,7 @@
 }
 
 .breadcrumb-link:hover {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 .breadcrumb-separator {
@@ -177,7 +177,7 @@
 }
 
 .total-amount {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 /* Checkout Actions */
@@ -226,7 +226,7 @@
 .checkout-btn {
   width: 100%;
   padding: 18px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -241,7 +241,7 @@
 }
 
 .checkout-btn:hover:not(:disabled) {
-  background: #ff5722;
+  background: #b91c1c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
@@ -272,8 +272,8 @@
 }
 
 .back-btn:hover:not(:disabled) {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 .back-btn:disabled {
