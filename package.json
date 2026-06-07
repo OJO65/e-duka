@@ -24,6 +24,7 @@
     "@angular/ssr": "^19.2.27",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@netlify/angular-runtime": "^4.0.0",
     "@tailwindcss/postcss": "^4.1.17",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",
