@@ -13,12 +13,20 @@ import { Subscription } from 'rxjs';
 })
 export class CartComponent implements OnInit, OnDestroy {
   cart: Cart = { items: [], itemCount: 0, subtotal: 0, currency: 'KES' };
+  isLoading = true;
+
   private cartSub?: Subscription;
 
   constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
-    this.cartSub = this.cartService.cart$.subscribe(cart => this.cart = cart);
+    this.cartSub = this.cartService.cart$.subscribe(cart => {
+      this.cart      = cart;
+      this.isLoading = false;
+    });
+
+    // Safety timeout — stop loading after 3s even if fetch fails
+    setTimeout(() => { this.isLoading = false; }, 3000);
   }
 
   ngOnDestroy(): void {
