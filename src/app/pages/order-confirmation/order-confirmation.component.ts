@@ -13,38 +13,29 @@ import { AuthService } from '../../services/authService/auth.service';
 })
 export class OrderConfirmationComponent implements OnInit {
   order: any = null;
-  loading = true;
-  estimatedDelivery: string = '';
+  loading          = true;
+  estimatedDelivery = '';
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
+    private route:        ActivatedRoute,
+    private router:       Router,
     private orderService: OrderService,
-    private authService: AuthService
+    private authService:  AuthService
   ) {}
 
   ngOnInit(): void {
-    const orderId    = this.route.snapshot.paramMap.get('id');
+    const orderId     = this.route.snapshot.paramMap.get('id');
     const currentUser = this.authService.getCurrentUser();
 
-    if (!orderId || !currentUser) {
-      this.router.navigate(['/orders']);
-      return;
-    }
+    if (!orderId || !currentUser) { this.router.navigate(['/orders']); return; }
 
     this.orderService.getOrderById(orderId).subscribe({
       next: (order: any) => {
-        if (!order) {
-          this.router.navigate(['/orders']);
-          return;
-        }
         this.order             = order;
         this.estimatedDelivery = this.calculateDeliveryDate();
         this.loading           = false;
       },
-      error: () => {
-        this.router.navigate(['/orders']);
-      },
+      error: () => { this.router.navigate(['/orders']); }
     });
   }
 
@@ -52,25 +43,24 @@ export class OrderConfirmationComponent implements OnInit {
     return 'KES ' + new Intl.NumberFormat('en-KE', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price);
+    }).format(Number(price) || 0);
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-KE', {
       year: 'numeric', month: 'long', day: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
   }
 
-  calculateDeliveryDate(): string {
-    const d = new Date();
-    d.setDate(d.getDate() + 6);
-    return d.toLocaleDateString('en-US', {
+  private calculateDeliveryDate(): string {
+    const date = new Date();
+    date.setDate(date.getDate() + 5);
+    return date.toLocaleDateString('en-KE', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
   }
 
-  goToOrders():      void { this.router.navigate(['/orders']); }
+  viewAllOrders():    void { this.router.navigate(['/orders']); }
   continueShopping(): void { this.router.navigate(['/']); }
-  printOrder():      void { window.print(); }
 }

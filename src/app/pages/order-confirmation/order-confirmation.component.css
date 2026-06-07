@@ -223,7 +223,7 @@
 }
 
 .total-amount {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 /* Action Buttons */
@@ -237,7 +237,7 @@
 .btn-primary {
   flex: 1;
   padding: 16px 24px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -253,7 +253,7 @@
 }
 
 .btn-primary:hover {
-  background: #ff5722;
+  background: #b91c1c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
@@ -273,8 +273,8 @@
 }
 
 .btn-secondary:hover {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 .btn-text {
@@ -292,7 +292,7 @@
 }
 
 .btn-text:hover {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 .btn-icon {
