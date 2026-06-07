@@ -12,8 +12,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cartService/cart.service';
 import { SearchService } from '../../services/searchService/search.service';
-import { AuthService } from '../../services/authService/auth.service';
-import { User } from '../../models/user.model';
+import { AuthService, User } from '../../services/authService/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -71,52 +70,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userSubscription?.unsubscribe();
   }
 
-  toggleMobileMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
-  }
+  toggleMobileMenu()  { this.isMobileMenuOpen  = !this.isMobileMenuOpen; }
+  closeMobileMenu()   { this.isMobileMenuOpen  = false; }
+  toggleAccountMenu() { this.isAccountMenuOpen = !this.isAccountMenuOpen; }
+  closeAccountMenu()  { this.isAccountMenuOpen = false; }
 
-  closeMobileMenu() {
-    this.isMobileMenuOpen = false;
-  }
+  searchProducts() { this.searchEvent.emit(this.searchQuery.trim()); }
+  onSearchInput()  { this.searchSubject.next(this.searchQuery.trim()); }
+  clearSearch()    { this.searchQuery = ''; this.searchService.setSearch(''); }
 
-  toggleAccountMenu() {
-    this.isAccountMenuOpen = !this.isAccountMenuOpen;
-  }
-
-  closeAccountMenu() {
-    this.isAccountMenuOpen = false;
-  }
-
-  searchProducts() {
-    this.searchEvent.emit(this.searchQuery.trim());
-  }
-
-  onSearchInput() {
-    this.searchSubject.next(this.searchQuery.trim());
-  }
-
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchService.setSearch('');
-  }
-
-  goHome() {
-    this.router.navigate(['/']);
-  }
-
-  goToCart() {
-    this.router.navigate(['/cart']);
-  }
-
-  goToLogin() {
-    this.closeAccountMenu();
-    this.router.navigate(['/login']);
-  }
-
-  goToRegister() {
-    this.closeAccountMenu();
-    this.router.navigate(['/register']);
-  }
+  goHome()       { this.router.navigate(['/']); }
+  goToCart()     { this.router.navigate(['/cart']); }
+  goToLogin()    { this.closeAccountMenu(); this.router.navigate(['/login']); }
+  goToRegister() { this.closeAccountMenu(); this.router.navigate(['/register']); }
 
   signOut() {
     if (confirm('Are you sure you want to sign out?')) {
