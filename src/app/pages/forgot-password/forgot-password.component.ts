@@ -51,28 +51,18 @@ export class ForgotPasswordComponent {
   }
 
   onSubmitNewPassword(): void {
-    this.errorMessage  = '';
-    this.successMessage = '';
+  this.errorMessage   = '';
+  this.successMessage = '';
 
-    if (!this.newPassword || !this.confirmPassword) { this.errorMessage = 'Please fill in all password fields'; return; }
-    if (this.newPassword.length < 6) { this.errorMessage = 'Password must be at least 6 characters'; return; }
-    if (this.newPassword !== this.confirmPassword) { this.errorMessage = 'Passwords do not match'; return; }
+  if (!this.newPassword || !this.confirmPassword) { this.errorMessage = 'Please fill in all password fields'; return; }
+  if (this.newPassword.length < 6) { this.errorMessage = 'Password must be at least 6 characters'; return; }
+  if (this.newPassword !== this.confirmPassword) { this.errorMessage = 'Passwords do not match'; return; }
 
-    this.isLoading = true;
-
-    // Update password via Supabase admin
-    this.authService.forgotPassword(this.email).subscribe({
-      next: () => {
-        this.isLoading      = false;
-        this.successMessage = 'Password reset email sent! Click the link in your email to complete the reset.';
-        setTimeout(() => { this.router.navigate(['/login']); }, 2000);
-      },
-      error: () => {
-        this.isLoading    = false;
-        this.errorMessage = 'An error occurred. Please try again.';
-      }
-    });
-  }
+  // Password reset is handled via the email link from Supabase
+  // Just show success and redirect to login
+  this.successMessage = 'Please check your email and click the reset link to complete the password reset.';
+  setTimeout(() => { this.router.navigate(['/login']); }, 3000);
+}
 
   togglePasswordVisibility():        void { this.showPassword        = !this.showPassword; }
   toggleConfirmPasswordVisibility(): void { this.showConfirmPassword = !this.showConfirmPassword; }
