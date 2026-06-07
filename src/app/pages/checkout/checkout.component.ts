@@ -20,7 +20,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     items: [],
     itemCount: 0,
     subtotal: 0,
-    currency: 'USD',
+    currency: 'KES',
   };
 
   currentUser: User | null = null;
@@ -38,17 +38,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to cart
     this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
       this.cart = cart;
-
-      // Redirect to cart if empty
       if (cart.items.length === 0) {
         this.router.navigate(['/cart']);
       }
     });
 
-    // Subscribe to current user
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
@@ -59,80 +55,49 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.userSubscription?.unsubscribe();
   }
 
-  formatPrice(price: number, currency?: string): string {
-    const curr = currency || this.cart.currency || 'USD';
-
-    let formatted = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: curr,
-      currencyDisplay: 'symbol',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+  formatPrice(price: number): string {
+    return 'KES ' + new Intl.NumberFormat('en-KE', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
-
-    if (curr === 'CAD') {
-      formatted = formatted.replace(/^CA/, '');
-    }
-
-    return formatted;
   }
 
   getItemTotal(item: CartItem): number {
     return item.price * item.quantity;
   }
 
-  /**
-   * Place order locally (no external payment processing)
-   */
   placeOrder(): void {
-  console.log('1. placeOrder called');
-  console.log('Cart items:', this.cart.items);
-  console.log('Current user:', this.currentUser);
-
-  if (this.cart.items.length === 0) {
-    this.error = 'Your cart is empty';
-    return;
-  }
-
-  if (!this.currentUser) {
-    console.log('No user found, redirecting to login');
-    this.error = 'You must be logged in to place an order';
-    this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
-    return;
-  }
-
-  this.loading = true;
-  this.error = '';
-
-  console.log('2. Starting order creation timeout');
-
-  setTimeout(() => {
-    try {
-      console.log('3. Creating order...');
-      const order = this.orderService.createOrder(this.cart, this.currentUser!.id);
-      console.log('4. Order created:', order);
-
-      console.log('5. Clearing cart...');
-      this.cartService.clearCart();
-
-      this.loading = false;
-      console.log('6. Navigating to confirmation...');
-
-      this.router.navigate(['/order-confirmation', order.id]);
-      console.log('7. Navigation called');
-    } catch (error: any) {
-      console.error('Order creation error:', error);
-      this.error = 'Failed to place order. Please try again.';
-      this.loading = false;
+    if (this.cart.items.length === 0) {
+      this.error = 'Your cart is empty';
+      return;
     }
-  }, 1000);
-}
 
-  goToCart(): void {
-    this.router.navigate(['/cart']);
+    if (!this.currentUser) {
+      this.error = 'You must be logged in to place an order';
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      return;
+    }
+
+    this.loading = true;
+    this.error   = '';
+
+    // Use phone from user profile, fall back to placeholder
+    const phone   = this.currentUser.phone || '0700000000';
+    const address = { street: 'TBD', city: 'Nairobi', county: 'Nairobi' };
+
+    this.orderService.createOrder(phone, address).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        this.router.navigate(['/order-confirmation', res.order?.id || 'success']);
+      },
+      error: (err: any) => {
+        console.error('Order error:', err);
+        this.error   = 'Failed to place order. Please try again.';
+        this.loading = false;
+      },
+    });
   }
 
-  continueShopping(): void {
-    this.router.navigate(['/']);
-  }
+  goToCart():        void { this.router.navigate(['/cart']); }
+  continueShopping(): void { this.router.navigate(['/']); }
 }
