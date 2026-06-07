@@ -408,3 +408,23 @@
     display: none;
   }
 }
+
+@media print {
+  app-header,
+  app-footer,
+  .breadcrumbs {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .checkout-container,
+  .order-confirmation-container {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+  }
+}
