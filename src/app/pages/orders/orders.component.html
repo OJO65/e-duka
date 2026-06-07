@@ -91,7 +91,7 @@
 
       <!-- Order Items Preview -->
       <div class="order-items-preview">
-        <div *ngFor="let item of order.items.slice(0, 3)" class="item-preview">
+        <div *ngFor="let item of (order.order_items || []).slice(0, 3)" class="item-preview">
           <img [src]="item.image" [alt]="item.title" class="item-preview-image" />
         </div>
         <div *ngIf="order.items.length > 3" class="more-items">
