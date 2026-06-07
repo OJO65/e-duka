@@ -40,6 +40,11 @@ constructor(private http: HttpClient, private auth: AuthService) {
     if (loggedIn) this.fetchCart();
     else this.cartSubject.next(this.emptyCart());
   });
+
+  // On page refresh — wait for auth to settle then fetch cart
+  if (this.auth.isLoggedIn()) {
+    setTimeout(() => this.fetchCart(), 500);
+  }
 }
 
   getCurrentCart(): Cart { return this.cartSubject.value; }
