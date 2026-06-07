@@ -14,10 +14,23 @@
     </button>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-20">
-    <div class="inline-block w-8 h-8 border-4 border-[#1a56db] border-t-transparent rounded-full animate-spin"></div>
-    <p class="mt-4 text-gray-500 font-advent">Loading your cart...</p>
+  <!-- Skeleton Loading State -->
+  <div *ngIf="isLoading" class="cart-skeleton">
+    <div class="skeleton-content">
+      <div class="skeleton-items">
+        <div *ngFor="let i of [1,2,3]" class="skeleton-item">
+          <div class="skeleton-image shimmer"></div>
+          <div class="skeleton-details">
+            <div class="skeleton-line long shimmer"></div>
+            <div class="skeleton-line medium shimmer"></div>
+            <div class="skeleton-line short shimmer"></div>
+          </div>
+          <div class="skeleton-qty shimmer"></div>
+          <div class="skeleton-total shimmer"></div>
+        </div>
+      </div>
+      <div class="skeleton-summary shimmer"></div>
+    </div>
   </div>
 
   <!-- Empty Cart -->
@@ -35,11 +48,9 @@
   <div *ngIf="!isLoading && cart.items.length > 0" class="cart-content">
     <div class="cart-items">
       <div *ngFor="let item of cart.items" class="cart-item">
-
         <div class="item-image">
           <img [src]="item.image" [alt]="item.title" />
         </div>
-
         <div class="item-details">
           <h3 class="item-title">{{ item.title }}</h3>
           <p class="item-vendor" *ngIf="item.vendor">{{ item.vendor }}</p>
@@ -48,7 +59,6 @@
             {{ item.availableForSale ? 'In Stock' : 'Out of Stock' }}
           </p>
         </div>
-
         <div class="item-quantity">
           <label class="quantity-label">Quantity</label>
           <div class="quantity-controls">
@@ -57,12 +67,10 @@
             <button (click)="increaseQuantity(item)" class="qty-btn">+</button>
           </div>
         </div>
-
         <div class="item-total">
           <p class="total-label">Total</p>
           <p class="total-price">{{ formatPrice(getItemTotal(item), item.currency) }}</p>
         </div>
-
         <button (click)="removeItem(item)" class="remove-btn" title="Remove item">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,32 +83,21 @@
     <!-- Cart Summary -->
     <div class="cart-summary">
       <h2 class="summary-title font-advent">Order Summary</h2>
-
       <div class="summary-row">
         <span>Subtotal ({{ cart.itemCount }} items)</span>
         <span>{{ formatPrice(cart.subtotal, cart.currency) }}</span>
       </div>
-
       <div class="summary-row">
         <span>Shipping</span>
         <span>Calculated at checkout</span>
       </div>
-
       <div class="summary-divider"></div>
-
       <div class="summary-row summary-total">
         <span>Total</span>
         <span class="total-amount">{{ formatPrice(cart.subtotal, cart.currency) }}</span>
       </div>
-
-      <button (click)="proceedToCheckout()" class="checkout-btn">
-        Proceed to Checkout
-      </button>
-
-      <button (click)="continueShopping()" class="continue-btn">
-        Continue Shopping
-      </button>
-
+      <button (click)="proceedToCheckout()" class="checkout-btn">Proceed to Checkout</button>
+      <button (click)="continueShopping()" class="continue-btn">Continue Shopping</button>
       <div class="trust-badges">
         <div class="badge">
           <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
