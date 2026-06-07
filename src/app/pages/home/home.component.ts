@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { CategoryService } from '../../services/categoryService/category.service';
 import { ProductService } from '../../services/productService/product.service';
 import { SearchService } from '../../services/searchService/search.service';
@@ -19,14 +20,9 @@ import { CategorySkeletonComponent } from '../../components/category-skeleton/ca
 interface Product {
   id: string;
   title: string;
-  images: {
-    nodes: Array<{ url: string }>;
-  };
+  images: { nodes: Array<{ url: string }> };
   priceRange: {
-    minVariantPrice: {
-      amount: string;
-      currencyCode?: string;
-    };
+    minVariantPrice: { amount: string; currencyCode?: string; };
   };
 }
 
@@ -51,9 +47,9 @@ interface Category {
 })
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   categories: Category[] = [];
-  products: Product[] = [];
+  products:   Product[]  = [];
   showProducts = false;
-  loading = true;
+  loading      = true;
 
   readonly skeletonCount = 8;
 
@@ -65,17 +61,19 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private readonly categoryService: CategoryService,
-    private readonly productService: ProductService,
-    private readonly searchService: SearchService,
+    private readonly productService:  ProductService,
+    private readonly searchService:   SearchService,
   ) {}
 
-  ngOnInit(): void {
-    this.loadCategories();
-    this.subscribeToSearch();
-  }
+  // ngOnInit intentionally empty — all init moved to ngAfterViewInit
+  // so gridContainer is guaranteed to exist when observeCards() runs
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
+    // Order matters: observer first, then load, then subscribe to search
     this.initializeObserver();
+    this.loadCategories();
+    this.subscribeToSearch();
   }
 
   ngOnDestroy(): void {
@@ -83,58 +81,53 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.observer?.disconnect();
   }
 
-  private initializeObserver(): void {
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          entry.target.classList.toggle('is-visible', entry.isIntersecting);
-        });
-      },
-      {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px',
-      },
-    );
-
-    this.observeCards();
-  }
-
-  private observeCards(): void {
-    if (!this.gridContainer?.nativeElement || !this.observer) return;
-
-    const cards =
-      this.gridContainer.nativeElement.querySelectorAll('.reveal-card');
-    cards.forEach((card) => this.observer!.observe(card));
-  }
-
+private initializeObserver(): void {
+  this.observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle('is-visible', entry.isIntersecting);
+      });
+    },
+    {
+      threshold: 0,
+      rootMargin: '-200px 0px -200px 0px'
+    }
+  );
+}
+private observeCards(): void {
+  if (!this.gridContainer?.nativeElement || !this.observer) return;
+  this.observer.disconnect();
+  const cards = this.gridContainer.nativeElement.querySelectorAll('.reveal-card');
+  cards.forEach((card) => this.observer!.observe(card));
+}
   private subscribeToSearch(): void {
-    this.searchSubscription = this.searchService.search$.subscribe({
-      next: (query) => this.handleSearch(query),
-      error: (error) => console.error('Search subscription error:', error),
-    });
+    this.searchSubscription = this.searchService.search$
+      .pipe(skip(1)) // skip BehaviorSubject's initial '' emission
+      .subscribe({
+        next:  (query) => this.handleSearch(query),
+        error: (err)   => console.error('Search error:', err),
+      });
   }
 
   private handleSearch(query: string | null): void {
-    const trimmedQuery = query?.trim();
-
-    if (!trimmedQuery) {
+    const trimmed = query?.trim();
+    if (!trimmed) {
       this.resetToCategories();
       return;
     }
-
-    this.loading = true;
+    this.loading      = true;
     this.showProducts = true;
+    this.products     = [];
 
-    this.productService.searchProducts(trimmedQuery).subscribe({
+    this.productService.searchProducts(trimmed).subscribe({
       next: (result: any) => {
         this.products = result.data.products.nodes;
-        this.loading = false;
-        // Re-observe cards after new products load
-        setTimeout(() => this.observeCards(), 0);
+        this.loading  = false;
+        setTimeout(() => this.observeCards(), 100);
       },
-      error: (error) => {
-        console.error('Product search error:', error);
-        this.loading = false;
+      error: (err) => {
+        console.error('Search error:', err);
+        this.loading  = false;
         this.products = [];
       },
     });
@@ -142,30 +135,26 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private resetToCategories(): void {
     this.showProducts = false;
-    this.loading = false;
+    this.products     = [];
+    this.loading      = true;
+    setTimeout(() => this.loadCategories(), 50);
   }
 
   private loadCategories(): void {
     this.categoryService.getCollections().subscribe({
       next: (result: any) => {
         this.categories = result.data.collections.nodes;
-        this.loading = false;
-        // Re-observe cards after categories load
-        setTimeout(() => this.observeCards(), 0);
+        this.loading    = false;
+        setTimeout(() => this.observeCards(), 100);
       },
-      error: (error) => {
-        console.error('Category loading error:', error);
-        this.loading = false;
+      error: (err) => {
+        console.error('Category error:', err);
+        this.loading    = false;
         this.categories = [];
       },
     });
   }
 
-  trackByProductId(_index: number, product: Product): string {
-    return product.id;
-  }
-
-  trackByCategoryId(_index: number, category: Category): string {
-    return category.id;
-  }
+  trackByProductId(_i: number, p: Product):  string { return p.id; }
+  trackByCategoryId(_i: number, c: Category): string { return c.id; }
 }
