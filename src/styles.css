@@ -41,3 +41,21 @@ input, textarea {
 .focus\:ring-orange-100:focus { --tw-ring-color: rgba(26,86,219,0.1) !important; }
 .hover\:bg-orange-50:hover { background-color: #eff6ff !important; }
 .bg-orange-50          { background-color: #eff6ff !important; }
+
+@media print {
+  app-header,
+  app-footer,
+  nav.breadcrumbs {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  header {
+    display: none !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
