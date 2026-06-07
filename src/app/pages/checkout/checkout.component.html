@@ -8,86 +8,100 @@
     <span class="breadcrumb-current">Checkout</span>
   </nav>
 
-  <!-- Page Title -->
   <h1 class="checkout-title font-advent">Checkout</h1>
 
   <!-- Error Message -->
   <div *ngIf="error" class="error-message">
     <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
     <p>{{ error }}</p>
   </div>
 
-  <div class="checkout-grid">
+  <!-- ── STEP 1: ORDER SUMMARY ─────────────────────────────────────────── -->
+  <div *ngIf="step === 'summary'" class="checkout-grid">
+
     <!-- Order Summary -->
     <div class="order-summary">
       <h2 class="section-title font-advent">Order Summary</h2>
-
-      <!-- Cart Items -->
       <div class="checkout-items">
         <div *ngFor="let item of cart.items" class="checkout-item">
           <img [src]="item.image" [alt]="item.title" class="item-image" />
-          
           <div class="item-details">
             <h3 class="item-title">{{ item.title }}</h3>
             <p class="item-vendor" *ngIf="item.vendor">{{ item.vendor }}</p>
             <p class="item-quantity">Qty: {{ item.quantity }}</p>
           </div>
-
           <div class="item-price">
-            <p class="price">
-  {{ formatPrice(getItemTotal(item)) }}
-</p>
+            <p class="price">{{ formatPrice(getItemTotal(item), item.currency) }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Order Totals -->
       <div class="order-totals">
         <div class="total-row">
           <span>Subtotal</span>
-          <span>{{ formatPrice(cart.subtotal) }}</span>
+          <span>{{ formatPrice(cart.subtotal, cart.currency) }}</span>
         </div>
-        
         <div class="total-row">
           <span>Shipping</span>
           <span class="free-badge">FREE</span>
         </div>
-
         <div class="total-row">
           <span>Tax</span>
           <span>Included</span>
         </div>
-
         <div class="total-divider"></div>
-
         <div class="total-row total">
           <span>Total</span>
-          <span class="total-amount">
-  {{ formatPrice(cart.subtotal) }}
-</span>
+          <span class="total-amount">{{ formatPrice(cart.subtotal, cart.currency) }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Checkout Actions -->
+    <!-- Delivery + Place Order -->
     <div class="checkout-actions">
-      <div class="info-card">
-        <div class="info-header">
-          <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <h3>Ready to Place Order</h3>
+
+      <!-- Delivery Details -->
+      <div class="delivery-form">
+        <h3 class="section-title font-advent">Delivery Details</h3>
+
+        <div class="form-group">
+          <label>Phone Number (M-Pesa)</label>
+          <input
+            type="tel"
+            [(ngModel)]="phone"
+            placeholder="e.g. 0712345678"
+            class="form-input"
+          />
         </div>
-        <p>Your order will be processed and you'll receive a confirmation.</p>
+
+        <div class="form-group">
+          <label>Delivery Address</label>
+          <input
+            type="text"
+            [(ngModel)]="deliveryStreet"
+            placeholder="Street / Building / Area"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" [(ngModel)]="deliveryCity" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>County</label>
+            <input type="text" [(ngModel)]="deliveryCounty" class="form-input" />
+          </div>
+        </div>
       </div>
 
       <!-- Place Order Button -->
-      <button 
-        (click)="placeOrder()" 
+      <button
+        (click)="placeOrder()"
         class="checkout-btn"
         [disabled]="loading || cart.items.length === 0"
       >
@@ -95,72 +109,137 @@
           <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
           </svg>
-          Place Order
+          Proceed to Payment
         </span>
         <span *ngIf="loading" class="loading-spinner">
           <svg class="animate-spin h-5 w-5 mr-2 inline-block" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Processing Order...
+          Processing...
         </span>
       </button>
 
-      <!-- Back to Cart -->
       <button (click)="goToCart()" class="back-btn" [disabled]="loading">
         Back to Cart
       </button>
 
       <!-- Trust Badges -->
       <div class="trust-section">
-        <h4>Why shop with us?</h4>
         <div class="trust-badges">
           <div class="badge">
             <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
-            <div>
-              <strong>Secure Ordering</strong>
-              <p>Your data is protected</p>
-            </div>
+            <div><strong>Secure Ordering</strong><p>Your data is protected</p></div>
           </div>
-
           <div class="badge">
             <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
             </svg>
-            <div>
-              <strong>Free Shipping</strong>
-              <p>On all orders</p>
-            </div>
+            <div><strong>Free Shipping</strong><p>On all orders</p></div>
           </div>
-
           <div class="badge">
             <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
-            <div>
-              <strong>Easy Returns</strong>
-              <p>30-day return policy</p>
-            </div>
+            <div><strong>Easy Returns</strong><p>30-day return policy</p></div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Payment Methods -->
-      <div class="payment-methods">
-        <p>Accepted payment methods:</p>
-        <div class="payment-icons">
-          <i class="fab fa-cc-visa"></i>
-          <i class="fab fa-cc-mastercard"></i>
-          <i class="fab fa-cc-amex"></i>
-          <i class="fab fa-cc-paypal"></i>
-          <i class="fab fa-apple-pay"></i>
-          <i class="fab fa-google-pay"></i>
+  <!-- ── STEP 2: M-PESA PAYMENT ─────────────────────────────────────────── -->
+  <div *ngIf="step === 'payment'" class="mpesa-step">
+
+    <div class="mpesa-card">
+      <!-- Header -->
+      <div class="mpesa-header">
+        <div class="mpesa-logo">M-PESA</div>
+        <h2 class="font-advent">Complete Your Payment</h2>
+        <p class="mpesa-subtitle">Your order has been created. Pay via M-Pesa to confirm.</p>
+      </div>
+
+      <!-- Amount -->
+      <div class="mpesa-amount">
+        <span class="amount-label">Amount to Pay</span>
+        <span class="amount-value">{{ formatPrice(orderTotal, 'KES') }}</span>
+      </div>
+
+      <!-- Till Number -->
+      <div class="till-section">
+        <div class="till-card">
+          <p class="till-label">Buy Goods Till Number</p>
+          <p class="till-number">{{ tillNumber }}</p>
+          <p class="till-name">GNET COMPUTERS</p>
         </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="mpesa-steps">
+        <h3>How to pay:</h3>
+        <ol class="steps-list">
+          <li>
+            <span class="step-num">1</span>
+            <span>Go to <strong>M-Pesa</strong> on your phone</span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Select <strong>Lipa na M-Pesa</strong></span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Select <strong>Buy Goods and Services</strong></span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Enter Till Number: <strong>{{ tillNumber }}</strong></span>
+          </li>
+          <li>
+            <span class="step-num">5</span>
+            <span>Enter Amount: <strong>{{ formatPrice(orderTotal, 'KES') }}</strong></span>
+          </li>
+          <li>
+            <span class="step-num">6</span>
+            <span>Enter your <strong>M-Pesa PIN</strong> and confirm</span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Confirm Button -->
+      <button (click)="confirmPayment()" class="confirm-btn">
+        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        I Have Paid
+      </button>
+
+      <p class="mpesa-note">
+        Our team will verify your payment and confirm your order within 30 minutes.
+        You will receive an SMS confirmation.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: CONFIRMED ──────────────────────────────────────────────── -->
+  <div *ngIf="step === 'confirmed'" class="confirmed-step">
+    <div class="confirmed-card">
+      <div class="confirmed-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2 class="font-advent">Payment Submitted!</h2>
+      <p>Thank you for your order. Our team will verify your M-Pesa payment and confirm your order shortly.</p>
+      <p class="confirmed-note">You'll receive an SMS once your order is confirmed.</p>
+
+      <div class="confirmed-actions">
+        <button (click)="goToOrders()" class="view-orders-btn">View My Orders</button>
+        <button (click)="continueShopping()" class="continue-btn">Continue Shopping</button>
       </div>
     </div>
   </div>
