@@ -123,7 +123,7 @@
 
 .btn-add-all {
   padding: 12px 20px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -137,7 +137,7 @@
 }
 
 .btn-add-all:hover {
-  background: #ff5722;
+  background: #b91c1c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
@@ -206,7 +206,7 @@
 }
 
 .wishlist-item:hover {
-  border-color: #ff6b35;
+  border-color: #1a56db;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-4px);
 }
@@ -276,13 +276,13 @@
 }
 
 .product-title:hover {
-  color: #ff6b35;
+  color: #1a56db;
 }
 
 .product-price {
   font-size: 20px;
   font-weight: 700;
-  color: #ff6b35;
+  color: #1a56db;
   margin-bottom: 12px;
 }
 
@@ -319,7 +319,7 @@
 .btn-add-to-cart {
   flex: 1;
   padding: 12px 16px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -334,7 +334,7 @@
 }
 
 .btn-add-to-cart:hover:not(:disabled) {
-  background: #ff5722;
+  background: #b91c1c;
 }
 
 .btn-add-to-cart:disabled {
@@ -391,7 +391,7 @@
 
 .shop-now-btn {
   padding: 14px 28px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -405,7 +405,7 @@
 }
 
 .shop-now-btn:hover {
-  background: #ff5722;
+  background: #b91c1c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }

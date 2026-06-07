@@ -135,13 +135,13 @@
 }
 
 .filter-tab:hover {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 .filter-tab.active {
-  background: #ff6b35;
-  border-color: #ff6b35;
+  background: #e02424;
+  border-color: #e02424;
   color: white;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .order-card:hover {
-  border-color: #ff6b35;
+  border-color: #e02424;
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
   transform: translateY(-2px);
 }
@@ -325,7 +325,7 @@
 .total-amount {
   font-size: 20px;
   font-weight: 700;
-  color: #ff6b35;
+  color: #e02424;
 }
 
 /* View Details Button */
@@ -350,8 +350,8 @@
 }
 
 .view-details-btn:hover {
-  background: #ff6b35;
-  border-color: #ff6b35;
+  background: #e02424;
+  border-color: #e02424;
   color: white;
 }
 
@@ -391,7 +391,7 @@
 
 .shop-now-btn {
   padding: 14px 28px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -405,7 +405,7 @@
 }
 
 .shop-now-btn:hover {
-  background: #ff5722;
+  background: #b91c1c;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }

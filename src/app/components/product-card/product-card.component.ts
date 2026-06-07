@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cartService/cart.service';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { AuthService } from '../../services/authService/auth.service';
+
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -16,71 +17,53 @@ export class ProductCardComponent implements OnInit, OnDestroy {
   @Input() product!: {
     id: string;
     title: string;
+    vendor?: string;
     images: { nodes: Array<{ url: string }> };
     priceRange: {
-      minVariantPrice: {
-        amount: string;
-        currencyCode?: string;
-      };
+      minVariantPrice: { amount: string; currencyCode?: string };
     };
+    variants?: { nodes: any[] };
   };
 
-  imageLoaded: boolean = false;
-  imageError: boolean = false;
-  toastMessage: string = '';
-  showToast: boolean = false;
-
-  // Wishlist state
-  isInWishlist: boolean = false;
-  isLoggedIn: boolean = false;
-  currentUserId: string | null = null;
+  imageLoaded = false;
+  imageError = false;
+  toastMessage = '';
+  showToast = false;
+  isInWishlist = false;
+  isLoggedIn = false;
+  currentUserId: string | null = null; // ← string not number
 
   private toastTimeout: any;
-  private authSubscription?: Subscription;
-  private wishlistSubscription?: Subscription;
+  private authSub?: Subscription;
+  private wishlistSub?: Subscription;
 
   constructor(
     private cartService: CartService,
     private wishlistService: WishlistService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to auth state
-    this.authSubscription = this.authService.currentUser$.subscribe(user => {
+    this.authSub = this.authService.currentUser$.subscribe((user) => {
       this.isLoggedIn = !!user;
-      this.currentUserId = user?.id || null;
-
-      // Check if product is in wishlist
-      if (user && this.product) {
-        this.isInWishlist = this.wishlistService.isInWishlist(user.id, this.product.id);
-      } else {
-        this.isInWishlist = false;
-      }
+      this.currentUserId = user?.id ?? null;
+      // Set initial wishlist state from service
+      this.isInWishlist =
+        user && this.product
+          ? this.wishlistService.isInWishlist(user.id, this.product.id)
+          : false;
     });
-
-    // Subscribe to wishlist changes
-    this.wishlistSubscription = this.wishlistService.wishlist$.subscribe(() => {
-      if (this.currentUserId && this.product) {
-        this.isInWishlist = this.wishlistService.isInWishlist(this.currentUserId, this.product.id);
-      }
-    });
+    // No wishlistSub — icon state managed locally
   }
 
   ngOnDestroy(): void {
-    this.authSubscription?.unsubscribe();
-    this.wishlistSubscription?.unsubscribe();
-    
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
-    }
+    this.authSub?.unsubscribe();
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
   }
-
   onImageLoad() {
     this.imageLoaded = true;
   }
-
   onImageError() {
     this.imageError = true;
     this.imageLoaded = false;
@@ -90,70 +73,63 @@ export class ProductCardComponent implements OnInit, OnDestroy {
     return this.product?.images?.nodes?.[0]?.url || 'assets/placeholder.jpg';
   }
 
- get formattedPrice(): string {
-  const amount = Number(this.product?.priceRange?.minVariantPrice?.amount || 0);
-  return 'KES ' + new Intl.NumberFormat('en-KE', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-  onAddToCart() {
-    this.cartService.addToCart(this.product);
-
-    this.toastMessage = `${this.product.title} added to cart`;
-    this.showToast = false;
-
-    setTimeout(() => {
-      this.showToast = true;
-    });
-
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
-    }
-
-    this.toastTimeout = setTimeout(() => {
-      this.showToast = false;
-    }, 800);
+  get formattedPrice(): string {
+    const amount = Number(
+      this.product?.priceRange?.minVariantPrice?.amount || 0,
+    );
+    return (
+      'KES ' +
+      new Intl.NumberFormat('en-KE', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(amount)
+    );
   }
 
-  onToggleWishlist(event: Event) {
-    event.stopPropagation(); // Prevent card flip when clicking heart
+  onAddToCart(): void {
+    this.cartService.addToCart(this.product);
+    this.showToastMessage(`${this.product.title} added to cart`);
+  }
 
+  onToggleWishlist(event: Event): void {
+    event.stopPropagation();
     if (!this.isLoggedIn) {
-      // Redirect to login if not logged in
-      this.router.navigate(['/login'], { 
-        queryParams: { returnUrl: this.router.url } 
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: this.router.url },
       });
       return;
     }
-
     if (!this.currentUserId) return;
 
-    // Toggle wishlist
-    const added = this.wishlistService.toggleWishlist(this.currentUserId, this.product.id);
+    this.isInWishlist = !this.isInWishlist;
+    const added = this.isInWishlist;
 
-    // Show toast notification
-    this.toastMessage = added 
-      ? `Added to wishlist` 
-      : `Removed from wishlist`;
-    
-    this.showToast = false;
-
-    setTimeout(() => {
-      this.showToast = true;
-    });
-
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
+    if (added) {
+      this.wishlistService.addToWishlist(this.currentUserId, this.product.id);
+    } else {
+      this.wishlistService.removeFromWishlist(
+        this.currentUserId,
+        this.product.id,
+      );
     }
 
-    this.toastTimeout = setTimeout(() => {
-      this.showToast = false;
-    }, 1000);
+    this.showToastMessage(
+      added
+        ? `${this.product.title} added to wishlist`
+        : `${this.product.title} removed from wishlist`,
+    );
   }
 
-  onViewDetails() {
+  onViewDetails(): void {
     this.router.navigate(['/product', this.product.id]);
-  } 
   }
+
+  private showToastMessage(msg: string): void {
+    this.toastMessage = msg;
+    this.showToast = true;
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.showToast = false;
+    }, 1500);
+  }
+}

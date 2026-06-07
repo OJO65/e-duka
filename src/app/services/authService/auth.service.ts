@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -20,14 +21,27 @@ export class AuthService {
   private readonly TOKEN_KEY   = 'gnet_access_token';
   private readonly REFRESH_KEY = 'gnet_refresh_token';
   private readonly USER_KEY    = 'gnet_user';
+  private readonly isBrowser:  boolean;
 
-  private isLoggedInSubject  = new BehaviorSubject<boolean>(!!this.getToken());
-  private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
+  private isLoggedInSubject  = new BehaviorSubject<boolean>(false);
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
 
   isLoggedIn$:  Observable<boolean>     = this.isLoggedInSubject.asObservable();
   currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    if (this.isBrowser) {
+      // Only access localStorage in browser
+      const token = localStorage.getItem(this.TOKEN_KEY);
+      const user  = this.loadUser();
+      this.isLoggedInSubject.next(!!token);
+      this.currentUserSubject.next(user);
+    }
+  }
 
   login(email: string, password: string): Observable<any> {
     return this.http
@@ -60,6 +74,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
+    if (!this.isBrowser) return null;
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
@@ -79,7 +94,7 @@ export class AuthService {
     const current = this.currentUserSubject.value;
     if (!current) return;
     const updated = { ...current, ...updates };
-    localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+    if (this.isBrowser) localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
     this.currentUserSubject.next(updated);
   }
 
@@ -88,22 +103,27 @@ export class AuthService {
   }
 
   private handleAuthResponse(res: any): void {
-    localStorage.setItem(this.TOKEN_KEY,   res.access_token);
-    localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
-    localStorage.setItem(this.USER_KEY,    JSON.stringify(res.user));
+    if (this.isBrowser) {
+      localStorage.setItem(this.TOKEN_KEY,   res.access_token);
+      localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
+      localStorage.setItem(this.USER_KEY,    JSON.stringify(res.user));
+    }
     this.currentUserSubject.next(res.user);
     this.isLoggedInSubject.next(true);
   }
 
   private clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    if (this.isBrowser) {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_KEY);
+      localStorage.removeItem(this.USER_KEY);
+    }
     this.currentUserSubject.next(null);
     this.isLoggedInSubject.next(false);
   }
 
   private loadUser(): User | null {
+    if (!this.isBrowser) return null;
     try {
       const raw = localStorage.getItem(this.USER_KEY);
       return raw ? JSON.parse(raw) : null;

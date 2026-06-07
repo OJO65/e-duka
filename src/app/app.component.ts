@@ -7,7 +7,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AuthService } from './services/authService/auth.service';
 import { CartService } from './services/cartService/cart.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, skip } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -18,53 +18,41 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'e-duka';
-  products: any[] = [];
-  loading: boolean = false;
-  showProducts: boolean = false;
-  
-  isAuthPage: boolean = false;
+  isAuthPage = false;
 
-  private authSubscription?: Subscription;
+  private authSubscription?:   Subscription;
   private routerSubscription?: Subscription;
 
   constructor(
     private searchService: SearchService,
-    private authService: AuthService,
-    private cartService: CartService,
-    private router: Router
+    private authService:   AuthService,
+    private cartService:   CartService,
+    private router:        Router
   ) {}
 
   ngOnInit(): void {
-    // Listen to authentication state changes
-    this.authSubscription = this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        console.log('User logged in:', user.username);
-        this.cartService.mergeGuestCartIntoUser(user.id);
-        this.cartService.setUser(user.id);
-      } else {
-        console.log('No user authenticated');
-        this.cartService.setUser(null);
-      }
-    });
+    // skip(1) skips the initial BehaviorSubject emission
+    // so we don't call setUser before the token is validated
+    this.authSubscription = this.authService.currentUser$
+      .pipe(skip(1))
+      .subscribe(user => {
+        if (user) {
+          this.cartService.setUser(user.id);
+        }
+      });
 
-    // Listen to route changes to detect auth pages
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.isAuthPage = this.checkIfAuthPage(event.urlAfterRedirects);
     });
 
-    // Check initial route
     this.isAuthPage = this.checkIfAuthPage(this.router.url);
   }
 
   ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-    }
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
+    this.authSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
   }
 
   onSearch(query: string) {

@@ -12,7 +12,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #ff6b35;
+  border-top: 4px solid #1a56db;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -45,7 +45,7 @@
 }
 
 .breadcrumb-link:hover {
-  color: #ff6b35;
+  color: #1a56db;
 }
 
 .breadcrumb-separator {
@@ -122,11 +122,11 @@
 }
 
 .thumbnail:hover {
-  border-color: #ff6b35;
+  border-color: #1a56db;
 }
 
 .thumbnail.active {
-  border-color: #ff6b35;
+  border-color: #1a56db;
 }
 
 .thumbnail img {
@@ -159,7 +159,7 @@
 .product-price {
   font-size: 28px;
   font-weight: 700;
-  color: #ff6b35;
+  color: #1a56db;
 }
 
 .availability {
@@ -230,13 +230,13 @@
 }
 
 .variant-btn:hover:not(.unavailable) {
-  border-color: #ff6b35;
+  border-color: #1a56db;
 }
 
 .variant-btn.active {
-  border-color: #ff6b35;
+  border-color: #1a56db;
   background: #fff5f2;
-  color: #ff6b35;
+  color: #1a56db;
 }
 
 .variant-btn.unavailable {
@@ -316,12 +316,12 @@
 }
 
 .btn-add-cart {
-  background: #ff6b35;
+  background: #1a56db;
   color: white;
 }
 
 .btn-add-cart:hover:not(:disabled) {
-  background: #ff5722;
+  background: #1e3a8a;
 }
 
 .btn-buy-now {

@@ -16,78 +16,72 @@ import { Subscription } from 'rxjs';
 export class WishlistComponent implements OnInit, OnDestroy {
   wishlistProducts: any[] = [];
   loading = true;
-  currentUserId: string | null = null;
 
-  private userSubscription?: Subscription;
-  private wishlistSubscription?: Subscription;
+  private itemsSub?: Subscription;
+  private userSub?: Subscription;
 
   constructor(
     private wishlistService: WishlistService,
-    private authService:     AuthService,
-    private cartService:     CartService,
-    private router:          Router
+    private authService: AuthService,
+    private cartService: CartService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.currentUserId = user.id;
-        this.loadWishlist();
-      } else {
+    this.userSub = this.authService.currentUser$.subscribe((user: any) => {
+      if (!user) {
         this.router.navigate(['/login']);
+        return;
       }
+      this.wishlistService.fetchWishlist();
     });
 
-    // Reload when wishlist changes
-    this.wishlistSubscription = this.wishlistService.wishlist$.subscribe(() => {
-      if (this.currentUserId) this.loadWishlist();
-    });
+    this.itemsSub = this.wishlistService.wishlistItems$.subscribe(
+      (items: any[]) => {
+        this.wishlistProducts = items
+          .map((i: any) => ({
+            id: i.products?.id,
+            title: i.products?.title ?? '',
+            vendor: i.products?.vendor ?? '',
+            images: {
+              nodes: (i.products?.images ?? []).map((img: any) => ({
+                url: img.url,
+              })),
+            },
+            priceRange: {
+              minVariantPrice: {
+                amount: String(i.products?.min_price ?? 0),
+                currencyCode: i.products?.currency_code ?? 'KES',
+              },
+            },
+            availableForSale: i.products?.available_for_sale ?? true,
+            variants: {
+              nodes: (i.products?.product_variants ?? []).map((v: any) => ({
+                id: v.id,
+                title: v.title,
+                availableForSale: v.available_for_sale,
+                quantityAvailable: v.quantity_available,
+                priceV2: {
+                  amount: String(v.price),
+                  currencyCode: v.currency_code ?? 'KES',
+                },
+                selectedOptions: v.selected_options ?? [],
+              })),
+            },
+          }))
+          .filter((p: any) => p.id);
+        this.loading = false;
+      },
+    );
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
-    this.wishlistSubscription?.unsubscribe();
-  }
-
-  loadWishlist(): void {
-    this.loading = true;
-    this.wishlistService.fetchWishlist();
-
-    // Give fetchWishlist a moment to complete then read from the observable
-    setTimeout(() => {
-      // wishlist$ emits product IDs — get full items from backend
-      this.wishlistService['http']?.get<any[]>(
-        `${this.wishlistService['api']}/wishlist`,
-        { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
-      ).subscribe({
-        next: (items: any[]) => {
-          this.wishlistProducts = items.map(i => ({
-            id:              i.products?.id,
-            title:           i.products?.title,
-            images:          { nodes: (i.products?.images ?? []).map((img: any) => ({ url: img.url })) },
-            priceRange:      {
-              minVariantPrice: {
-                amount:       String(i.products?.min_price ?? 0),
-                currencyCode: i.products?.currency_code ?? 'KES',
-              }
-            },
-            availableForSale: i.products?.available_for_sale ?? true,
-            vendor:           i.products?.vendor ?? '',
-            variants:         { nodes: i.products?.product_variants ?? [] },
-          })).filter(p => p.id);
-          this.loading = false;
-        },
-        error: () => {
-          this.wishlistProducts = [];
-          this.loading = false;
-        }
-      });
-    }, 300);
+    this.itemsSub?.unsubscribe();
+    this.userSub?.unsubscribe();
   }
 
   removeFromWishlist(productId: string): void {
-    if (!this.currentUserId) return;
-    this.wishlistService.removeFromWishlist(this.currentUserId, productId);
+    this.wishlistService.removeFromWishlist(null, productId);
   }
 
   addToCart(product: any): void {
@@ -95,25 +89,31 @@ export class WishlistComponent implements OnInit, OnDestroy {
   }
 
   addAllToCart(): void {
-    this.wishlistProducts.forEach(p => this.cartService.addToCart(p));
+    this.wishlistProducts.forEach((p: any) => this.cartService.addToCart(p));
   }
 
   clearWishlist(): void {
-    if (!this.currentUserId) return;
     if (confirm('Clear your entire wishlist?')) {
-      this.wishlistService.clearWishlist(this.currentUserId);
+      this.wishlistService.clearWishlist(null);
       this.wishlistProducts = [];
     }
   }
 
-  viewProduct(productId: string): void { this.router.navigate(['/product', productId]); }
-  continueShopping(): void             { this.router.navigate(['/shop']); }
+  viewProduct(productId: string): void {
+    this.router.navigate(['/product', productId]);
+  }
+  continueShopping(): void {
+    this.router.navigate(['/']);
+  }
 
-  formatPrice(amount: string, _currency?: string): string {
-    return 'KES ' + new Intl.NumberFormat('en-KE', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(Number(amount));
+  formatPrice(amount: string | number, _currency?: string): string {
+    return (
+      'KES ' +
+      new Intl.NumberFormat('en-KE', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(Number(amount))
+    );
   }
 
   getProductImage(product: any): string {

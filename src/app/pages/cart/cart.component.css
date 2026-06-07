@@ -20,7 +20,7 @@
 }
 
 .breadcrumb-link:hover {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 .breadcrumb-separator {
@@ -61,8 +61,8 @@
 
 .clear-cart-btn:hover {
   background: #fee;
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 /* Empty Cart */
@@ -92,7 +92,7 @@
 
 .continue-shopping-btn {
   padding: 14px 32px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -102,7 +102,7 @@
 }
 
 .continue-shopping-btn:hover {
-  background: #ff5722;
+  background: #b91c1c;
 }
 
 /* Cart Content */
@@ -192,7 +192,7 @@
 .item-price {
   font-size: 16px;
   font-weight: 600;
-  color: #ff6b35;
+  color: #e02424;
   margin-bottom: 6px;
 }
 
@@ -288,8 +288,8 @@
 
 .remove-btn:hover {
   background: #fee;
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 /* Cart Summary */
@@ -331,13 +331,13 @@
 }
 
 .total-amount {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 .checkout-btn {
   width: 100%;
   padding: 16px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -349,7 +349,7 @@
 }
 
 .checkout-btn:hover {
-  background: #ff5722;
+  background: #b91c1c;
 }
 
 .continue-btn {
@@ -366,8 +366,8 @@
 }
 
 .continue-btn:hover {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 /* Trust Badges */
