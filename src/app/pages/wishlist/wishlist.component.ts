@@ -3,22 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { AuthService } from '../../services/authService/auth.service';
-import { ProductService } from '../../services/productService/product.service';
 import { CartService } from '../../services/cartService/cart.service';
-import { Subscription, forkJoin } from 'rxjs';
-
-interface WishlistProduct {
-  id: string;
-  title: string;
-  images: { nodes: Array<{ url: string }> };
-  priceRange: {
-    minVariantPrice: {
-      amount: string;
-      currencyCode: string;
-    }
-  };
-  availableForSale: boolean;
-}
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-wishlist',
@@ -28,36 +14,33 @@ interface WishlistProduct {
   styleUrls: ['./wishlist.component.css'],
 })
 export class WishlistComponent implements OnInit, OnDestroy {
-  wishlistProducts: WishlistProduct[] = [];
+  wishlistProducts: any[] = [];
   loading = true;
-  currentUserId: number | null = null;
+  currentUserId: string | null = null;
 
   private userSubscription?: Subscription;
   private wishlistSubscription?: Subscription;
 
   constructor(
     private wishlistService: WishlistService,
-    private authService: AuthService,
-    private productService: ProductService,
-    private cartService: CartService,
-    private router: Router
+    private authService:     AuthService,
+    private cartService:     CartService,
+    private router:          Router
   ) {}
 
   ngOnInit(): void {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.currentUserId = user.id;
-        this.loadWishlist(user.id);
+        this.loadWishlist();
       } else {
         this.router.navigate(['/login']);
       }
     });
 
-    // Listen to wishlist changes
+    // Reload when wishlist changes
     this.wishlistSubscription = this.wishlistService.wishlist$.subscribe(() => {
-      if (this.currentUserId) {
-        this.loadWishlist(this.currentUserId);
-      }
+      if (this.currentUserId) this.loadWishlist();
     });
   }
 
@@ -66,34 +49,40 @@ export class WishlistComponent implements OnInit, OnDestroy {
     this.wishlistSubscription?.unsubscribe();
   }
 
-  loadWishlist(userId: number): void {
+  loadWishlist(): void {
     this.loading = true;
-    const productIds = this.wishlistService.getWishlistByUserId(userId);
+    this.wishlistService.fetchWishlist();
 
-    if (productIds.length === 0) {
-      this.wishlistProducts = [];
-      this.loading = false;
-      return;
-    }
-
-    // Fetch all products from Shopify
-    const productRequests = productIds.map(id => 
-      this.productService.getProductById(id)
-    );
-
-    forkJoin(productRequests).subscribe({
-      next: (results) => {
-        this.wishlistProducts = results
-          .map(result => result?.data?.product)
-          .filter(product => product != null) as WishlistProduct[];
-        
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Failed to load wishlist products:', error);
-        this.loading = false;
-      }
-    });
+    // Give fetchWishlist a moment to complete then read from the observable
+    setTimeout(() => {
+      // wishlist$ emits product IDs — get full items from backend
+      this.wishlistService['http']?.get<any[]>(
+        `${this.wishlistService['api']}/wishlist`,
+        { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+      ).subscribe({
+        next: (items: any[]) => {
+          this.wishlistProducts = items.map(i => ({
+            id:              i.products?.id,
+            title:           i.products?.title,
+            images:          { nodes: (i.products?.images ?? []).map((img: any) => ({ url: img.url })) },
+            priceRange:      {
+              minVariantPrice: {
+                amount:       String(i.products?.min_price ?? 0),
+                currencyCode: i.products?.currency_code ?? 'KES',
+              }
+            },
+            availableForSale: i.products?.available_for_sale ?? true,
+            vendor:           i.products?.vendor ?? '',
+            variants:         { nodes: i.products?.product_variants ?? [] },
+          })).filter(p => p.id);
+          this.loading = false;
+        },
+        error: () => {
+          this.wishlistProducts = [];
+          this.loading = false;
+        }
+      });
+    }, 300);
   }
 
   removeFromWishlist(productId: string): void {
@@ -101,42 +90,33 @@ export class WishlistComponent implements OnInit, OnDestroy {
     this.wishlistService.removeFromWishlist(this.currentUserId, productId);
   }
 
-  addToCart(product: WishlistProduct): void {
+  addToCart(product: any): void {
     this.cartService.addToCart(product);
   }
 
   addAllToCart(): void {
-    this.wishlistProducts.forEach(product => {
-      this.cartService.addToCart(product);
-    });
+    this.wishlistProducts.forEach(p => this.cartService.addToCart(p));
   }
 
   clearWishlist(): void {
     if (!this.currentUserId) return;
-    
-    if (confirm('Are you sure you want to clear your entire wishlist?')) {
+    if (confirm('Clear your entire wishlist?')) {
       this.wishlistService.clearWishlist(this.currentUserId);
+      this.wishlistProducts = [];
     }
   }
 
-  viewProduct(productId: string): void {
-    this.router.navigate(['/product', productId]);
-  }
+  viewProduct(productId: string): void { this.router.navigate(['/product', productId]); }
+  continueShopping(): void             { this.router.navigate(['/shop']); }
 
-  continueShopping(): void {
-    this.router.navigate(['/shop']);
-  }
-
-  formatPrice(amount: string, currency: string = 'USD'): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+  formatPrice(amount: string, _currency?: string): string {
+    return 'KES ' + new Intl.NumberFormat('en-KE', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(Number(amount));
   }
 
-  getProductImage(product: WishlistProduct): string {
+  getProductImage(product: any): string {
     return product?.images?.nodes?.[0]?.url || 'assets/placeholder.jpg';
   }
 }

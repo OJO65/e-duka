@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/orderService/order.service';
 import { AuthService } from '../../services/authService/auth.service';
-import { Order } from '../../models/user.model';
 
 @Component({
   selector: 'app-order-confirmation',
@@ -13,7 +12,7 @@ import { Order } from '../../models/user.model';
   styleUrls: ['./order-confirmation.component.css']
 })
 export class OrderConfirmationComponent implements OnInit {
- order: Order | null = null;
+  order: any = null;
   loading = true;
   estimatedDelivery: string = '';
 
@@ -25,82 +24,53 @@ export class OrderConfirmationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get order ID from route params
-    const orderId = this.route.snapshot.paramMap.get('id');
+    const orderId    = this.route.snapshot.paramMap.get('id');
     const currentUser = this.authService.getCurrentUser();
 
     if (!orderId || !currentUser) {
-      // Redirect to orders page if no order ID or user
       this.router.navigate(['/orders']);
       return;
     }
 
-    // Load order details
-    this.order = this.orderService.getOrderById(orderId, currentUser.id);
-
-    if (!this.order) {
-      // Order not found, redirect to orders
-      this.router.navigate(['/orders']);
-      return;
-    }
-
-    // Calculate estimated delivery (5-7 business days)
-    this.estimatedDelivery = this.calculateDeliveryDate();
-    this.loading = false;
+    this.orderService.getOrderById(orderId).subscribe({
+      next: (order: any) => {
+        if (!order) {
+          this.router.navigate(['/orders']);
+          return;
+        }
+        this.order             = order;
+        this.estimatedDelivery = this.calculateDeliveryDate();
+        this.loading           = false;
+      },
+      error: () => {
+        this.router.navigate(['/orders']);
+      },
+    });
   }
 
-formatPrice(price: number, currency?: string): string {
-  const curr = currency || 'USD';  // Default to USD
-  
-  let formatted = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: curr,
-    currencyDisplay: 'symbol',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(price);
-  
-  // Remove "CA" prefix from Canadian dollars if needed
-  if (curr === 'CAD') {
-    formatted = formatted.replace(/^CA/, '');
+  formatPrice(price: number, _currency?: string): string {
+    return 'KES ' + new Intl.NumberFormat('en-KE', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   }
-  
-  return formatted;
-}
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   }
 
   calculateDeliveryDate(): string {
-    const today = new Date();
-    const deliveryDate = new Date(today);
-    deliveryDate.setDate(today.getDate() + 6); // 5-7 days average = 6 days
-    
-    return deliveryDate.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const d = new Date();
+    d.setDate(d.getDate() + 6);
+    return d.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
   }
 
-  goToOrders(): void {
-    this.router.navigate(['/orders']);
-  }
-
-  continueShopping(): void {
-    this.router.navigate(['/']);
-  }
-
-  printOrder(): void {
-    window.print();
-  }
+  goToOrders():      void { this.router.navigate(['/orders']); }
+  continueShopping(): void { this.router.navigate(['/']); }
+  printOrder():      void { window.print(); }
 }
