@@ -1,225 +1,112 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { User } from '../../models/user.model';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface User {
+  id:          string;
+  username:    string;
+  email:       string;
+  phone?:      string;
+  avatar_url?: string;
+  orders?:     any[];
+  wishlist?:   string[];
+  createdAt?:  string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly STORAGE_KEY = 'eduka_current_user';
-  private readonly USERS_KEY = 'eduka_users';
-  private readonly REMEMBER_ME_KEY = 'eduka_remember_me';
+  private readonly api         = environment.apiUrl;
+  private readonly TOKEN_KEY   = 'gnet_access_token';
+  private readonly REFRESH_KEY = 'gnet_refresh_token';
+  private readonly USER_KEY    = 'gnet_user';
 
-  private isLoggedInSubject = new BehaviorSubject<boolean>(
-    this.checkLoginStatus()
-  );
-  private currentUserSubject = new BehaviorSubject<User | null>(
-    this.loadUser()
-  );
+  private isLoggedInSubject  = new BehaviorSubject<boolean>(!!this.getToken());
+  private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
 
-  isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
-  currentUser$: Observable<User | null> =
-    this.currentUserSubject.asObservable();
+  isLoggedIn$:  Observable<boolean>     = this.isLoggedInSubject.asObservable();
+  currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
-  constructor() {
-    // Initialize with demo user if no users exist
-    this.initializeDemoUser();
+  constructor(private http: HttpClient) {}
+
+  login(email: string, password: string): Observable<any> {
+    return this.http
+      .post<any>(`${this.api}/auth/login`, { email, password })
+      .pipe(tap(res => this.handleAuthResponse(res)));
   }
 
-  private checkLoginStatus(): boolean {
-    return localStorage.getItem(this.STORAGE_KEY) !== null;
-  }
-
-  private loadUser(): User | null {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (error) {
-      console.error('Failed to load user:', error);
-    }
-    return null;
-  }
-
-  private saveUser(user: User): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-    } catch (error) {
-      console.error('Failed to save user:', error);
-    }
-  }
-
-  private removeUser(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  private getUsers(): User[] {
-    try {
-      const users = localStorage.getItem(this.USERS_KEY);
-      return users ? JSON.parse(users) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveUsers(users: User[]): void {
-    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-  }
-
-  private initializeDemoUser(): void {
-    const users = this.getUsers();
-    if (users.length === 0) {
-      // Create demo user for testing
-      const demoUser: User = {
-        id: 1,
-        username: 'ojo',
-        email: 'odhiambo149@gmail.com',
-        password: 'ojo654465',
-        orders: [],
-        wishlist: [],
-        createdAt: new Date().toISOString(),
-      };
-      this.saveUsers([demoUser]);
-    }
-  }
-
-  login(
-    email: string,
-    password: string,
-    rememberMe: boolean = false
-  ): { success: boolean; message: string; user?: User } {
-    const users = this.getUsers();
-    const user = users.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
-
-    if (user) {
-      // Create public user object without password
-      const publicUser: User = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        orders: user.orders || [],
-        wishlist: user.wishlist || [],
-      };
-
-      this.saveUser(publicUser);
-      localStorage.setItem(this.REMEMBER_ME_KEY, rememberMe.toString());
-
-      this.isLoggedInSubject.next(true);
-      this.currentUserSubject.next(publicUser);
-
-      return { success: true, message: 'Login successful', user: publicUser };
-    }
-
-    return { success: false, message: 'Invalid email or password' };
-  }
-
-  register(
-    username: string,
-    email: string,
-    password: string
-  ): { success: boolean; message: string; user?: User } {
-    const users = this.getUsers();
-
-    // Check if email already exists
-    if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      return { success: false, message: 'Email already registered' };
-    }
-
-    // Validate inputs
-    if (!username || username.length < 3) {
-      return {
-        success: false,
-        message: 'Username must be at least 3 characters',
-      };
-    }
-
-    if (!this.isValidEmail(email)) {
-      return { success: false, message: 'Invalid email format' };
-    }
-
-    if (!password || password.length < 6) {
-      return {
-        success: false,
-        message: 'Password must be at least 6 characters',
-      };
-    }
-
-    // Create new user
-    const newUser: User = {
-      id: Date.now(),
-      username,
-      email,
-      password,
-      orders: [],
-      wishlist: [],
-      createdAt: new Date().toISOString(),
-    };
-
-    users.push(newUser);
-    this.saveUsers(users);
-
-    // Auto-login after registration
-    return this.login(email, password, false);
+  register(username: string, email: string, password: string, phone?: string): Observable<any> {
+    return this.http.post<any>(`${this.api}/auth/register`, { username, email, password, phone });
   }
 
   logout(): void {
-    const rememberMe = localStorage.getItem(this.REMEMBER_ME_KEY) === 'true';
-
-    this.removeUser();
-    this.isLoggedInSubject.next(false);
-    this.currentUserSubject.next(null);
-
-    if (!rememberMe) {
-      localStorage.removeItem(this.REMEMBER_ME_KEY);
+    const token = this.getToken();
+    if (token) {
+      this.http.post(`${this.api}/auth/logout`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).subscribe({ error: () => {} });
     }
+    this.clearSession();
   }
 
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.api}/auth/forgot-password`, { email });
+  }
+
+  getMe(): Observable<any> {
+    return this.http.get(`${this.api}/auth/me`, {
+      headers: { Authorization: `Bearer ${this.getToken()}` }
+    });
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  getAuthHeaders(): { Authorization: string } {
+    return { Authorization: `Bearer ${this.getToken()}` };
   }
 
   isLoggedIn(): boolean {
     return this.isLoggedInSubject.value;
   }
 
-  updateUser(updates: Partial<User>): void {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser) return;
-
-    const users = this.getUsers();
-    const index = users.findIndex((u) => u.id === currentUser.id);
-
-    if (index !== -1) {
-      users[index] = { ...users[index], ...updates };
-      this.saveUsers(users);
-
-      // Update current user in memory (exclude password)
-      const updatedUser: User = {
-        id: users[index].id,
-        username: users[index].username,
-        email: users[index].email,
-        orders: users[index].orders || [],
-        wishlist: users[index].wishlist || [],
-      };
-
-      this.currentUserSubject.next(updatedUser);
-      this.saveUser(updatedUser);
-    }
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
   }
 
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  updateUser(updates: Partial<User>): void {
+    const current = this.currentUserSubject.value;
+    if (!current) return;
+    const updated = { ...current, ...updates };
+    localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+    this.currentUserSubject.next(updated);
   }
 
   getDemoCredentials(): { email: string; password: string } {
-    return {
-      email: 'odhiambo149@gmail.com',
-      password: 'ojo654465',
-    };
+    return { email: '', password: '' };
+  }
+
+  private handleAuthResponse(res: any): void {
+    localStorage.setItem(this.TOKEN_KEY,   res.access_token);
+    localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
+    localStorage.setItem(this.USER_KEY,    JSON.stringify(res.user));
+    this.currentUserSubject.next(res.user);
+    this.isLoggedInSubject.next(true);
+  }
+
+  private clearSession(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    this.currentUserSubject.next(null);
+    this.isLoggedInSubject.next(false);
+  }
+
+  private loadUser(): User | null {
+    try {
+      const raw = localStorage.getItem(this.USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
   }
 }

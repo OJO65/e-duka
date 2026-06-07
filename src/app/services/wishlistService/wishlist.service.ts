@@ -1,165 +1,70 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../authService/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class WishlistService {
-  private readonly USERS_KEY = 'eduka_users';
+  readonly api = environment.apiUrl;
 
-  // Observable for wishlist changes
   private wishlistSubject = new BehaviorSubject<string[]>([]);
-  public wishlist$: Observable<string[]> = this.wishlistSubject.asObservable();
+  wishlist$: Observable<string[]> = this.wishlistSubject.asObservable();
 
-  constructor() {}
-
-  /**
-   * Initialize wishlist for current user
-   */
-  initializeWishlist(userId: number): void {
-    const wishlist = this.getWishlistByUserId(userId);
-    this.wishlistSubject.next(wishlist);
+  constructor(public http: HttpClient, private auth: AuthService) {
+    if (this.auth.isLoggedIn()) this.fetchWishlist();
+    this.auth.isLoggedIn$.subscribe(loggedIn => {
+      if (loggedIn) this.fetchWishlist();
+      else this.wishlistSubject.next([]);
+    });
   }
 
-  /**
-   * Get wishlist for a specific user
-   */
-  getWishlistByUserId(userId: number): string[] {
-    const users = this.getUsers();
-    const user = users.find(u => u.id === userId);
-    
-    if (!user || !user.wishlist) {
-      return [];
-    }
-
-    return user.wishlist;
+  fetchWishlist(): void {
+    this.http.get<any[]>(`${this.api}/wishlist`, { headers: this.headers() })
+      .subscribe({
+        next: items => {
+          const ids = items.map((i: any) => i.products?.id ?? i.product_id);
+          this.wishlistSubject.next(ids);
+        },
+        error: () => {}
+      });
   }
 
-  /**
-   * Add product to wishlist
-   */
-  addToWishlist(userId: number, productId: string): boolean {
-    const users = this.getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
+  initializeWishlist(_userId: any): void { this.fetchWishlist(); }
 
-    if (userIndex === -1) {
-      return false;
-    }
-
-    // Initialize wishlist if it doesn't exist
-    if (!users[userIndex].wishlist) {
-      users[userIndex].wishlist = [];
-    }
-
-    // Check if already in wishlist
-    if (users[userIndex].wishlist!.includes(productId)) {
-      return false; // Already in wishlist
-    }
-
-    // Add to wishlist
-    users[userIndex].wishlist!.push(productId);
-
-    // Save back to localStorage
-    this.saveUsers(users);
-
-    // Update observable
-    this.wishlistSubject.next(users[userIndex].wishlist!);
-
+  addToWishlist(_userId: any, productId: string): boolean {
+    if (!this.auth.isLoggedIn()) return false;
+    this.http.post<any>(`${this.api}/wishlist`, { product_id: productId }, { headers: this.headers() })
+      .subscribe({ next: () => this.fetchWishlist(), error: () => {} });
     return true;
   }
 
-  /**
-   * Remove product from wishlist
-   */
-  removeFromWishlist(userId: number, productId: string): boolean {
-    const users = this.getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-
-    if (userIndex === -1 || !users[userIndex].wishlist) {
-      return false;
-    }
-
-    // Remove from wishlist
-    users[userIndex].wishlist = users[userIndex].wishlist!.filter(
-      (id: string) => id !== productId
-    );
-
-    // Save back to localStorage
-    this.saveUsers(users);
-
-    // Update observable
-    this.wishlistSubject.next(users[userIndex].wishlist!);
-
+  removeFromWishlist(_userId: any, productId: string): boolean {
+    if (!this.auth.isLoggedIn()) return false;
+    this.http.delete(`${this.api}/wishlist/${productId}`, { headers: this.headers() })
+      .subscribe({ next: () => this.fetchWishlist(), error: () => {} });
     return true;
   }
 
-  /**
-   * Toggle product in wishlist (add if not present, remove if present)
-   */
-  toggleWishlist(userId: number, productId: string): boolean {
-    if (this.isInWishlist(userId, productId)) {
-      this.removeFromWishlist(userId, productId);
-      return false; // Removed
+  toggleWishlist(_userId: any, productId: string): boolean {
+    if (this.isInWishlist(_userId, productId)) {
+      this.removeFromWishlist(_userId, productId);
+      return false;
     } else {
-      this.addToWishlist(userId, productId);
-      return true; // Added
+      this.addToWishlist(_userId, productId);
+      return true;
     }
   }
 
-  /**
-   * Check if product is in wishlist
-   */
-  isInWishlist(userId: number, productId: string): boolean {
-    const wishlist = this.getWishlistByUserId(userId);
-    return wishlist.includes(productId);
+  isInWishlist(_userId: any, productId: string): boolean {
+    return this.wishlistSubject.value.includes(productId);
   }
 
-  /**
-   * Get wishlist count
-   */
-  getWishlistCount(userId: number): number {
-    return this.getWishlistByUserId(userId).length;
-  }
+  getWishlistCount(_userId: any): number { return this.wishlistSubject.value.length; }
+  getWishlistByUserId(_userId: any): string[] { return this.wishlistSubject.value; }
+  clearWishlist(_userId: any): boolean { this.wishlistSubject.next([]); return true; }
 
-  /**
-   * Clear entire wishlist
-   */
-  clearWishlist(userId: number): boolean {
-    const users = this.getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-
-    if (userIndex === -1) {
-      return false;
-    }
-
-    users[userIndex].wishlist = [];
-
-    // Save back to localStorage
-    this.saveUsers(users);
-
-    // Update observable
-    this.wishlistSubject.next([]);
-
-    return true;
-  }
-
-  // Private helper methods
-
-  private getUsers(): any[] {
-    try {
-      const users = localStorage.getItem(this.USERS_KEY);
-      return users ? JSON.parse(users) : [];
-    } catch (error) {
-      console.error('Failed to get users:', error);
-      return [];
-    }
-  }
-
-  private saveUsers(users: any[]): void {
-    try {
-      localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-    } catch (error) {
-      console.error('Failed to save users:', error);
-    }
+  private headers(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
   }
 }

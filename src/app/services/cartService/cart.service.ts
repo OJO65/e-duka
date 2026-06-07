@@ -1,195 +1,103 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CartItem, Cart } from '../../models/cart.model';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../authService/auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface CartItem {
+  id:               string;
+  productId:        string;
+  variantId:        string;
+  title:            string;
+  vendor:           string;
+  image:            string;
+  price:            number;
+  currency:         string;
+  quantity:         number;
+  availableForSale: boolean;
+}
+
+export interface Cart {
+  items:     CartItem[];
+  itemCount: number;
+  subtotal:  number;
+  currency:  string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly GUEST_KEY = 'eduka_cart_guest';
+  private readonly api = environment.apiUrl;
 
-  private currentUserId: number | null = null;
+  private cartSubject = new BehaviorSubject<Cart>(this.emptyCart());
+  cart$: Observable<Cart> = this.cartSubject.asObservable();
 
-  private cartSubject = new BehaviorSubject<Cart>(this.createEmptyCart());
-  public cart$: Observable<Cart> = this.cartSubject.asObservable();
-
-  constructor() {
-    // Load initial cart (guest by default)
-    const initialCart = this.loadFromStorage();
-    this.cartSubject.next(initialCart);
-
-    // Persist cart on every change
-    this.cart$.subscribe(cart => {
-      this.saveToStorage(cart);
+  constructor(private http: HttpClient, private auth: AuthService) {
+    if (this.auth.isLoggedIn()) this.fetchCart();
+    this.auth.isLoggedIn$.subscribe(loggedIn => {
+      if (loggedIn) this.fetchCart();
+      else this.cartSubject.next(this.emptyCart());
     });
   }
 
-  /* ========================
-     PUBLIC API (UNCHANGED)
-     ======================== */
+  getCurrentCart(): Cart { return this.cartSubject.value; }
 
-  getCurrentCart(): Cart {
-    return this.cartSubject.value;
+  fetchCart(): void {
+    this.http.get<any[]>(`${this.api}/cart`, { headers: this.headers() })
+      .subscribe({ next: items => this.cartSubject.next(this.buildCart(items)), error: () => {} });
   }
 
   addToCart(product: any, quantity: number = 1): void {
-    const cart = this.getCurrentCart();
-
-    const existingItem = cart.items.find(
-      item => item.productId === product.id
-    );
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      const variant = product.variants?.nodes?.[0];
-
-      if (!variant || !variant.id) {
-        alert(`"${product.title}" cannot be added to cart.`);
-        return;
-      }
-
-      const newItem: CartItem = {
-        productId: product.id,
-        variantId: variant.id,
-        title: product.title,
-        vendor: product.vendor || '',
-        image: product.images.nodes[0]?.url || '',
-        price: parseFloat(
-          variant.priceV2?.amount ||
-            product.priceRange.minVariantPrice.amount
-        ),
-        currency:
-          variant.priceV2?.currencyCode ||
-          product.priceRange.minVariantPrice.currencyCode,
-        quantity,
-        availableForSale:
-          product.availableForSale && variant.availableForSale,
-      };
-
-      cart.items.push(newItem);
-    }
-
-    this.updateCart(cart);
+    if (!this.auth.isLoggedIn()) { alert('Please log in to add items to your cart.'); return; }
+    const variant = product.variants?.nodes?.[0];
+    if (!variant?.id) { alert(`"${product.title}" cannot be added.`); return; }
+    this.http.post<any>(`${this.api}/cart`,
+      { product_id: product.id, variant_id: variant.id, quantity },
+      { headers: this.headers() }
+    ).subscribe({ next: () => this.fetchCart(), error: e => console.error(e) });
   }
 
-  removeFromCart(productId: string): void {
-    const cart = this.getCurrentCart();
-    cart.items = cart.items.filter(
-      item => item.productId !== productId
-    );
-    this.updateCart(cart);
+  updateQuantity(cartItemId: string, quantity: number): void {
+    if (quantity <= 0) { this.removeFromCart(cartItemId); return; }
+    this.http.patch<any>(`${this.api}/cart/${cartItemId}`, { quantity }, { headers: this.headers() })
+      .subscribe({ next: () => this.fetchCart() });
   }
 
-  updateQuantity(productId: string, quantity: number): void {
-    const cart = this.getCurrentCart();
-    const item = cart.items.find(
-      item => item.productId === productId
-    );
-
-    if (!item) return;
-
-    if (quantity <= 0) {
-      this.removeFromCart(productId);
-    } else {
-      item.quantity = quantity;
-      this.updateCart(cart);
-    }
+  removeFromCart(cartItemId: string): void {
+    this.http.delete(`${this.api}/cart/${cartItemId}`, { headers: this.headers() })
+      .subscribe({ next: () => this.fetchCart() });
   }
 
   clearCart(): void {
-    this.updateCart(this.createEmptyCart());
+    this.http.delete(`${this.api}/cart`, { headers: this.headers() })
+      .subscribe({ next: () => this.cartSubject.next(this.emptyCart()) });
   }
 
-  /* ========================
-     AUTH INTEGRATION
-     ======================== */
+  setUser(_userId: any): void { if (this.auth.isLoggedIn()) this.fetchCart(); }
+  mergeGuestCartIntoUser(_userId: any): void {}
 
-  setUser(userId: number | null): void {
-    this.currentUserId = userId;
-    const cart = this.loadFromStorage();
-    this.cartSubject.next(cart);
+  private headers(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.auth.getToken()}` });
   }
 
-  mergeGuestCartIntoUser(userId: number): void {
-    const guestCart = this.getStoredCart(this.GUEST_KEY);
-    if (!guestCart || guestCart.items.length === 0) return;
-
-    const userKey = this.getUserKey(userId);
-    const userCart =
-      this.getStoredCart(userKey) || this.createEmptyCart();
-
-    guestCart.items.forEach(guestItem => {
-      const existing = userCart.items.find(
-        item => item.variantId === guestItem.variantId
-      );
-
-      if (existing) {
-        existing.quantity += guestItem.quantity;
-      } else {
-        userCart.items.push(guestItem);
-      }
-    });
-
-    this.updateCart(userCart);
-    localStorage.setItem(userKey, JSON.stringify(userCart));
-    localStorage.removeItem(this.GUEST_KEY);
+  private buildCart(items: any[]): Cart {
+    const mapped: CartItem[] = items.map(i => ({
+      id:               i.id,
+      productId:        i.products?.id         ?? i.product_id,
+      variantId:        i.product_variants?.id  ?? i.variant_id,
+      title:            i.products?.title       ?? '',
+      vendor:           i.products?.vendor      ?? '',
+      image:            i.products?.images?.[0]?.url ?? '',
+      price:            i.product_variants?.price ?? 0,
+      currency:         i.product_variants?.currency_code ?? 'KES',
+      quantity:         i.quantity,
+      availableForSale: i.product_variants?.available_for_sale ?? true,
+    }));
+    const subtotal  = mapped.reduce((s, i) => s + i.price * i.quantity, 0);
+    const itemCount = mapped.reduce((s, i) => s + i.quantity, 0);
+    return { items: mapped, itemCount, subtotal, currency: mapped[0]?.currency ?? 'KES' };
   }
 
-  /* ========================
-     INTERNAL HELPERS
-     ======================== */
-
-  private updateCart(cart: Cart): void {
-    cart.itemCount = cart.items.reduce(
-      (sum, item) => sum + item.quantity,
-      0
-    );
-
-    cart.subtotal = cart.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-
-    cart.currency = cart.items[0]?.currency || 'USD';
-    this.cartSubject.next({ ...cart });
-  }
-
-  private saveToStorage(cart: Cart): void {
-    const key = this.currentUserId
-      ? this.getUserKey(this.currentUserId)
-      : this.GUEST_KEY;
-
-    localStorage.setItem(key, JSON.stringify(cart));
-  }
-
-  private loadFromStorage(): Cart {
-    const key = this.currentUserId
-      ? this.getUserKey(this.currentUserId)
-      : this.GUEST_KEY;
-
-    return this.getStoredCart(key) || this.createEmptyCart();
-  }
-
-  private getStoredCart(key: string): Cart | null {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private getUserKey(userId: number): string {
-    return `eduka_cart_user_${userId}`;
-  }
-
-  private createEmptyCart(): Cart {
-    return {
-      items: [],
-      itemCount: 0,
-      subtotal: 0,
-      currency: 'USD',
-    };
+  private emptyCart(): Cart {
+    return { items: [], itemCount: 0, subtotal: 0, currency: 'KES' };
   }
 }
