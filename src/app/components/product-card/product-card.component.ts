@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cartService/cart.service';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { AuthService } from '../../services/authService/auth.service';
-
 @Component({
   selector: 'app-product-card',
   standalone: true,
@@ -34,7 +33,7 @@ export class ProductCardComponent implements OnInit, OnDestroy {
   // Wishlist state
   isInWishlist: boolean = false;
   isLoggedIn: boolean = false;
-  currentUserId: number | null = null;
+  currentUserId: string | null = null;
 
   private toastTimeout: any;
   private authSubscription?: Subscription;
@@ -91,21 +90,13 @@ export class ProductCardComponent implements OnInit, OnDestroy {
     return this.product?.images?.nodes?.[0]?.url || 'assets/placeholder.jpg';
   }
 
-  get formattedPrice(): string {
-    const amount = Number(
-      this.product?.priceRange?.minVariantPrice?.amount || 0
-    );
-
-    let formatted = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      currencyDisplay: 'symbol',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-
-    return formatted;
-  }
+ get formattedPrice(): string {
+  const amount = Number(this.product?.priceRange?.minVariantPrice?.amount || 0);
+  return 'KES ' + new Intl.NumberFormat('en-KE', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
   onAddToCart() {
     this.cartService.addToCart(this.product);

@@ -2,8 +2,15 @@
   <div class="card-inner">
     <!-- Front -->
     <div class="card-front">
-      <img [src]="category.image?.url" alt="" />
-      <h2 class="font-advent text-2xl font-semibold">{{ category.title }}</h2>
+      <div class="image-wrapper">
+        <img
+          [src]="category.image?.url || 'assets/placeholder.jpg'"
+          [alt]="category.title"
+          (load)="onImageLoad()"
+          (error)="onImageError()"
+        />
+      </div>
+      <h2 class="category-label font-advent">{{ category.title }}</h2>
     </div>
 
     <!-- Back -->
