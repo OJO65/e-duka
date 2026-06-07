@@ -102,15 +102,16 @@ export class AuthService {
     return { email: '', password: '' };
   }
 
-  private handleAuthResponse(res: any): void {
-    if (this.isBrowser) {
-      localStorage.setItem(this.TOKEN_KEY,   res.access_token);
-      localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
-      localStorage.setItem(this.USER_KEY,    JSON.stringify(res.user));
-    }
-    this.currentUserSubject.next(res.user);
-    this.isLoggedInSubject.next(true);
+ private handleAuthResponse(res: any): void {
+  if (this.isBrowser) {
+    localStorage.setItem(this.TOKEN_KEY,   res.access_token);
+    localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
+    localStorage.setItem(this.USER_KEY,    JSON.stringify(res.user));
   }
+  this.currentUserSubject.next(res.user);
+  this.isLoggedInSubject.next(true);
+  this.scheduleTokenRefresh(); // ← add this
+}
 
   private clearSession(): void {
     if (this.isBrowser) {
@@ -129,4 +130,52 @@ export class AuthService {
       return raw ? JSON.parse(raw) : null;
     } catch { return null; }
   }
+
+  private scheduleTokenRefresh(): void {
+  if (!this.isBrowser) return;
+  const token = this.getToken();
+  if (!token) return;
+
+  try {
+    // Decode JWT to get expiry
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiresAt = payload.exp * 1000; // convert to ms
+    const now       = Date.now();
+    const delay     = expiresAt - now - 60000; // refresh 1 minute before expiry
+
+    if (delay <= 0) {
+      // Already expired or about to expire — refresh now
+      this.refreshToken();
+      return;
+    }
+
+    setTimeout(() => this.refreshToken(), delay);
+  } catch {
+    // Invalid token format
+  }
+}
+
+private refreshToken(): void {
+  if (!this.isBrowser) return;
+  const refreshToken = localStorage.getItem(this.REFRESH_KEY);
+  if (!refreshToken) return;
+
+  this.http.post<any>(`${this.api}/auth/refresh`, { refresh_token: refreshToken })
+    .subscribe({
+      next: (res) => {
+        if (this.isBrowser) {
+          localStorage.setItem(this.TOKEN_KEY,   res.access_token);
+          localStorage.setItem(this.REFRESH_KEY, res.refresh_token);
+        }
+        console.log('🔄 Token refreshed');
+        // Schedule next refresh
+        this.scheduleTokenRefresh();
+      },
+      error: () => {
+        // Refresh failed — clear session and redirect to login
+        console.warn('Token refresh failed — logging out');
+        this.clearSession();
+      }
+    });
+}
 }
