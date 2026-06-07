@@ -12,8 +12,8 @@ import { AuthService } from '../../services/authService/auth.service';
   styleUrls: ['./order-confirmation.component.css']
 })
 export class OrderConfirmationComponent implements OnInit {
-  order: any = null;
-  loading          = true;
+  order: any        = null;
+  loading           = true;
   estimatedDelivery = '';
 
   constructor(
@@ -62,5 +62,7 @@ export class OrderConfirmationComponent implements OnInit {
   }
 
   viewAllOrders():    void { this.router.navigate(['/orders']); }
+  goToOrders():       void { this.router.navigate(['/orders']); }
   continueShopping(): void { this.router.navigate(['/']); }
+  printOrder():       void { if (typeof window !== 'undefined') window.print(); }
 }
