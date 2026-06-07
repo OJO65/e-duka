@@ -12,38 +12,31 @@ import { AuthService } from '../../services/authService/auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  email: string = '';
-  password: string = '';
-  rememberMe: boolean = false;
-
-  errorMessage: string = '';
-  isLoading: boolean = false;
+  email:        string  = '';
+  password:     string  = '';
+  rememberMe:   boolean = false;
+  errorMessage: string  = '';
+  isLoading:    boolean = false;
   showPassword: boolean = false;
-
-  returnUrl: string = '/';
+  returnUrl:    string  = '/';
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService
+    private router:      Router,
+    private route:       ActivatedRoute,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-
-    if (this.authService.isLoggedIn()) {
-      this.router.navigateByUrl(this.returnUrl);
-    }
+    if (this.authService.isLoggedIn()) this.router.navigateByUrl(this.returnUrl);
   }
 
   onSubmit(): void {
     this.errorMessage = '';
-
     if (!this.email || !this.password) {
       this.errorMessage = 'Please enter both email and password.';
       return;
     }
-
     if (!this.isValidEmail(this.email)) {
       this.errorMessage = 'Please enter a valid email address.';
       return;
@@ -51,50 +44,37 @@ export class LoginComponent implements OnInit {
 
     this.isLoading = true;
 
-    setTimeout(() => {
-      const result = this.authService.login(
-        this.email,
-        this.password,
-        this.rememberMe
-      );
-      this.isLoading = false;
-
-      if (result.success) {
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.isLoading = false;
         this.router.navigate([this.returnUrl]);
-      } else {
-        this.errorMessage = result.message;
-      }
-    }, 500);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err?.error?.error || 'Invalid email or password.';
+      },
+    });
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
+  togglePasswordVisibility(): void { this.showPassword = !this.showPassword; }
 
   goToForgotPassword(): void {
-    this.router.navigate(['/forgot-password'], {
-      queryParams: { returnUrl: this.returnUrl },
-    });
+    this.router.navigate(['/forgot-password'], { queryParams: { returnUrl: this.returnUrl } });
   }
 
   goToRegister(): void {
-    this.router.navigate(['/register'], {
-      queryParams: { returnUrl: this.returnUrl },
-    });
+    this.router.navigate(['/register'], { queryParams: { returnUrl: this.returnUrl } });
   }
 
-  goHome(): void {
-    this.router.navigate(['/']);
+  goHome(): void { this.router.navigate(['/']); }
+
+  fillDemoCredentials(): void {
+    const demo    = this.authService.getDemoCredentials();
+    this.email    = demo.email;
+    this.password = demo.password;
   }
 
   private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  fillDemoCredentials(): void {
-    const demo = this.authService.getDemoCredentials();
-    this.email = demo.email;
-    this.password = demo.password;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 }
