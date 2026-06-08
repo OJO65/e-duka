@@ -1,0 +1,48 @@
+<div class="admin-orders">
+
+  <!-- Skeleton -->
+  <div *ngIf="loading">
+    <div *ngFor="let i of [1,2,3,4,5]" class="order-card sk-order-card">
+      <div class="sk-row">
+        <div class="sk-left">
+          <div class="sk-line w60 shimmer"></div>
+          <div class="sk-line w40 shimmer"></div>
+        </div>
+        <div class="sk-right">
+          <div class="sk-line w80 shimmer"></div>
+          <div class="sk-line w50 shimmer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading">
+    <div *ngFor="let order of orders" class="order-card">
+      <div class="order-row">
+        <div class="order-left">
+          <p class="order-id">#{{ order.id.slice(0,8) }}...</p>
+          <p class="order-customer">{{ order.profiles?.username || 'Unknown' }}</p>
+          <p class="order-date">{{ formatDate(order.created_at) }}</p>
+        </div>
+        <div class="order-right">
+          <p class="order-amount">KES {{ formatNumber(order.total_amount) }}</p>
+          <span class="status-badge" [class]="getStatusClass(order.status)">{{ order.status }}</span>
+          <div class="order-actions">
+            <select (change)="updateStatus(order.id, $any($event.target).value)" class="status-select">
+              <option [selected]="order.status === 'pending'"   value="pending">Pending</option>
+              <option [selected]="order.status === 'confirmed'" value="confirmed">Confirmed</option>
+              <option [selected]="order.status === 'shipped'"   value="shipped">Shipped</option>
+              <option [selected]="order.status === 'delivered'" value="delivered">Delivered</option>
+            </select>
+            <select (change)="updatePaymentStatus(order.id, order.status, $any($event.target).value)" class="status-select">
+              <option [selected]="order.payment_status === 'unpaid'" value="unpaid">Unpaid</option>
+              <option [selected]="order.payment_status === 'paid'"   value="paid">Paid</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p *ngIf="!orders.length" class="empty-state">No orders yet</p>
+  </div>
+</div>
