@@ -20,7 +20,7 @@
 
 .clear-filters-btn {
   font-size: 13px;
-  color: #ff6b35;
+  color: #e02424;
   background: none;
   border: none;
   cursor: pointer;
@@ -28,7 +28,7 @@
 }
 
 .clear-filters-btn:hover {
-  color: #ff5722;
+  color: #b91c1c;
   text-decoration: underline;
 }
 
@@ -69,14 +69,14 @@
 }
 
 .filter-checkbox:hover {
-  color: #ff6b35;
+  color: #e02424;
 }
 
 .filter-checkbox input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
-  accent-color: #ff6b35;
+  accent-color: #e02424;
 }
 
 /* Mobile Filter Panel */
@@ -136,14 +136,14 @@
 }
 
 .clear-btn:hover {
-  border-color: #ff6b35;
-  color: #ff6b35;
+  border-color: #e02424;
+  color: #e02424;
 }
 
 .apply-btn {
   flex: 2;
   padding: 12px;
-  background: #ff6b35;
+  background: #e02424;
   color: white;
   border: none;
   border-radius: 8px;
@@ -153,5 +153,5 @@
 }
 
 .apply-btn:hover {
-  background: #ff5722;
+  background: #b91c1c;
 }
