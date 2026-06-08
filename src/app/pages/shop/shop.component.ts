@@ -197,7 +197,11 @@ export class ShopComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  toggleMobileFilters(): void  { this.mobileFiltersOpen = !this.mobileFiltersOpen; }
+  toggleMobileFilters(): void {
+  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+    this.mobileFiltersOpen = !this.mobileFiltersOpen;
+  }
+}
   closeMobileFilters(): void   { this.mobileFiltersOpen = false; }
   goHome(): void               { this.router.navigate(['/']); }
 
