@@ -1,0 +1,11 @@
+{
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsserver.experimental.enableProjectDiagnostics": false,
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true
+  }
+}
