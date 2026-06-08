@@ -17,8 +17,9 @@ import { filter, skip } from 'rxjs/operators';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'e-duka';
-  isAuthPage = false;
+  title       = 'e-duka';
+  isAuthPage  = false;
+  isAdminPage = false;
 
   private authSubscription?:   Subscription;
   private routerSubscription?: Subscription;
@@ -31,23 +32,22 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // skip(1) skips the initial BehaviorSubject emission
-    // so we don't call setUser before the token is validated
     this.authSubscription = this.authService.currentUser$
       .pipe(skip(1))
       .subscribe(user => {
-        if (user) {
-          this.cartService.setUser(user.id);
-        }
+        if (user) this.cartService.setUser(user.id);
       });
 
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.isAuthPage = this.checkIfAuthPage(event.urlAfterRedirects);
+      this.isAuthPage  = this.checkIfAuthPage(event.urlAfterRedirects);
+      this.isAdminPage = event.urlAfterRedirects.startsWith('/admin');
     });
 
-    this.isAuthPage = this.checkIfAuthPage(this.router.url);
+    // Check initial route
+    this.isAuthPage  = this.checkIfAuthPage(this.router.url);
+    this.isAdminPage = this.router.url.startsWith('/admin');
   }
 
   ngOnDestroy(): void {
@@ -55,11 +55,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.routerSubscription?.unsubscribe();
   }
 
-  onSearch(query: string) {
-    this.searchService.setSearch(query);
-  }
+  onSearch(query: string) { this.searchService.setSearch(query); }
 
   private checkIfAuthPage(url: string): boolean {
-    return url.includes('/login') || url.includes('/register') || url.includes('/forgot-password');
+    return url.includes('/login') ||
+           url.includes('/register') ||
+           url.includes('/forgot-password');
   }
 }
