@@ -12,24 +12,54 @@ import { OrdersComponent } from './pages/orders/orders.component';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+import { AdminLayoutComponent } from './pages/admin/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
-    {path: '', redirectTo: 'home', pathMatch: 'full' },
-    {path: 'home', component: HomeComponent},
-    {path: 'shop', component: ShopComponent},
-    {path: 'cart', component: CartComponent},
-    {path: 'product/:productId', component: ProductDetailComponent},
-    
-    // Auth pages
-    {path: 'login', component: LoginComponent },
-    {path: 'register', component: RegisterComponent},
-    {path: 'forgot-password', component: ForgotPasswordComponent},
-    
-    // Protected routes
-    {path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard]},
-    {path: 'account', component: AccountComponent, canActivate: [AuthGuard]},
-    {path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard]},
-    {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},  // ← We'll add this when we build Orders page
-    {path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard]},
-    {path: '**', redirectTo: 'home' }
+  { path: '',     redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'shop', component: ShopComponent },
+  { path: 'cart', component: CartComponent },
+  { path: 'product/:productId', component: ProductDetailComponent },
+
+  { path: 'login',           component: LoginComponent },
+  { path: 'register',        component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+
+  { path: 'checkout',               component: CheckoutComponent,          canActivate: [AuthGuard] },
+  { path: 'account',                component: AccountComponent,           canActivate: [AuthGuard] },
+  { path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard] },
+  { path: 'orders',                 component: OrdersComponent,            canActivate: [AuthGuard] },
+  { path: 'wishlist',               component: WishlistComponent,          canActivate: [AuthGuard] },
+
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [AdminGuard],
+    children: [
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      {
+        path: 'overview',
+        loadComponent: () => import('./pages/admin/admin-overview/admin-overview.component')
+          .then(m => m.AdminOverviewComponent)
+      },
+      {
+        path: 'orders',
+        loadComponent: () => import('./pages/admin/admin-orders/admin-orders.component')
+          .then(m => m.AdminOrdersComponent)
+      },
+      {
+        path: 'products',
+        loadComponent: () => import('./pages/admin/admin-products/admin-products.component')
+          .then(m => m.AdminProductsComponent)
+      },
+      {
+        path: 'customers',
+        loadComponent: () => import('./pages/admin/admin-customers/admin-customers.component')
+          .then(m => m.AdminCustomersComponent)
+      },
+    ]
+  },
+
+  { path: '**', redirectTo: 'home' }
 ];
