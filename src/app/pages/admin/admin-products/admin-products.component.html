@@ -1,0 +1,40 @@
+<div class="admin-products">
+
+  <!-- Skeleton -->
+  <div *ngIf="loading" class="products-grid">
+    <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="product-card">
+      <div class="sk-product-image shimmer"></div>
+      <div class="product-info">
+        <div class="sk-line w80 shimmer"></div>
+        <div class="sk-line w50 shimmer"></div>
+        <div class="sk-line w40 shimmer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="products-grid">
+    <div *ngFor="let product of products" class="product-card">
+      <div class="product-image">
+        <img [src]="product.images?.[0]?.url" [alt]="product.title" />
+      </div>
+      <div class="product-info">
+        <p class="product-title">{{ product.title }}</p>
+        <p class="product-collection">{{ product.collections?.title }}</p>
+        <p class="product-price">KES {{ formatNumber(product.min_price) }}</p>
+        <div class="product-footer">
+          <span class="stock-badge"
+            [class.in-stock]="product.available_for_sale"
+            [class.out-of-stock]="!product.available_for_sale">
+            {{ product.available_for_sale ? 'In Stock' : 'Out of Stock' }}
+          </span>
+          <button class="toggle-btn" (click)="toggleAvailability(product)">
+            {{ product.available_for_sale ? 'Mark Out' : 'Mark In' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="!loading && !products.length" class="empty-state">No products found</p>
+</div>
