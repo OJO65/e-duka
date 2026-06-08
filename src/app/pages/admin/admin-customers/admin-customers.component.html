@@ -1,0 +1,38 @@
+<div class="admin-customers">
+
+  <!-- Skeleton -->
+  <div *ngIf="loading">
+    <div *ngFor="let i of [1,2,3,4,5]" class="customer-card">
+      <div class="customer-left">
+        <div class="sk-avatar shimmer"></div>
+        <div class="sk-info-lines">
+          <div class="sk-line w60 shimmer"></div>
+          <div class="sk-line w40 shimmer"></div>
+        </div>
+      </div>
+      <div class="sk-right-lines">
+        <div class="sk-line w50 shimmer"></div>
+        <div class="sk-line w40 shimmer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading">
+    <div *ngFor="let customer of customers" class="customer-card">
+      <div class="customer-left">
+        <div class="customer-avatar">{{ customer.username?.charAt(0)?.toUpperCase() }}</div>
+        <div class="customer-info">
+          <p class="customer-name">{{ customer.username }}</p>
+          <p class="customer-phone">{{ customer.phone || 'No phone' }}</p>
+          <p class="customer-since">Joined {{ formatDate(customer.created_at) }}</p>
+        </div>
+      </div>
+      <div class="customer-right">
+        <p class="customer-orders">{{ customer.orders?.length || 0 }} orders</p>
+        <p class="customer-spent">KES {{ formatNumber(getTotalSpent(customer.orders)) }}</p>
+      </div>
+    </div>
+    <p *ngIf="!customers.length" class="empty-state">No customers yet</p>
+  </div>
+</div>
