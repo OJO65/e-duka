@@ -1,0 +1,40 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { AuthService } from '../../../services/authService/auth.service';
+
+@Component({
+  selector: 'app-admin-layout',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './admin-layout.component.html',
+  styleUrls: ['./admin-layout.component.css'],
+})
+export class AdminLayoutComponent implements OnInit {
+  currentRoute = '';
+  sidebarOpen  = true;
+  currentUser: any;
+
+  navItems = [
+    { label: 'Overview',  path: '/admin/overview',  icon: 'grid' },
+    { label: 'Orders',    path: '/admin/orders',    icon: 'orders' },
+    { label: 'Products',  path: '/admin/products',  icon: 'box' },
+    { label: 'Customers', path: '/admin/customers', icon: 'users' },
+  ];
+
+  constructor(private router: Router, private auth: AuthService) {}
+
+  ngOnInit(): void {
+    this.currentUser  = this.auth.getCurrentUser();
+    this.currentRoute = this.router.url;
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe((e: any) => { this.currentRoute = e.url; });
+  }
+
+  isActive(path: string): boolean { return this.currentRoute.startsWith(path); }
+  toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
+  goToStore(): void { this.router.navigate(['/home']); }
+  signOut(): void { this.auth.logout(); this.router.navigate(['/login']); }
+}
