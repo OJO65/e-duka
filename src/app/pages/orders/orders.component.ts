@@ -70,12 +70,21 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   continueShopping(): void { this.router.navigate(['/shop']); }
 
-  formatPrice(price: number, _currency?: string): string {
-    return 'KES ' + new Intl.NumberFormat('en-KE', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
+  shortId(id: string): string {
+    return id ? id.slice(0, 8).toUpperCase() : '';
   }
+
+  orderItemCount(order: any): number {
+    return (order.order_items || []).length;
+  }
+
+formatPrice(price: number, _currency?: string): string {
+  const safePrice = Number(price) || 0;
+  return 'KES ' + new Intl.NumberFormat('en-KE', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(safePrice);
+}
 
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-US', {
