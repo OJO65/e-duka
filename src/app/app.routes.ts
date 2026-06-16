@@ -11,26 +11,41 @@ import { AccountComponent } from './pages/account/account.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
+import { ServicesComponent } from './pages/services/services.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { AdminLayoutComponent } from './pages/admin/admin-layout/admin-layout.component';
+import { CareersComponent } from './pages/careers/careers.component';
+import { TermsComponent } from './pages/terms/terms.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 export const routes: Routes = [
-  { path: '',     redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'shop', component: ShopComponent },
+  { path: 'services', component: ServicesComponent },
   { path: 'cart', component: CartComponent },
   { path: 'product/:productId', component: ProductDetailComponent },
 
-  { path: 'login',           component: LoginComponent },
-  { path: 'register',        component: RegisterComponent },
+  { path: 'careers', component: CareersComponent },
+  { path: 'terms', component: TermsComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
+  { path: 'contact', component: ContactComponent },
+
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
 
-  { path: 'checkout',               component: CheckoutComponent,          canActivate: [AuthGuard] },
-  { path: 'account',                component: AccountComponent,           canActivate: [AuthGuard] },
-  { path: 'order-confirmation/:id', component: OrderConfirmationComponent, canActivate: [AuthGuard] },
-  { path: 'orders',                 component: OrdersComponent,            canActivate: [AuthGuard] },
-  { path: 'wishlist',               component: WishlistComponent,          canActivate: [AuthGuard] },
+  { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
+  { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
+  {
+    path: 'order-confirmation/:id',
+    component: OrderConfirmationComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard] },
+  { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
 
   {
     path: 'admin',
@@ -40,26 +55,34 @@ export const routes: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       {
         path: 'overview',
-        loadComponent: () => import('./pages/admin/admin-overview/admin-overview.component')
-          .then(m => m.AdminOverviewComponent)
+        loadComponent: () =>
+          import('./pages/admin/admin-overview/admin-overview.component').then(
+            (m) => m.AdminOverviewComponent,
+          ),
       },
       {
         path: 'orders',
-        loadComponent: () => import('./pages/admin/admin-orders/admin-orders.component')
-          .then(m => m.AdminOrdersComponent)
+        loadComponent: () =>
+          import('./pages/admin/admin-orders/admin-orders.component').then(
+            (m) => m.AdminOrdersComponent,
+          ),
       },
       {
         path: 'products',
-        loadComponent: () => import('./pages/admin/admin-products/admin-products.component')
-          .then(m => m.AdminProductsComponent)
+        loadComponent: () =>
+          import('./pages/admin/admin-products/admin-products.component').then(
+            (m) => m.AdminProductsComponent,
+          ),
       },
       {
         path: 'customers',
-        loadComponent: () => import('./pages/admin/admin-customers/admin-customers.component')
-          .then(m => m.AdminCustomersComponent)
+        loadComponent: () =>
+          import('./pages/admin/admin-customers/admin-customers.component').then(
+            (m) => m.AdminCustomersComponent,
+          ),
       },
-    ]
+    ],
   },
 
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'home' },
 ];
