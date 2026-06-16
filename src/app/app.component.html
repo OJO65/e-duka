@@ -1,3 +1,4 @@
 <app-header (searchEvent)="onSearch($event)" *ngIf="!isAuthPage && !isAdminPage"></app-header>
+<div class="header-overflow-spacer" aria-hidden="true" *ngIf="!isAuthPage && !isAdminPage"></div>
 <router-outlet></router-outlet>
 <app-footer *ngIf="!isAuthPage && !isAdminPage"></app-footer>
