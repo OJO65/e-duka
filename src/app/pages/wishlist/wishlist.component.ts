@@ -15,7 +15,15 @@ import { Subscription } from 'rxjs';
 })
 export class WishlistComponent implements OnInit, OnDestroy {
   wishlistProducts: any[] = [];
-  loading = true;
+  loading      = true;
+  authChecking = true;
+
+  showToast    = false;
+  toastMessage = '';
+
+  private toastTimeout: any;
+  private emptyStateTimeout: any;
+  private hasReceivedRealData = false;
 
   private itemsSub?: Subscription;
   private userSub?: Subscription;
@@ -29,15 +37,37 @@ export class WishlistComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userSub = this.authService.currentUser$.subscribe((user: any) => {
-      if (!user) {
-        this.router.navigate(['/login']);
+      // CRITICAL FIX: ignore the synchronous initial `null` emission that
+      // fires before the AuthService constructor finishes reading localStorage.
+      // Only act once we are CERTAIN of the real state.
+      if (user === null) {
+        // Could be "not logged in" OR "not yet checked" — wait a tick to be sure.
+        setTimeout(() => {
+          if (!this.authService.getCurrentUser()) {
+            this.authChecking = false;
+            this.router.navigate(['/login']);
+          }
+        }, 50);
         return;
       }
+
+      this.authChecking = false;
       this.wishlistService.fetchWishlist();
     });
 
+    // Hard safety net
+    setTimeout(() => { this.authChecking = false; }, 1500);
+
     this.itemsSub = this.wishlistService.wishlistItems$.subscribe(
       (items: any[]) => {
+        if (!this.hasReceivedRealData && items.length === 0) {
+          this.scheduleEmptyStateReveal();
+          return;
+        }
+
+        this.hasReceivedRealData = true;
+        if (this.emptyStateTimeout) clearTimeout(this.emptyStateTimeout);
+
         this.wishlistProducts = items
           .map((i: any) => ({
             id: i.products?.id,
@@ -78,6 +108,19 @@ export class WishlistComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.itemsSub?.unsubscribe();
     this.userSub?.unsubscribe();
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    if (this.emptyStateTimeout) clearTimeout(this.emptyStateTimeout);
+  }
+
+  private scheduleEmptyStateReveal(): void {
+    if (this.emptyStateTimeout) clearTimeout(this.emptyStateTimeout);
+    this.emptyStateTimeout = setTimeout(() => {
+      if (!this.hasReceivedRealData) {
+        this.hasReceivedRealData = true;
+        this.wishlistProducts    = [];
+        this.loading              = false;
+      }
+    }, 400);
   }
 
   removeFromWishlist(productId: string): void {
@@ -86,10 +129,12 @@ export class WishlistComponent implements OnInit, OnDestroy {
 
   addToCart(product: any): void {
     this.cartService.addToCart(product);
+    this.showToastMessage(`${product.title} added to cart!`);
   }
 
   addAllToCart(): void {
     this.wishlistProducts.forEach((p: any) => this.cartService.addToCart(p));
+    this.showToastMessage(`${this.wishlistProducts.length} items added to cart!`);
   }
 
   clearWishlist(): void {
@@ -102,6 +147,7 @@ export class WishlistComponent implements OnInit, OnDestroy {
   viewProduct(productId: string): void {
     this.router.navigate(['/product', productId]);
   }
+
   continueShopping(): void {
     this.router.navigate(['/']);
   }
@@ -118,5 +164,13 @@ export class WishlistComponent implements OnInit, OnDestroy {
 
   getProductImage(product: any): string {
     return product?.images?.nodes?.[0]?.url || 'assets/placeholder.jpg';
+  }
+
+  private showToastMessage(message: string): void {
+    this.toastMessage = message;
+    this.showToast     = false;
+    setTimeout(() => { this.showToast = true; });
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => { this.showToast = false; }, 2000);
   }
 }
