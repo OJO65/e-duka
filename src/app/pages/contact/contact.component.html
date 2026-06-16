@@ -1,0 +1,64 @@
+<div class="contact-page">
+  <div class="contact-header">
+    <span class="page-eyebrow">GET IN TOUCH</span>
+    <h1 class="page-title font-advent">Contact Us</h1>
+    <p class="page-subtitle">
+      Questions about a product, an order, or a service request? Reach out and we'll respond the same day.
+    </p>
+  </div>
+
+  <div class="contact-grid">
+    <!-- Quick contact options -->
+    <div class="contact-options">
+      <div class="contact-option-card">
+        <div class="option-icon wa-icon-bg">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.823.359-.3.3-1.155 1.13-1.155 2.745 0 1.615 1.18 3.18 1.345 3.405.165.225 2.29 3.49 5.55 4.75 2.79 1.08 2.79.72 3.21.675.42-.045 1.36-.555 1.555-1.095.196-.54.196-1.005.135-1.095-.06-.135-.225-.18-.475-.315z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.13 2.4 7.2L0 24l4.95-1.5A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.94 9.94 0 01-5.4-1.575l-.39-.24-3 .9.93-2.97-.255-.39A9.94 9.94 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+          </svg>
+        </div>
+        <h3>WhatsApp</h3>
+        <p>Fastest way to reach us</p>
+        <button class="btn-whatsapp" (click)="openWhatsApp()">Chat Now</button>
+      </div>
+
+      <div class="contact-option-card">
+        <div class="option-icon email-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3>Email</h3>
+        <p>{{ contactEmail }}</p>
+        <a class="btn-email-link" [href]="'mailto:' + contactEmail">Send Email</a>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div class="contact-form-card">
+      <h2 class="form-title font-advent">Send a Message</h2>
+
+      <div *ngIf="!sent">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" [(ngModel)]="name" placeholder="Jane Wanjiru" />
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" [(ngModel)]="email" placeholder="jane@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea [(ngModel)]="message" rows="5" placeholder="Tell us what you need..."></textarea>
+        </div>
+        <button class="btn-primary-red" (click)="sendEmail()" [disabled]="!name || !email || !message">
+          Send Message
+        </button>
+      </div>
+
+      <div *ngIf="sent" class="form-sent">
+        <p>Your email app should have opened with your message ready to send. If it didn't, email us directly at <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
