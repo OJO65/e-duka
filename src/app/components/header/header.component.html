@@ -1,7 +1,10 @@
 <!-- TOP BAR -->
-<div class="w-full bg-[#f2f2f2] px-4 md:px-6 py-2 flex justify-between text-xs md:text-sm">
+<div
+  class="w-full bg-[#f2f2f2] px-4 md:px-6 py-2 flex justify-between text-xs md:text-sm font-advent"
+>
   <div class="flex gap-2 md:gap-4 font-advent font-semibold">
     <a href="#" class="hover:underline">Sell on GNET</a>
+    <a routerLink="/services" class="hover:underline">Our Services</a>
   </div>
   <div class="flex gap-2 md:gap-4 font-advent font-semibold">
     <span class="cursor-pointer hidden sm:inline">M-PESA</span>
@@ -10,57 +13,96 @@
 </div>
 
 <!-- MAIN HEADER -->
-<header class="w-full bg-white border-b px-4 md:px-6 py-3 sticky top-0 z-50">
-
+<header class="w-full bg-white px-4 md:px-6 py-3 sticky top-0 z-50 font-advent font-semibold border-mask-host">
   <!-- Mobile Header -->
   <div class="flex items-center justify-between lg:hidden relative">
-
     <!-- Burger Menu -->
     <button (click)="toggleMobileMenu()" class="text-2xl mr-3">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
       </svg>
     </button>
 
     <!-- Mobile Logo -->
-    <div (click)="goHome()" class="cursor-pointer flex-1 flex items-center">
-      
-    </div>
+    <div
+      (click)="goHome()"
+      class="cursor-pointer flex-1 flex items-center"
+    ></div>
 
     <!-- Mobile Icons -->
     <div class="flex items-center gap-3">
-      <button class="cursor-pointer" (click)="toggleAccountMenu()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      <button
+        class="cursor-pointer auth-gate"
+        [class.auth-resolved]="authResolved"
+        (click)="toggleAccountMenu()"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
         </svg>
       </button>
 
       <button class="cursor-pointer relative" (click)="goToCart()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
-        <span *ngIf="cartItemCount > 0"
-          class="absolute -top-2 -right-2 bg-[#e02424] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+        <span
+          *ngIf="cartItemCount > 0"
+          class="absolute -top-2 -right-2 bg-[#e02424] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
+        >
           {{ cartItemCount }}
         </span>
       </button>
     </div>
 
     <!-- Mobile Account Dropdown -->
-    <div *ngIf="isAccountMenuOpen"
-      class="absolute top-14 right-4 bg-white border shadow-lg rounded-md min-w-48 z-50">
+    <div
+      *ngIf="isAccountMenuOpen"
+      class="absolute top-14 right-4 bg-white border shadow-lg rounded-md min-w-48 z-50"
+    >
       <ng-container *ngIf="!isLoggedIn">
         <div class="p-2">
-          <button (click)="goToLogin()"
-            class="bg-[#e02424] text-white font-semibold py-2 px-4 w-full hover:bg-[#b91c1c] rounded-md transition-colors">
+          <button
+            (click)="goToLogin()"
+            class="bg-[#e02424] text-white font-semibold py-2 px-4 w-full hover:bg-[#b91c1c] rounded-md transition-colors"
+          >
             Sign In
           </button>
         </div>
         <div class="px-2 pb-2">
-          <button (click)="goToRegister()"
-            class="border-2 border-[#1a56db] text-[#1a56db] hover:bg-blue-50 font-semibold py-2 px-4 w-full rounded-md transition-colors cursor-pointer">
+          <button
+            (click)="goToRegister()"
+            class="border-2 border-[#1a56db] text-[#1a56db] hover:bg-blue-50 font-semibold py-2 px-4 w-full rounded-md transition-colors cursor-pointer"
+          >
             Create Account
           </button>
         </div>
@@ -70,21 +112,43 @@
           <p class="text-sm font-semibold">{{ currentUser?.username }}</p>
           <p class="text-xs text-gray-600 truncate">{{ currentUser?.email }}</p>
         </div>
-        <a routerLink="/account" (click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer">My Account</a>
-        <a routerLink="/orders"  (click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Orders</a>
-        <a routerLink="/wishlist"(click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Wishlist</a>
+        <a
+          routerLink="/account"
+          (click)="closeAccountMenu()"
+          class="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          >My Account</a
+        >
+        <a
+          routerLink="/orders"
+          (click)="closeAccountMenu()"
+          class="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          >Orders</a
+        >
+        <a
+          routerLink="/wishlist"
+          (click)="closeAccountMenu()"
+          class="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          >Wishlist</a
+        >
         <hr class="my-2" />
-        <a (click)="signOut()" class="block px-4 py-2 hover:bg-red-50 cursor-pointer text-red-600 font-semibold">Sign Out</a>
+        <a
+          (click)="signOut()"
+          class="block px-4 py-2 hover:bg-red-50 cursor-pointer text-red-600 font-semibold"
+          >Sign Out</a
+        >
       </ng-container>
     </div>
   </div>
 
   <!-- Desktop Header -->
   <div class="hidden lg:flex items-center gap-6">
-
     <!-- Logo -->
-    <div (click)="goHome()" class="cursor-pointer shrink-0">
-      <img src="ChatGPT_Image_May_25__2026__02_34_19_PM-removebg-preview.png" alt="GNET" class=" h-32" />
+    <div (click)="goHome()" class="cursor-pointer logo-overflow-wrap">
+      <img
+        src="ChatGPT_Image_May_25__2026__02_34_19_PM-removebg-preview.png"
+        alt="GNET"
+        class="logo-overflow-img"
+      />
     </div>
 
     <!-- Search bar -->
@@ -96,68 +160,126 @@
         (input)="onSearchInput()"
         class="w-full border-2 border-gray-200 px-5 py-2.5 pr-12 rounded-lg outline-none transition-all focus:border-[#1a56db] focus:ring-2 focus:ring-blue-100 focus:shadow-md"
       />
-      <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
-        <button *ngIf="searchQuery" (click)="clearSearch()"
-          class="text-gray-400 hover:text-gray-600 transition-all hover:scale-110" title="Clear search">
+      <div
+        class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3"
+      >
+        <button
+          *ngIf="searchQuery"
+          (click)="clearSearch()"
+          class="text-gray-400 hover:text-gray-600 transition-all hover:scale-110"
+          title="Clear search"
+        >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
+            <path
+              fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"/>
+              clip-rule="evenodd"
+            />
           </svg>
         </button>
-        <svg *ngIf="!searchQuery" class="w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        <svg
+          *ngIf="!searchQuery"
+          class="w-5 h-5 text-gray-400 pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
       </div>
     </div>
 
     <!-- Icons -->
     <div class="flex items-center gap-6 text-sm shrink-0">
-
       <!-- Account -->
-      <div class="relative">
-        <a (click)="toggleAccountMenu()" class="cursor-pointer hover:text-[#1a56db] flex items-center gap-2">
-          <svg *ngIf="isLoggedIn" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      <div class="relative auth-gate" [class.auth-resolved]="authResolved">
+        <a
+          (click)="toggleAccountMenu()"
+          class="cursor-pointer hover:text-[#1a56db] flex items-center gap-2"
+        >
+          <svg
+            *ngIf="isLoggedIn"
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
           </svg>
-          <span *ngIf="isLoggedIn" class="font-semibold">Hi, {{ currentUser?.username }}</span>
+          <span *ngIf="isLoggedIn" class="font-semibold"
+            >Hi, {{ currentUser?.username }}</span
+          >
           <span *ngIf="!isLoggedIn">Account</span>
           <i class="fa-solid fa-caret-down ml-1"></i>
         </a>
 
-        <div *ngIf="isAccountMenuOpen"
-          class="absolute top-full right-0 mt-2 bg-white border shadow-lg rounded-md min-w-44 z-10">
+        <div
+          *ngIf="isAccountMenuOpen"
+          class="absolute top-full right-0 mt-2 bg-white border shadow-lg rounded-md min-w-44 z-10"
+        >
           <ng-container *ngIf="!isLoggedIn">
             <div class="p-2">
-              <button (click)="goToLogin()"
-                class="bg-[#e02424] hover:bg-[#b91c1c] text-white font-semibold py-2 px-4 w-full rounded-md transition-colors">
+              <button
+                (click)="goToLogin()"
+                class="bg-[#e02424] hover:bg-[#b91c1c] text-white font-semibold py-2 px-4 w-full rounded-md transition-colors"
+              >
                 Sign In
               </button>
             </div>
             <div class="px-2 pb-2">
-              <button (click)="goToRegister()"
-                class="border-2 border-[#1a56db] text-[#1a56db] hover:bg-blue-50 font-semibold py-2 px-4 w-full rounded-md transition-colors cursor-pointer">
+              <button
+                (click)="goToRegister()"
+                class="border-2 border-[#1a56db] text-[#1a56db] hover:bg-blue-50 font-semibold py-2 px-4 w-full rounded-md transition-colors cursor-pointer"
+              >
                 Create Account
               </button>
             </div>
           </ng-container>
           <ng-container *ngIf="isLoggedIn">
             <div class="px-4 py-3 border-b bg-gray-50 rounded-t-md">
-              <p class="text-sm font-semibold text-gray-900">{{ currentUser?.username }}</p>
-              <p class="text-xs text-gray-600 truncate">{{ currentUser?.email }}</p>
+              <p class="text-sm font-semibold text-gray-900">
+                {{ currentUser?.username }}
+              </p>
+              <p class="text-xs text-gray-600 truncate">
+                {{ currentUser?.email }}
+              </p>
             </div>
-            <a routerLink="/account" (click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
+            <a
+              routerLink="/account"
+              (click)="closeAccountMenu()"
+              class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+            >
               <i class="fa-solid fa-user mr-2 text-gray-500"></i>My Account
             </a>
-            <a routerLink="/orders" (click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
+            <a
+              routerLink="/orders"
+              (click)="closeAccountMenu()"
+              class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+            >
               <i class="fa-solid fa-box mr-2 text-gray-500"></i>Orders
             </a>
-            <a routerLink="/wishlist" (click)="closeAccountMenu()" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
+            <a
+              routerLink="/wishlist"
+              (click)="closeAccountMenu()"
+              class="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+            >
               <i class="fa-solid fa-heart mr-2 text-gray-500"></i>Wishlist
             </a>
             <hr class="my-2" />
-            <a (click)="signOut()" class="block px-4 py-2 hover:bg-red-50 cursor-pointer text-sm text-red-600 font-semibold rounded-b-md">
+            <a
+              (click)="signOut()"
+              class="block px-4 py-2 hover:bg-red-50 cursor-pointer text-sm text-red-600 font-semibold rounded-b-md"
+            >
               <i class="fa-solid fa-right-from-bracket mr-2"></i>Sign Out
             </a>
           </ng-container>
@@ -165,11 +287,16 @@
       </div>
 
       <!-- Cart -->
-      <a class="cursor-pointer hover:text-[#1a56db] relative flex items-center gap-2" (click)="goToCart()">
+      <a
+        class="cursor-pointer hover:text-[#1a56db] relative flex items-center gap-2"
+        (click)="goToCart()"
+      >
         Cart
         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-        <span *ngIf="cartItemCount > 0"
-          class="absolute -top-3 -right-4 bg-[#e02424] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+        <span
+          *ngIf="cartItemCount > 0"
+          class="absolute -top-3 -right-4 bg-[#e02424] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+        >
           {{ cartItemCount }}
         </span>
       </a>
@@ -178,38 +305,76 @@
 </header>
 
 <!-- Mobile Sidebar -->
-<div class="fixed top-0 left-0 w-64 h-full bg-white shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-in-out"
+<div
+  class="fixed top-0 left-0 w-64 h-full bg-white shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-in-out"
   [class.translate-x-0]="isMobileMenuOpen"
-  [class.-translate-x-full]="!isMobileMenuOpen">
+  [class.-translate-x-full]="!isMobileMenuOpen"
+>
   <div class="p-6">
     <!-- Logo in sidebar -->
     <div class="mb-6 pb-4 border-b">
-      <img src="ChatGPT_Image_May_25__2026__02_34_19_PM-removebg-preview.png" alt="GNET" class="h-12" />
+      <img
+        src="ChatGPT_Image_May_25__2026__02_34_19_PM-removebg-preview.png"
+        alt="GNET"
+        class="h-12"
+      />
     </div>
 
-    <button (click)="closeMobileMenu()" class="absolute top-4 right-4 text-2xl hover:text-[#e02424]">
+    <button
+      (click)="closeMobileMenu()"
+      class="absolute top-4 right-4 text-2xl hover:text-[#e02424]"
+    >
       &times;
     </button>
 
     <nav class="flex flex-col gap-4 font-advent font-semibold">
       <div *ngIf="isLoggedIn" class="pb-4 border-b mb-2">
-        <p class="text-sm font-semibold text-gray-900">{{ currentUser?.username }}</p>
+        <p class="text-sm font-semibold text-gray-900">
+          {{ currentUser?.username }}
+        </p>
         <p class="text-xs text-gray-600">{{ currentUser?.email }}</p>
       </div>
 
-      <a *ngIf="!isLoggedIn" (click)="goToLogin(); closeMobileMenu()"
-        class="text-lg hover:text-[#1a56db] py-2 border-b cursor-pointer">Sign In</a>
-      <a *ngIf="isLoggedIn" routerLink="/account" (click)="closeMobileMenu()"
-        class="text-lg hover:text-[#1a56db] py-2 border-b">My Account</a>
-      <a *ngIf="isLoggedIn" routerLink="/orders" (click)="closeMobileMenu()"
-        class="text-lg hover:text-[#1a56db] py-2 border-b">Orders</a>
-      <a *ngIf="isLoggedIn" routerLink="/wishlist" (click)="closeMobileMenu()"
-        class="text-lg hover:text-[#1a56db] py-2 border-b">Wishlist</a>
-      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b">Sell on GNET</a>
+      <a
+        *ngIf="authResolved && !isLoggedIn"
+        (click)="goToLogin(); closeMobileMenu()"
+        class="text-lg hover:text-[#1a56db] py-2 border-b cursor-pointer"
+        >Sign In</a
+      >
+      <a
+        *ngIf="authResolved && isLoggedIn"
+        routerLink="/account"
+        (click)="closeMobileMenu()"
+        class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >My Account</a
+      >
+      <a
+        *ngIf="isLoggedIn"
+        routerLink="/orders"
+        (click)="closeMobileMenu()"
+        class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Orders</a
+      >
+      <a
+        *ngIf="isLoggedIn"
+        routerLink="/wishlist"
+        (click)="closeMobileMenu()"
+        class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Wishlist</a
+      >
+      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Sell on GNET</a
+      >
       <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b">M-PESA</a>
-      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b">Delivery</a>
-      <a *ngIf="isLoggedIn" (click)="signOut(); closeMobileMenu()"
-        class="text-lg py-2 text-red-600 font-semibold cursor-pointer">Sign Out</a>
+      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Delivery</a
+      >
+      <a
+        *ngIf="isLoggedIn"
+        (click)="signOut(); closeMobileMenu()"
+        class="text-lg py-2 text-red-600 font-semibold cursor-pointer"
+        >Sign Out</a
+      >
     </nav>
   </div>
 </div>

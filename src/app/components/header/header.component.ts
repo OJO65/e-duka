@@ -36,6 +36,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   isLoggedIn: boolean = false;
   currentUser: User | null = null;
+
+  // CRITICAL FIX: gates rendering of the account/login area until we have
+  // the REAL auth state (post-hydration on client), preventing the
+  // SSR-default "Sign In" button from ever being visibly painted when
+  // the user is actually logged in.
+  authResolved: boolean = false;
+
   private authSubscription?: Subscription;
   private userSubscription?: Subscription;
 
@@ -52,12 +59,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((searchQuery) => {
         this.searchService.setSearch(searchQuery);
       });
+
     this.cartSubscription = this.cartService.cart$.subscribe((cart) => {
       this.cartItemCount = cart.itemCount;
     });
+
     this.authSubscription = this.authService.isLoggedIn$.subscribe(loggedIn => {
-      this.isLoggedIn = loggedIn;
+      this.isLoggedIn    = loggedIn;
+      this.authResolved  = true; // flips true on the FIRST real emission
     });
+
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
