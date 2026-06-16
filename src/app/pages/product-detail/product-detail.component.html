@@ -1,7 +1,7 @@
 <!-- Toast Notification -->
 <div
-  *ngIf="showToast"
-  class="fixed top-6 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in"
+  class="cart-toast"
+  [class.show]="showToast"
 >
   {{ toastMessage }}
 </div>
