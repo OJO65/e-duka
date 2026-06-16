@@ -1,0 +1,426 @@
+/* HERO */
+.services-hero {
+  background: #0f1f3d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 70px 60px;
+  gap: 50px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 480px;
+  flex-shrink: 0;
+}
+
+.hero-eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #6ea0f5;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 14px 0 18px;
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  color: #b4c2da;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-primary-red {
+  background: #e02424;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary-red:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.btn-outline-white {
+  background: transparent;
+  color: white;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  padding: 14px 28px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-outline-white:hover {
+  border-color: white;
+  background: rgba(255,255,255,0.06);
+}
+
+.hero-visual {
+  flex: 1;
+  min-width: 320px;
+  max-width: 600px;
+}
+
+.monitor-svg {
+  width: 280px;
+  height: 210px;
+}
+
+.pulse-dot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* SERVICE ROWS */
+.service-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 70px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.bg-light {
+  background: #f8f9fb;
+}
+
+.service-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.service-tag {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #1a56db;
+}
+
+.service-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 10px 0 14px;
+}
+
+.service-desc {
+  font-size: 15.5px;
+  color: #4b5563;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+
+.service-specs {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-specs li {
+  font-size: 14px;
+  color: #374151;
+}
+
+.spec-mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a56db;
+  background: #eff6ff;
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin-right: 4px;
+}
+
+.btn-text-link {
+  background: none;
+  border: none;
+  color: #e02424;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-text-link:hover {
+  text-decoration: underline;
+}
+
+.service-visual {
+  flex-shrink: 0;
+}
+
+.service-visual svg {
+  width: 240px;
+  height: 190px;
+}
+
+/* TRUST STRIP */
+.trust-strip {
+  background: #0f1f3d;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 60px;
+  padding: 48px 30px;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.trust-number {
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+}
+
+.trust-label {
+  font-size: 13px;
+  color: #8ca3c4;
+}
+
+/* BOTTOM CTA */
+.bottom-cta {
+  text-align: center;
+  padding: 70px 30px;
+  background: white;
+}
+
+.cta-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.cta-subtitle {
+  font-size: 15.5px;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 14px 26px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.btn-whatsapp:hover {
+  background: #1ea952;
+  transform: translateY(-1px);
+}
+
+.wa-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-call {
+  background: transparent;
+  color: #1a56db;
+  border: 1.5px solid #1a56db;
+  padding: 14px 26px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-call:hover {
+  background: #eff6ff;
+}
+
+.hero-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+}
+
+.service-visual img.service-image {
+  width: 320px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .services-hero {
+    padding: 44px 24px 50px;
+    flex-direction: column;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    font-size: 27px;
+  }
+
+  .hero-subtitle {
+    font-size: 14.5px;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 260px;
+    border-radius: 14px;
+  }
+
+  .service-row {
+    padding: 48px 24px;
+    flex-direction: column !important;
+    text-align: center;
+    gap: 28px;
+  }
+    .service-row .service-text {
+    order: 1;
+  }
+
+  .service-row .service-visual {
+    order: 2;
+  }
+
+  .service-title {
+    font-size: 23px;
+  }
+
+  .service-desc {
+    font-size: 14.5px;
+  }
+
+  .service-specs {
+    align-items: center;
+  }
+
+  .service-visual {
+    width: 100%;
+  }
+
+  .service-visual img.service-image {
+    width: 100%;
+    max-width: 100%;
+    height: 220px;
+    border-radius: 14px;
+  }
+
+  .trust-strip {
+    gap: 28px;
+    padding: 40px 24px;
+  }
+
+  .trust-number {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-hero {
+    padding: 36px 18px 42px;
+  }
+
+  .hero-image {
+    height: 220px;
+  }
+
+  .service-row {
+    padding: 40px 18px;
+  }
+
+  .service-visual img.service-image {
+    height: 190px;
+  }
+
+  .trust-strip {
+    gap: 22px;
+    padding: 36px 18px;
+  }
+
+  .bottom-cta {
+    padding: 56px 18px;
+  }
+
+  .cta-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-whatsapp,
+  .btn-call {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot { animation: none; }
+}

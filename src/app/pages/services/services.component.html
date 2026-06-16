@@ -1,0 +1,148 @@
+<!-- HERO -->
+<section class="services-hero">
+  <div class="hero-content">
+    <span class="hero-eyebrow">GNET COMPUTERS</span>
+    <h1 class="hero-title font-advent">IT Solutions Beyond the Screen</h1>
+    <p class="hero-subtitle">
+      From securing your premises to keeping your network running, GNET Computers handles the hardware side of your business so you don't have to.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary-red" (click)="requestQuote('a service')">
+        Request a Quote
+      </button>
+      <button class="btn-outline-white" (click)="goToShop()">
+        Browse Shop
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <img src="/service_images/andras-vas-Bd7gNnWJBkU-unsplash.jpg" alt="GNET Computers IT solutions" class="hero-image" loading="lazy" />
+  </div>
+</section>
+
+<!-- SERVICE ROW 1: CCTV -->
+<section class="service-row bg-light">
+  <div class="service-text">
+    <span class="service-tag">SECURITY</span>
+    <h2 class="service-title font-advent">CCTV Cameras & Installation</h2>
+    <p class="service-desc">
+      Full-service security camera setup for homes, shops, and offices — from site assessment to mounting, cabling, and configuring remote viewing on your phone. We work with Hikvision and other trusted brands.
+    </p>
+    <ul class="service-specs">
+      <li><span class="spec-mono">1080P–4K</span> resolution options</li>
+      <li><span class="spec-mono">NVR</span> & cloud storage setup</li>
+      <li><span class="spec-mono">24/7</span> remote monitoring via app</li>
+    </ul>
+    <button class="btn-text-link" (click)="requestQuote('CCTV installation')">
+      Request CCTV Quote →
+    </button>
+  </div>
+  <div class="service-visual">
+    <img src="/service_images/jasper-garratt-BPHmP-2spVc-unsplash.jpg" alt="CCTV camera installation" class="service-image" loading="lazy" />
+  </div>
+</section>
+
+<!-- SERVICE ROW 2: Hardware Maintenance -->
+<section class="service-row">
+  <div class="service-visual">
+    <img src="/service_images/darius-cotoi-4RDfifiRG3M-unsplash.jpg" alt="Hardware maintenance and repair" class="service-image" loading="lazy" />
+  </div>
+  <div class="service-text">
+    <span class="service-tag">REPAIR</span>
+    <h2 class="service-title font-advent">Hardware Maintenance & Repair</h2>
+    <p class="service-desc">
+      Slow laptop, failing hard drive, broken screen, or a desktop that won't boot? We diagnose and fix it on-site or in-shop, with honest pricing before any work begins.
+    </p>
+    <ul class="service-specs">
+      <li><span class="spec-mono">Free</span> diagnosis, pay only if you proceed</li>
+      <li><span class="spec-mono">On-site</span> visits for businesses</li>
+      <li>Laptops, desktops, printers & peripherals</li>
+    </ul>
+    <button class="btn-text-link" (click)="requestQuote('hardware repair')">
+      Request Repair Quote →
+    </button>
+  </div>
+</section>
+
+<!-- SERVICE ROW 3: Networking -->
+<section class="service-row bg-light">
+  <div class="service-text">
+    <span class="service-tag">CONNECTIVITY</span>
+    <h2 class="service-title font-advent">Networking Solutions</h2>
+    <p class="service-desc">
+      Reliable internet and internal networks for offices, schools, and shops — structured cabling, Wi-Fi coverage planning, and router/switch configuration that just works.
+    </p>
+    <ul class="service-specs">
+      <li><span class="spec-mono">Cat6</span> structured cabling</li>
+      <li>Wi-Fi coverage mapping & access points</li>
+      <li>Router, switch & firewall setup</li>
+    </ul>
+    <button class="btn-text-link" (click)="requestQuote('networking setup')">
+      Request Networking Quote →
+    </button>
+  </div>
+  <div class="service-visual">
+    <img src="/service_images/albert-stoynov-dyUp7WPu5q4-unsplash.jpg" alt="Networking solutions and cabling" class="service-image" loading="lazy" />
+  </div>
+</section>
+
+<!-- SERVICE ROW 4: Shop -->
+<section class="service-row">
+  <div class="service-visual">
+    <img src="/service_images/niclas-illg-wzVQp_NRIHg-unsplash.jpg" alt="Computers and accessories" class="service-image" loading="lazy" />
+  </div>
+  <div class="service-text">
+    <span class="service-tag">RETAIL</span>
+    <h2 class="service-title font-advent">Computers & Accessories</h2>
+    <p class="service-desc">
+      Browse laptops, desktops, monitors, and accessories from trusted brands — with real stock you can collect in Kisumu, plus M-Pesa payment at checkout.
+    </p>
+    <ul class="service-specs">
+      <li>New & verified pre-owned options</li>
+      <li><span class="spec-mono">M-PESA</span> payment supported</li>
+      <li>In-store pickup, Kisumu</li>
+    </ul>
+    <button class="btn-text-link" (click)="goToShop()">
+      Browse the Shop →
+    </button>
+  </div>
+</section>
+
+<!-- WHY GNET STRIP -->
+<section class="trust-strip">
+  <div class="trust-item">
+    <span class="trust-number font-advent">4+</span>
+    <span class="trust-label">Years in IT services</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-number font-advent">Kisumu</span>
+    <span class="trust-label">Based & local</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-number font-advent">On-site</span>
+    <span class="trust-label">Visits available</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-number font-advent">M-Pesa</span>
+    <span class="trust-label">Payment accepted</span>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <h2 class="cta-title font-advent">Need help with your setup?</h2>
+  <p class="cta-subtitle">Reach out and we'll get back to you the same day.</p>
+  <div class="cta-actions">
+    <button class="btn-whatsapp" (click)="requestQuote('a service')">
+      <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.823.359-.3.3-1.155 1.13-1.155 2.745 0 1.615 1.18 3.18 1.345 3.405.165.225 2.29 3.49 5.55 4.75 2.79 1.08 2.79.72 3.21.675.42-.045 1.36-.555 1.555-1.095.196-.54.196-1.005.135-1.095-.06-.135-.225-.18-.475-.315z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.13 2.4 7.2L0 24l4.95-1.5A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.94 9.94 0 01-5.4-1.575l-.39-.24-3 .9.93-2.97-.255-.39A9.94 9.94 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+      </svg>
+      Chat on WhatsApp
+    </button>
+    <button class="btn-call" (click)="callNow()">
+      Call {{ phoneNumber }}
+    </button>
+  </div>
+</section>
