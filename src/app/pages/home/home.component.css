@@ -10,7 +10,8 @@
   opacity: 0;
   transform: translateY(1.5rem);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-  width: 250px; /* ← add this */
+  width: clamp(160px, 42vw, 250px);
+  animation: reveal-fallback 0.01s 1.2s forwards;
 }
 
 .reveal-card.is-visible {
@@ -18,8 +19,13 @@
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .grid {
+    padding: 24px 16px;
+    gap: 14px;
+  }
+
   .reveal-card {
-    width: 160px;
+    width: clamp(150px, 44vw, 200px);
   }
 }
