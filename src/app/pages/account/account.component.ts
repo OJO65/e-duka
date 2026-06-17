@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/authService/auth.service';
+import { OrderService } from '../../services/orderService/order.service';
+import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { User } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
@@ -16,62 +18,89 @@ import { Subscription } from 'rxjs';
 export class AccountComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   private userSubscription?: Subscription;
+  private wishlistSubscription?: Subscription;
 
-  // Edit mode
+  loading = true;
+  private ordersLoaded   = false;
+  private wishlistLoaded = false;
+
   isEditMode = false;
   editedUsername = '';
   editedEmail = '';
-  
+
   errorMessage = '';
   successMessage = '';
   isLoading = false;
 
-  // Stats
   orderCount = 0;
   wishlistCount = 0;
   memberSince = '';
 
   constructor(
     private authService: AuthService,
+    private orderService: OrderService,
+    private wishlistService: WishlistService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       if (user) {
-        this.currentUser = user;
+        this.currentUser    = user;
         this.editedUsername = user.username;
-        this.editedEmail = user.email;
-        
-        // Calculate stats
-        this.orderCount = user.orders?.length || 0;
-        this.wishlistCount = user.wishlist?.length || 0;
-        this.memberSince = this.formatDate(user.createdAt);
+        this.editedEmail    = user.email;
+        this.memberSince    = this.formatDate(user.createdAt);
+
+        this.loadOrderCount();
       }
+    });
+
+    this.wishlistSubscription = this.wishlistService.wishlistItems$.subscribe(items => {
+      this.wishlistCount   = items?.length || 0;
+      this.wishlistLoaded  = true;
+      this.checkAllLoaded();
     });
   }
 
   ngOnDestroy(): void {
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
+    this.userSubscription?.unsubscribe();
+    this.wishlistSubscription?.unsubscribe();
+  }
+
+  private loadOrderCount(): void {
+    this.orderService.getOrders().subscribe({
+      next: (orders) => {
+        this.orderCount   = orders?.length || 0;
+        this.ordersLoaded = true;
+        this.checkAllLoaded();
+      },
+      error: () => {
+        this.orderCount   = 0;
+        this.ordersLoaded = true;
+        this.checkAllLoaded();
+      }
+    });
+  }
+
+  private checkAllLoaded(): void {
+    if (this.ordersLoaded && this.wishlistLoaded) {
+      this.loading = false;
     }
   }
 
   toggleEditMode(): void {
     if (this.isEditMode) {
-      // Cancel edit - reset values
       this.editedUsername = this.currentUser?.username || '';
-      this.editedEmail = this.currentUser?.email || '';
-      this.errorMessage = '';
+      this.editedEmail    = this.currentUser?.email || '';
+      this.errorMessage   = '';
     }
     this.isEditMode = !this.isEditMode;
   }
 
   saveProfile(): void {
-    this.errorMessage = '';
+    this.errorMessage   = '';
     this.successMessage = '';
 
-    // Validate
     if (!this.editedUsername || this.editedUsername.length < 3) {
       this.errorMessage = 'Username must be at least 3 characters';
       return;
@@ -82,49 +111,25 @@ export class AccountComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Check if email already exists (for other users)
-    const users = this.getUsers();
-    const emailExists = users.some(
-      u => u.email.toLowerCase() === this.editedEmail.toLowerCase() && 
-      u.id !== this.currentUser?.id
-    );
-
-    if (emailExists) {
-      this.errorMessage = 'This email is already in use by another account';
-      return;
-    }
-
     this.isLoading = true;
 
     setTimeout(() => {
-      // Update user
       this.authService.updateUser({
         username: this.editedUsername,
         email: this.editedEmail
       });
 
-      this.isLoading = false;
+      this.isLoading      = false;
       this.successMessage = 'Profile updated successfully!';
-      this.isEditMode = false;
+      this.isEditMode      = false;
 
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        this.successMessage = '';
-      }, 3000);
+      setTimeout(() => { this.successMessage = ''; }, 3000);
     }, 500);
   }
 
-  goToForgotPassword(): void {
-    this.router.navigate(['/forgot-password']);
-  }
-
-  goToOrders(): void {
-    this.router.navigate(['/orders']);
-  }
-
-  goToWishlist(): void {
-    this.router.navigate(['/wishlist']);
-  }
+  goToForgotPassword(): void { this.router.navigate(['/forgot-password']); }
+  goToOrders(): void { this.router.navigate(['/orders']); }
+  goToWishlist(): void { this.router.navigate(['/wishlist']); }
 
   signOut(): void {
     if (confirm('Are you sure you want to sign out?')) {
@@ -135,27 +140,12 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   private formatDate(dateString?: string): string {
     if (!dateString) return 'Unknown';
-    
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  }
-
-  private getUsers(): any[] {
-    try {
-      const users = localStorage.getItem('eduka_users');
-      return users ? JSON.parse(users) : [];
-    } catch {
-      return [];
-    }
   }
 }

@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8 font-iosevka">
   <div class="max-w-5xl mx-auto px-4">
     <!-- Success Message -->
     <div
@@ -70,73 +70,59 @@
           </div>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+       <!-- Quick Stats — Skeleton -->
+<div *ngIf="loading" class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+  <div class="space-y-4">
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+        <div class="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      <div class="h-6 w-8 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+        <div class="h-4 w-28 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      <div class="h-6 w-8 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+  </div>
+</div>
 
-          <div class="space-y-4">
-            <!-- Orders -->
-            <div
-              class="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
-                >
-                  <svg
-                    class="w-5 h-5 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                    />
-                  </svg>
-                </div>
-                <span class="text-sm font-medium text-gray-700"
-                  >Total Orders</span
-                >
-              </div>
-              <span class="text-lg font-bold text-blue-600">{{
-                orderCount
-              }}</span>
-            </div>
+<!-- Quick Stats — Real content -->
+<div *ngIf="!loading" class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
 
-            <!-- Wishlist -->
-            <div
-              class="flex items-center justify-between p-3 bg-red-50 rounded-lg"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center"
-                >
-                  <svg
-                    class="w-5 h-5 text-red-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span class="text-sm font-medium text-gray-700"
-                  >Wishlist Items</span
-                >
-              </div>
-              <span class="text-lg font-bold text-red-600">{{
-                wishlistCount
-              }}</span>
-            </div>
-          </div>
+  <div class="space-y-4">
+    <!-- Orders -->
+    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
         </div>
+        <span class="text-sm font-medium text-gray-700">Total Orders</span>
+      </div>
+      <span class="text-lg font-bold text-blue-600">{{ orderCount }}</span>
+    </div>
 
+    <!-- Wishlist -->
+    <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+          <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <span class="text-sm font-medium text-gray-700">Wishlist Items</span>
+      </div>
+      <span class="text-lg font-bold text-red-600">{{ wishlistCount }}</span>
+    </div>
+  </div>
+</div>
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">
