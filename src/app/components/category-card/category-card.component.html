@@ -1,7 +1,7 @@
-<div class="card">
+<div class="card font-iosevka">
   <div class="card-inner">
     <!-- Front -->
-    <div class="card-front">
+    <div class="card-front font-iosevka">
       <div class="image-wrapper">
         <img
           [src]="category.image?.url || 'assets/placeholder.jpg'"
@@ -10,11 +10,11 @@
           (error)="onImageError()"
         />
       </div>
-      <h2 class="category-label font-advent">{{ category.title }}</h2>
+      <h2 class="category-label font-iosevka">{{ category.title }}</h2>
     </div>
 
     <!-- Back -->
-    <div class="card-back">
+    <div class="card-back font-iosevka">
       <button (click)="toShop()">Shop Now</button>
     </div>
   </div>
