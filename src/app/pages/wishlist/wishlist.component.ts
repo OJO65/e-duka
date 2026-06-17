@@ -15,10 +15,10 @@ import { Subscription } from 'rxjs';
 })
 export class WishlistComponent implements OnInit, OnDestroy {
   wishlistProducts: any[] = [];
-  loading      = true;
+  loading = true;
   authChecking = true;
 
-  showToast    = false;
+  showToast = false;
   toastMessage = '';
 
   private toastTimeout: any;
@@ -56,7 +56,9 @@ export class WishlistComponent implements OnInit, OnDestroy {
     });
 
     // Hard safety net
-    setTimeout(() => { this.authChecking = false; }, 1500);
+    setTimeout(() => {
+      this.authChecking = false;
+    }, 1500);
 
     this.itemsSub = this.wishlistService.wishlistItems$.subscribe(
       (items: any[]) => {
@@ -117,8 +119,8 @@ export class WishlistComponent implements OnInit, OnDestroy {
     this.emptyStateTimeout = setTimeout(() => {
       if (!this.hasReceivedRealData) {
         this.hasReceivedRealData = true;
-        this.wishlistProducts    = [];
-        this.loading              = false;
+        this.wishlistProducts = [];
+        this.loading = false;
       }
     }, 400);
   }
@@ -134,14 +136,13 @@ export class WishlistComponent implements OnInit, OnDestroy {
 
   addAllToCart(): void {
     this.wishlistProducts.forEach((p: any) => this.cartService.addToCart(p));
-    this.showToastMessage(`${this.wishlistProducts.length} items added to cart!`);
+    this.showToastMessage(
+      `${this.wishlistProducts.length} items added to cart!`,
+    );
   }
 
   clearWishlist(): void {
-    if (confirm('Clear your entire wishlist?')) {
-      this.wishlistService.clearWishlist(null);
-      this.wishlistProducts = [];
-    }
+    this.wishlistService.clearWishlist(null);
   }
 
   viewProduct(productId: string): void {
@@ -168,9 +169,13 @@ export class WishlistComponent implements OnInit, OnDestroy {
 
   private showToastMessage(message: string): void {
     this.toastMessage = message;
-    this.showToast     = false;
-    setTimeout(() => { this.showToast = true; });
+    this.showToast = false;
+    setTimeout(() => {
+      this.showToast = true;
+    });
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
-    this.toastTimeout = setTimeout(() => { this.showToast = false; }, 2000);
+    this.toastTimeout = setTimeout(() => {
+      this.showToast = false;
+    }, 2000);
   }
 }

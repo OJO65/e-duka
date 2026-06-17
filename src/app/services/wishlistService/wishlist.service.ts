@@ -107,21 +107,23 @@ export class WishlistService {
     return true;
   }
 
-  clearWishlist(_userId: any): boolean {
-    this.wishlistSubject.next([]);
-    this.wishlistItemsSubject.next([]);
-    // No bulk delete endpoint — remove one by one
-    const ids = [...this.wishlistSubject.value];
-    ids.forEach((productId) => {
-      this.http
-        .delete(`${this.api}/wishlist/${productId}`, {
-          headers: this.headers(),
-        })
-        .subscribe();
-    });
-    return true;
-  }
+clearWishlist(_userId: any): boolean {
+  const ids = [...this.wishlistSubject.value];
 
+  this.wishlistSubject.next([]);
+  this.wishlistItemsSubject.next([]);
+
+  // No bulk delete endpoint — remove one by one
+  ids.forEach((productId) => {
+    this.http
+      .delete(`${this.api}/wishlist/${productId}`, { headers: this.headers() })
+      .subscribe({
+        error: () => this.fetchWishlist(),
+      });
+  });
+
+  return true;
+}
   // Legacy compat
   initializeWishlist(_userId: any): void {
     this.fetchWishlist();
