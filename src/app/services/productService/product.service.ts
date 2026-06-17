@@ -11,28 +11,28 @@ export class ProductService {
 
   private mapProduct(p: any): any {
     return {
-      id:               p.id,
-      title:            p.title,
-      handle:           p.handle,
-      description:      p.description ?? '',
-      vendor:           p.vendor ?? '',
-      productType:      p.product_type ?? '',
-      tags:             p.tags ?? [],
+      id: p.id,
+      title: p.title,
+      handle: p.handle,
+      description: p.description ?? '',
+      vendor: p.vendor ?? '',
+      productType: p.product_type ?? '',
+      tags: p.tags ?? [],
       availableForSale: p.available_for_sale ?? false,
       images: {
         nodes: (p.images ?? []).map((img: any) => ({
-          url:     img.url,
+          url: img.url,
           altText: img.alt_text ?? p.title,
         })),
       },
       variants: {
         nodes: (p.product_variants ?? []).map((v: any) => ({
-          id:                v.id,
-          title:             v.title,
-          availableForSale:  v.available_for_sale,
+          id: v.id,
+          title: v.title,
+          availableForSale: v.available_for_sale,
           quantityAvailable: v.quantity_available,
           priceV2: {
-            amount:       String(v.price),
+            amount: String(v.price),
             currencyCode: v.currency_code ?? 'KES',
           },
           selectedOptions: v.selected_options ?? [],
@@ -40,8 +40,14 @@ export class ProductService {
         })),
       },
       priceRange: {
-        minVariantPrice: { amount: String(p.min_price), currencyCode: p.currency_code ?? 'KES' },
-        maxVariantPrice: { amount: String(p.max_price), currencyCode: p.currency_code ?? 'KES' },
+        minVariantPrice: {
+          amount: String(p.min_price),
+          currencyCode: p.currency_code ?? 'KES',
+        },
+        maxVariantPrice: {
+          amount: String(p.max_price),
+          currencyCode: p.currency_code ?? 'KES',
+        },
       },
       options: p.options ?? [],
     };
@@ -49,42 +55,63 @@ export class ProductService {
 
   searchProducts(query: string): Observable<any> {
     const params = new HttpParams().set('q', query);
-    return this.http.get<any>(`${this.api}/products/search`, { params })
-      .pipe(map(res => ({
-        data: { products: { nodes: (res.products ?? []).map((p: any) => this.mapProduct(p)) } }
-      })));
+    return this.http.get<any>(`${this.api}/products/search`, { params }).pipe(
+      map((res) => ({
+        data: {
+          products: {
+            nodes: (res.products ?? []).map((p: any) => this.mapProduct(p)),
+          },
+        },
+      })),
+    );
   }
 
   getProductsByCollection(collectionId: string): Observable<any> {
-    return this.http.get<any>(`${this.api}/collections/${collectionId}/products`)
-      .pipe(map(res => ({
-        data: {
-          collection: {
-            id:          res.collection.id,
-            title:       res.collection.title,
-            description: res.collection.description ?? '',
-            products: { nodes: (res.collection.products ?? []).map((p: any) => this.mapProduct(p)) },
-          }
-        }
-      })));
+    return this.http
+      .get<any>(`${this.api}/collections/${collectionId}/products`)
+      .pipe(
+        map((res) => ({
+          data: {
+            collection: {
+              id: res.collection.id,
+              title: res.collection.title,
+              description: res.collection.description ?? '',
+              products: {
+                nodes: (res.collection.products ?? []).map((p: any) =>
+                  this.mapProduct(p),
+                ),
+              },
+            },
+          },
+        })),
+      );
+  }
+
+  getAllProducts(): Observable<any> {
+    return this.http.get<any>(`${this.api}/products`);
   }
 
   getProductById(productId: string): Observable<any> {
-    return this.http.get<any>(`${this.api}/products/${productId}`)
-      .pipe(map(res => ({
-        data: { product: this.mapProduct(res.product) }
-      })));
+    return this.http.get<any>(`${this.api}/products/${productId}`).pipe(
+      map((res) => ({
+        data: { product: this.mapProduct(res.product) },
+      })),
+    );
   }
 
   createShopifyCart(items: any[]): Observable<any> {
-    return this.http.post<any>(`${this.api}/orders`, items)
-      .pipe(map(res => ({
+    return this.http.post<any>(`${this.api}/orders`, items).pipe(
+      map((res) => ({
         data: {
           cartCreate: {
-            cart: { id: res.order?.id, checkoutUrl: `/order-confirmation/${res.order?.id}` },
+            cart: {
+              id: res.order?.id,
+              checkoutUrl: `/order-confirmation/${res.order?.id}`,
+            },
             userErrors: [],
-          }
-        }
-      })));
+          },
+        },
+      })),
+    );
   }
 }

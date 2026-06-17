@@ -70,26 +70,25 @@ export class ShopComponent implements OnInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
-  ngOnInit(): void {
-    this.routeSubscription = this.route.queryParams.subscribe((params) => {
-      const collectionId = params['collectionId'];
-      if (!collectionId) { console.error('No collectionId provided in query params'); return; }
-      this.categoryId = collectionId;
-      this.loadProducts();
-    });
+ngOnInit(): void {
+  this.routeSubscription = this.route.queryParams.subscribe((params) => {
+    const collectionId = params['collectionId'];
+    this.categoryId = collectionId || '';
+    this.loadProducts();
+  });
 
-    this.searchSubscription = this.searchService.search$.subscribe((query) => {
-      if (!this.loading && this.allProducts.length > 0) {
-        if (query && query.trim() !== '') {
-          this.searching = true;
-          setTimeout(() => { this.filterBySearchQuery(query); this.searching = false; }, 300);
-        } else {
-          this.searching = true;
-          setTimeout(() => { this.applyFilters(); this.searching = false; }, 300);
-        }
+  this.searchSubscription = this.searchService.search$.subscribe((query) => {
+    if (!this.loading && this.allProducts.length > 0) {
+      if (query && query.trim() !== '') {
+        this.searching = true;
+        setTimeout(() => { this.filterBySearchQuery(query); this.searching = false; }, 300);
+      } else {
+        this.searching = true;
+        setTimeout(() => { this.applyFilters(); this.searching = false; }, 300);
       }
-    });
-  }
+    }
+  });
+}
 
   filterBySearchQuery(query: string): void {
     const searchLower = query.toLowerCase();
@@ -104,37 +103,40 @@ export class ShopComponent implements OnInit, OnDestroy {
   get isLoading(): boolean { return this.loading || this.searching; }
 
   loadProducts(): void {
-    this.loading      = true;
-    this.allProducts  = [];
-    this.filteredProducts = [];
+  this.loading      = true;
+  this.allProducts  = [];
+  this.filteredProducts = [];
 
-    const startTime     = Date.now();
-    const minLoadingTime = 500;
+  const startTime     = Date.now();
+  const minLoadingTime = 500;
 
-    this.productService.getProductsByCollection(this.categoryId).subscribe({
-      next: (result: any) => {
-        const collection = result.data.collection;
-        if (!collection) { this.loading = false; return; }
+  const request$ = this.categoryId
+    ? this.productService.getProductsByCollection(this.categoryId)
+    : this.productService.getAllProducts();
 
-        this.categoryTitle       = collection.title;
-        this.categoryDescription = collection.description || '';
-        this.allProducts         = collection.products.nodes;
+  request$.subscribe({
+    next: (result: any) => {
+      const collection = result.data.collection;
+      if (!collection) { this.loading = false; return; }
 
-        // Update meta tags dynamically
-        this.titleService.setTitle(`${collection.title} — GNET Computers Kenya`);
-        this.meta.updateTag({ name: 'description', content: `Shop ${collection.title} at GNET Computers. Best prices in Kenya. Pay via M-Pesa.` });
-        this.meta.updateTag({ property: 'og:title', content: `${collection.title} — GNET Computers Kenya` });
+      this.categoryTitle       = collection.title;
+      this.categoryDescription = collection.description || '';
+      this.allProducts         = collection.products.nodes;
 
-        this.extractFilterOptions();
-        this.applyFilters();
+      this.titleService.setTitle(`${collection.title} — GNET Computers Kenya`);
+      this.meta.updateTag({ name: 'description', content: `Shop ${collection.title} at GNET Computers. Best prices in Kenya. Pay via M-Pesa.` });
+      this.meta.updateTag({ property: 'og:title', content: `${collection.title} — GNET Computers Kenya` });
 
-        const elapsed   = Date.now() - startTime;
-        const remaining = Math.max(0, minLoadingTime - elapsed);
-        setTimeout(() => { this.loading = false; }, remaining);
-      },
-      error: () => { this.loading = false; },
-    });
-  }
+      this.extractFilterOptions();
+      this.applyFilters();
+
+      const elapsed   = Date.now() - startTime;
+      const remaining = Math.max(0, minLoadingTime - elapsed);
+      setTimeout(() => { this.loading = false; }, remaining);
+    },
+    error: () => { this.loading = false; },
+  });
+}
 
   extractFilterOptions(): void {
     this.filterOptions.brands = [...new Set(this.allProducts.map((p) => p.vendor).filter((v) => v?.trim()))].sort();
