@@ -54,7 +54,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   products: Product[] = [];
   showProducts = false;
   loading = true;
-  debugInfo = ''; // TEMPORARY — remove after diagnosing
 
   readonly skeletonCount = 8;
 
@@ -80,10 +79,12 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // ngOnInit intentionally empty — all init moved to ngAfterViewInit
+  // so gridContainer is guaranteed to exist when observeCards() runs
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    this.debugInfo += `viewInit | hasGrid: ${!!this.gridContainer} | `;
+    // Order matters: observer first, then load, then subscribe to search
     this.initializeObserver();
     this.loadCategories();
     this.subscribeToSearch();
@@ -95,18 +96,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initializeObserver(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      this.debugInfo += `NOT browser platform | `;
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
 
     const isMobile = window.innerWidth < 1024;
     const margin = isMobile ? '0px' : '-200px 0px -200px 0px';
-    this.debugInfo += `width: ${window.innerWidth} | margin: ${margin} | `;
 
     this.observer = new IntersectionObserver(
       (entries) => {
-        this.debugInfo += `observerFired: ${entries.length} entries | `;
         entries.forEach((entry) => {
           entry.target.classList.toggle('is-visible', entry.isIntersecting);
         });
@@ -116,19 +112,15 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private observeCards(): void {
-    if (!this.gridContainer?.nativeElement || !this.observer) {
-      this.debugInfo += `observeCards SKIPPED - hasGrid: ${!!this.gridContainer?.nativeElement} hasObserver: ${!!this.observer} | `;
-      return;
-    }
+    if (!this.gridContainer?.nativeElement || !this.observer) return;
     this.observer.disconnect();
-    const cards = this.gridContainer.nativeElement.querySelectorAll('.reveal-card');
-    this.debugInfo += `observing ${cards.length} cards | `;
+    const cards =
+      this.gridContainer.nativeElement.querySelectorAll('.reveal-card');
     cards.forEach((card) => this.observer!.observe(card));
   }
-
   private subscribeToSearch(): void {
     this.searchSubscription = this.searchService.search$
-      .pipe(skip(1))
+      .pipe(skip(1)) // skip BehaviorSubject's initial '' emission
       .subscribe({
         next: (query) => this.handleSearch(query),
         error: (err) => console.error('Search error:', err),
@@ -167,16 +159,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadCategories(): void {
-    this.debugInfo += `loadCategories called | `;
     this.categoryService.getCollections().subscribe({
       next: (result: any) => {
         this.categories = result.data.collections.nodes;
-        this.debugInfo += `categories loaded: ${this.categories.length} | `;
         this.loading = false;
         setTimeout(() => this.observeCards(), 100);
       },
       error: (err) => {
-        this.debugInfo += `CATEGORY ERROR: ${JSON.stringify(err.message || err)} | `;
         console.error('Category error:', err);
         this.loading = false;
         this.categories = [];
