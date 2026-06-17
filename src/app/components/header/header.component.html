@@ -1,19 +1,17 @@
 <!-- TOP BAR -->
 <div
-  class="w-full bg-[#f2f2f2] px-4 md:px-6 py-2 flex justify-between text-xs md:text-sm font-advent"
+  class="w-full bg-[#f2f2f2] px-4 md:px-6 py-2 flex justify-between text-xs md:text-sm font-iosevka"
 >
-  <div class="flex gap-2 md:gap-4 font-advent font-semibold">
-    <a href="#" class="hover:underline">Sell on GNET</a>
-    <a routerLink="/services" class="hover:underline">Our Services</a>
+  <div class="flex gap-2 md:gap-4 font-iosevka font-semibold">
+    <a routerLink="/services" class="hover:underline">Products & Services</a>
   </div>
-  <div class="flex gap-2 md:gap-4 font-advent font-semibold">
-    <span class="cursor-pointer hidden sm:inline">M-PESA</span>
-    <span class="cursor-pointer">Delivery</span>
+  <div class="flex gap-2 md:gap-4 font-iosevka font-semibold">
+    <a routerLink="/payment-delivery" class="hover:underline cursor-pointer">Payment & Delivery</a>
   </div>
 </div>
 
 <!-- MAIN HEADER -->
-<header class="w-full bg-white px-4 md:px-6 py-3 sticky top-0 z-50 font-advent font-semibold border-mask-host">
+<header class="w-full bg-white px-4 md:px-6 py-3 sticky top-0 z-50 font-iosevka font-semibold border-mask-host">
   <!-- Mobile Header -->
   <div class="flex items-center justify-between lg:hidden relative">
     <!-- Burger Menu -->
@@ -327,7 +325,7 @@
       &times;
     </button>
 
-    <nav class="flex flex-col gap-4 font-advent font-semibold">
+    <nav class="flex flex-col gap-4 font-iosevka font-semibold">
       <div *ngIf="isLoggedIn" class="pb-4 border-b mb-2">
         <p class="text-sm font-semibold text-gray-900">
           {{ currentUser?.username }}

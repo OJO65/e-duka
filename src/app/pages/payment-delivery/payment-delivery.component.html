@@ -1,0 +1,85 @@
+<div class="pd-page">
+  <div class="pd-header">
+    <span class="page-eyebrow">SHOPPING WITH US</span>
+    <h1 class="page-title font-iosevka">Payment & Delivery</h1>
+    <p class="page-subtitle">
+      Everything you need to know about how to pay and how your order gets to you.
+    </p>
+  </div>
+
+  <!-- Payment Section -->
+  <section class="pd-section">
+    <h2 class="pd-section-title font-iosevka">Payment</h2>
+
+    <div class="pd-card">
+      <div class="pd-card-icon mpesa-icon-bg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m9-8a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="pd-card-content">
+        <h3>M-Pesa Till Number</h3>
+        <p>We currently accept payment via M-Pesa Till. After placing your order, send payment to the till number below and we'll confirm once received.</p>
+        <div class="till-display">
+          <span class="till-label">Till Number</span>
+          <span class="till-number">{{ tillNumber }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="note-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p>Automated M-Pesa checkout (STK push) is coming soon. For now, payment is confirmed manually once we see your till payment.</p>
+    </div>
+  </section>
+
+  <!-- Delivery Section -->
+  <section class="pd-section">
+    <h2 class="pd-section-title font-iosevka">Delivery</h2>
+
+    <div class="pd-card">
+      <div class="pd-card-icon delivery-icon-bg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h13l4 4v6h-2M3 7v10h13M3 7l3-4h7l3 4M16 17a2 2 0 104 0 2 2 0 00-4 0zM6 17a2 2 0 104 0 2 2 0 00-4 0z"/>
+        </svg>
+      </div>
+      <div class="pd-card-content">
+        <h3>Kisumu — Local Delivery</h3>
+        <p>Orders within Kisumu town and surrounding areas are delivered directly by our team. Delivery fees, where applicable, are confirmed before checkout.</p>
+      </div>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-icon courier-icon-bg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+        </svg>
+      </div>
+      <div class="pd-card-content">
+        <h3>Nationwide — Courier</h3>
+        <p>For customers outside Kisumu, we arrange courier delivery on a case-by-case basis depending on your location and the item. We'll discuss courier options and costs with you directly after your order is placed.</p>
+      </div>
+    </div>
+
+    <div class="pd-card">
+      <div class="pd-card-icon pickup-icon-bg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
+        </svg>
+      </div>
+      <div class="pd-card-content">
+        <h3>In-Store Pickup</h3>
+        <p>Prefer to collect yourself? You're welcome to pick up your order directly from our shop in Kisumu at no extra cost.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section class="pd-cta">
+    <p>Have a question about payment or delivery to your area?</p>
+    <a routerLink="/contact" class="pd-cta-link">Contact Us →</a>
+  </section>
+</div>

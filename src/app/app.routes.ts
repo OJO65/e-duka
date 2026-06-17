@@ -19,6 +19,7 @@ import { CareersComponent } from './pages/careers/careers.component';
 import { TermsComponent } from './pages/terms/terms.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { PaymentDeliveryComponent } from './pages/payment-delivery/payment-delivery.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -39,6 +40,8 @@ export const routes: Routes = [
 
   { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
+  { path: 'payment-delivery', component: PaymentDeliveryComponent },
+  
   {
     path: 'order-confirmation/:id',
     component: OrderConfirmationComponent,
