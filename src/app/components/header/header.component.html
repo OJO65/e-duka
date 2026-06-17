@@ -314,7 +314,7 @@
       <img
         src="ChatGPT_Image_May_25__2026__02_34_19_PM-removebg-preview.png"
         alt="GNET"
-        class="h-12"
+        class="flex justify-center mx-auto h-32"
       />
     </div>
 
@@ -360,12 +360,11 @@
         class="text-lg hover:text-[#1a56db] py-2 border-b"
         >Wishlist</a
       >
-      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b"
-        >Sell on GNET</a
+      <a routerLink="/services" class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Products & Services</a
       >
-      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b">M-PESA</a>
-      <a href="#" class="text-lg hover:text-[#1a56db] py-2 border-b"
-        >Delivery</a
+      <a routerLink="/payment-delivery" class="text-lg hover:text-[#1a56db] py-2 border-b"
+        >Payment & Delivery</a
       >
       <a
         *ngIf="isLoggedIn"
