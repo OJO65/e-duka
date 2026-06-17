@@ -103,9 +103,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   // Step 2 → Step 3: user confirms they have paid
-  confirmPayment(): void {
-    this.step = 'confirmed';
-  }
+confirmPayment(): void {
+  this.step = 'confirmed';
+  this.cartService.clearCart();
+}
 
   continueShopping(): void { this.router.navigate(['/']); }
   goToCart():        void { this.router.navigate(['/cart']); }
