@@ -84,51 +84,53 @@ export class CartService {
       });
   }
 
-  addToCart(product: any, quantity: number = 1): void {
-    if (!this.auth.isLoggedIn()) {
-      alert('Please log in to add items to your cart.');
-      return;
-    }
-    const variant = product.variants?.nodes?.[0];
-    if (!variant?.id) return;
-
-    const current = this.cartSubject.value;
-    const existing = current.items.find((i) => i.productId === product.id);
-
-    if (existing) {
-      this.applyUpdate(existing.id, existing.quantity + quantity);
-    } else {
-      const newItem: CartItem = {
-        id: `temp-${Date.now()}`,
-        productId: product.id,
-        variantId: variant.id,
-        title: product.title,
-        vendor: product.vendor ?? '',
-        image: product.images?.nodes?.[0]?.url ?? '',
-        price: Number(product.priceRange?.minVariantPrice?.amount ?? 0),
-        currency: 'KES',
-        quantity,
-        availableForSale: true,
-      };
-      this.cartSubject.next(
-        this.recalculate({
-          ...current,
-          items: [...current.items, newItem],
-        }),
-      );
-    }
-
-    this.http
-      .post<any>(
-        `${this.api}/cart`,
-        { product_id: product.id, variant_id: variant.id, quantity },
-        { headers: this.headers() },
-      )
-      .subscribe({
-        next: () => {},
-        error: () => this.fetchCart(),
-      });
+addToCart(product: any, quantity: number = 1): boolean {
+  if (!this.auth.isLoggedIn()) {
+    alert('Please log in to add items to your cart.');
+    return false;
   }
+  const variant = product.variants?.nodes?.[0];
+  if (!variant?.id) return false;
+
+  const current = this.cartSubject.value;
+  const existing = current.items.find((i) => i.productId === product.id);
+
+  if (existing) {
+    this.applyUpdate(existing.id, existing.quantity + quantity);
+  } else {
+    const newItem: CartItem = {
+      id: `temp-${Date.now()}`,
+      productId: product.id,
+      variantId: variant.id,
+      title: product.title,
+      vendor: product.vendor ?? '',
+      image: product.images?.nodes?.[0]?.url ?? '',
+      price: Number(product.priceRange?.minVariantPrice?.amount ?? 0),
+      currency: 'KES',
+      quantity,
+      availableForSale: true,
+    };
+    this.cartSubject.next(
+      this.recalculate({
+        ...current,
+        items: [...current.items, newItem],
+      }),
+    );
+  }
+
+  this.http
+    .post<any>(
+      `${this.api}/cart`,
+      { product_id: product.id, variant_id: variant.id, quantity },
+      { headers: this.headers() },
+    )
+    .subscribe({
+      next: () => {},
+      error: () => this.fetchCart(),
+    });
+
+  return true;
+}
 
   updateQuantity(cartItemId: string, quantity: number): void {
     if (quantity <= 0) {
