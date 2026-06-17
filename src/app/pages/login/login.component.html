@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col font-advent">
+<div class="min-h-screen bg-gray-50 flex flex-col font-iosevka">
 
 
   <!-- Main Content -->
@@ -111,20 +111,6 @@
           </button>
         </form>
 
-        <!-- Demo Credentials Helper -->
-        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p class="text-xs text-blue-800 mb-2">
-            <strong>Demo Account:</strong>
-          </p>
-          <button
-            type="button"
-            (click)="fillDemoCredentials()"
-            class="text-xs text-blue-600 hover:text-blue-800 underline"
-          >
-            Click to fill demo credentials
-          </button>
-        </div>
-
         <!-- Divider -->
         <div class="mt-8 relative">
           <div class="absolute inset-0 flex items-center">
@@ -147,9 +133,9 @@
 
       <!-- Footer Text -->
       <p class="text-center text-sm text-gray-600 mt-6">
-        By signing in, you agree to E-DUKA's 
-        <a href="#" class="text-orange-500 hover:underline">Terms of Service</a> and 
-        <a href="#" class="text-orange-500 hover:underline">Privacy Policy</a>
+        By signing in, you agree to GNET COMPUTERS' 
+        <a routerLink="/terms" class="text-orange-500 hover:underline">Terms of Service</a> and 
+        <a routerLink="/privacy-policy" class="text-orange-500 hover:underline">Privacy Policy</a>
       </p>
     </div>
   </div>
