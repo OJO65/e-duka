@@ -1,8 +1,7 @@
-<footer class="bg-gray-900 text-gray-300 mt-16 font-advent">
+<footer class="bg-gray-900 text-gray-300 mt-16 font-iosevka">
   <!-- Main Footer Content -->
   <div class="max-w-7xl mx-auto px-4 md:px-6 py-12">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-     
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
       <!-- About GNET -->
       <div>
         <h3 class="text-white font-semibold text-lg mb-4">
@@ -10,24 +9,24 @@
         </h3>
         <ul class="space-y-2">
           <li>
-            <a routerLink="/services" class="hover:text-orange-500 transition"
-              >Our Services</a
+            <a routerLink="/services" class="hover:text-red-500 transition"
+              >Products & Services</a
             >
           </li>
           <li>
-            <a routerLink="/careers" class="hover:text-orange-500 transition"
+            <a routerLink="/careers" class="hover:text-red-500 transition"
               >Careers</a
             >
           </li>
           <li>
-            <a routerLink="/terms" class="hover:text-orange-500 transition"
+            <a routerLink="/terms" class="hover:text-red-500 transition"
               >Terms & Conditions</a
             >
           </li>
           <li>
             <a
               routerLink="/privacy-policy"
-              class="hover:text-orange-500 transition"
+              class="hover:text-red-500 transition"
               >Privacy Policy</a
             >
           </li>
@@ -39,18 +38,17 @@
         <h3 class="text-white font-semibold text-lg mb-4">NEED HELP?</h3>
         <ul class="space-y-2">
           <li>
-            <a routerLink="/contact" class="hover:text-orange-500 transition"
+            <a routerLink="/contact" class="hover:text-red-500 transition"
               >Contact Us</a
             >
           </li>
           <li>
-            <a routerLink="/orders" class="hover:text-orange-500 transition"
+            <a routerLink="/orders" class="hover:text-red-500 transition"
               >Track My Order</a
             >
           </li>
         </ul>
       </div>
-     
 
       <!-- Connect With Us -->
       <div>
@@ -58,7 +56,7 @@
         <div class="flex gap-4 mb-6">
           <a
             href="#"
-            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"
+            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-500 transition"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -68,7 +66,7 @@
           </a>
           <a
             href="#"
-            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"
+            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-500 transition"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -78,7 +76,7 @@
           </a>
           <a
             href="#"
-            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"
+            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-500 transition"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -88,7 +86,7 @@
           </a>
           <a
             href="#"
-            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"
+            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-500 transition"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -105,10 +103,10 @@
             <input
               type="email"
               placeholder="Your email"
-              class="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-md outline-none focus:border-orange-500"
+              class="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-md outline-none focus:border-red-500"
             />
             <button
-              class="bg-orange-500 text-white px-4 py-2 rounded-r-md hover:bg-orange-600 transition"
+              class="bg-red-500 text-white px-4 py-2 rounded-r-md hover:bg-red-600 transition"
             >
               Subscribe
             </button>
@@ -121,26 +119,18 @@
   <!-- Payment Methods -->
   <div class="border-t border-gray-800">
     <div class="max-w-7xl mx-auto px-4 md:px-6 py-6">
-      <div class="flex flex-col md:flex-row justify-center items-center">
-        <div>
-          <h4 class="text-white font-medium mb-2 text-center">
-            PAYMENT METHODS
-          </h4>
-          <div class="flex gap-2">
-            <div class="bg-white rounded px-2 py-1 text-xs font-semibold">
-              VISA
-            </div>
-            <div class="bg-white rounded px-2 py-1 text-xs font-semibold">
-              MASTERCARD
-            </div>
-            <div class="bg-white rounded px-2 py-1 text-xs font-semibold">
-              MPESA
-            </div>
-            <div class="bg-white rounded px-2 py-1 text-xs font-semibold">
-              PAYPAL
-            </div>
+      <div class="flex flex-col items-center">
+        <h4 class="text-white font-medium mb-3 text-center">PAYMENT METHOD</h4>
+        <div class="flex gap-3">
+          <div
+            class="bg-white text-gray-900 rounded-md px-4 py-2 text-sm font-bold shadow-sm"
+          >
+            M-PESA
           </div>
         </div>
+        <p class="text-xs text-gray-500 mt-3">
+          Till Number: <span class="text-gray-300 font-semibold">5120455</span>
+        </p>
       </div>
     </div>
   </div>
