@@ -87,8 +87,10 @@ export class ProductCardComponent implements OnInit, OnDestroy {
   }
 
   onAddToCart(): void {
-    this.cartService.addToCart(this.product);
-    this.showToastMessage(`${this.product.title} added to cart`);
+    const added = this.cartService.addToCart(this.product);
+    if (added) {
+      this.showToastMessage(`${this.product.title} added to cart`);
+    }
   }
 
   onToggleWishlist(event: Event): void {
