@@ -8,6 +8,10 @@
   font-family: "Poiret One", cursive;
 }
 
+.font-iosevka {
+  font-family: "Iosevka Charon", monospace;
+}
+
 * {
   touch-action: manipulation;
 }
