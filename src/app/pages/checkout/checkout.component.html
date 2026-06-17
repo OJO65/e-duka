@@ -1,4 +1,4 @@
-<div class="checkout-container">
+<div class="checkout-container font-iosevka">
   <!-- Breadcrumbs -->
   <nav class="breadcrumbs">
     <span class="breadcrumb-link" (click)="continueShopping()">Home</span>
@@ -8,7 +8,7 @@
     <span class="breadcrumb-current">Checkout</span>
   </nav>
 
-  <h1 class="checkout-title font-advent">Checkout</h1>
+  <h1 class="checkout-title font-iosevka">Checkout</h1>
 
   <!-- Error Message -->
   <div *ngIf="error" class="error-message">
@@ -24,7 +24,7 @@
 
     <!-- Order Summary -->
     <div class="order-summary">
-      <h2 class="section-title font-advent">Order Summary</h2>
+      <h2 class="section-title font-iosevka-advent">Order Summary</h2>
       <div class="checkout-items">
         <div *ngFor="let item of cart.items" class="checkout-item">
           <img [src]="item.image" [alt]="item.title" class="item-image" />
@@ -65,7 +65,7 @@
 
       <!-- Delivery Details -->
       <div class="delivery-form">
-        <h3 class="section-title font-advent">Delivery Details</h3>
+        <h3 class="section-title font-iosevka-advent">Delivery Details</h3>
 
         <div class="form-group">
           <label>Phone Number (M-Pesa)</label>
@@ -160,7 +160,7 @@
       <!-- Header -->
       <div class="mpesa-header">
         <div class="mpesa-logo">M-PESA</div>
-        <h2 class="font-advent">Complete Your Payment</h2>
+        <h2 class="font-iosevka-advent">Complete Your Payment</h2>
         <p class="mpesa-subtitle">Your order has been created. Pay via M-Pesa to confirm.</p>
       </div>
 
@@ -233,7 +233,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </div>
-      <h2 class="font-advent">Payment Submitted!</h2>
+      <h2 class="font-iosevka-advent">Payment Submitted!</h2>
       <p>Thank you for your order. Our team will verify your M-Pesa payment and confirm your order shortly.</p>
       <p class="confirmed-note">You'll receive an SMS once your order is confirmed.</p>
 
