@@ -1,7 +1,7 @@
 <!-- Desktop Sidebar -->
 <aside *ngIf="!isMobile" class="sidebar">
   <div class="sidebar-header">
-    <h3 class="font-advent font-bold text-lg">Filters</h3>
+    <h3 class="font-iosevka font-bold text-lg">Filters</h3>
     <button 
       *ngIf="hasActiveFilters"
       (click)="onClearFilters()" 
@@ -82,7 +82,7 @@
 <!-- Mobile Filter Panel -->
 <div *ngIf="isMobile" class="mobile-filter-panel">
   <div class="mobile-filter-header">
-    <h3 class="font-advent font-bold text-lg">Filters</h3>
+    <h3 class="font-iosevka font-bold text-lg">Filters</h3>
     <button (click)="onClose()" class="close-btn">✕</button>
   </div>
 
