@@ -1,0 +1,18 @@
+<div *ngIf="(state$ | async)?.visible" class="confirm-overlay" (click)="onCancel()">
+  <div class="confirm-box font-iosevka" (click)="$event.stopPropagation()">
+    <h3 class="confirm-title">{{ (state$ | async)?.title }}</h3>
+    <p class="confirm-message">{{ (state$ | async)?.message }}</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" (click)="onCancel()">
+        {{ (state$ | async)?.cancelLabel || 'Cancel' }}
+      </button>
+      <button
+        class="confirm-btn-confirm"
+        [class.danger]="(state$ | async)?.danger"
+        (click)="onConfirm()"
+      >
+        {{ (state$ | async)?.confirmLabel || 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>
