@@ -90,6 +90,8 @@ export class ProductCardComponent implements OnInit, OnDestroy {
     const added = this.cartService.addToCart(this.product);
     if (added) {
       this.showToastMessage(`${this.product.title} added to cart`);
+    } else {
+      this.showToastMessage('Please log in to add items to your cart')
     }
   }
 
