@@ -61,7 +61,7 @@
   <div class="admin-main">
     <header class="admin-topbar">
   <div class="topbar-left">
-    <button class="mobile-toggle-btn" (click)="toggleMobileSidebar()">
+    <button class="mobile-toggle-btn" *ngIf="!mobileSidebarOpen" (click)="toggleMobileSidebar()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
