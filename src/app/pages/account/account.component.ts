@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/authService/auth.service';
 import { OrderService } from '../../services/orderService/order.service';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
+import { ConfirmService } from '../../services/confirmService/confirm.service';
 import { User } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
@@ -21,7 +22,7 @@ export class AccountComponent implements OnInit, OnDestroy {
   private wishlistSubscription?: Subscription;
 
   loading = true;
-  private ordersLoaded   = false;
+  private ordersLoaded = false;
   private wishlistLoaded = false;
 
   isEditMode = false;
@@ -40,26 +41,29 @@ export class AccountComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private orderService: OrderService,
     private wishlistService: WishlistService,
-    private router: Router
+    private router: Router,
+    private confirmService: ConfirmService,
   ) {}
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+    this.userSubscription = this.authService.currentUser$.subscribe((user) => {
       if (user) {
-        this.currentUser    = user;
+        this.currentUser = user;
         this.editedUsername = user.username;
-        this.editedEmail    = user.email;
-        this.memberSince    = this.formatDate(user.createdAt);
+        this.editedEmail = user.email;
+        this.memberSince = this.formatDate(user.createdAt);
 
         this.loadOrderCount();
       }
     });
 
-    this.wishlistSubscription = this.wishlistService.wishlistItems$.subscribe(items => {
-      this.wishlistCount   = items?.length || 0;
-      this.wishlistLoaded  = true;
-      this.checkAllLoaded();
-    });
+    this.wishlistSubscription = this.wishlistService.wishlistItems$.subscribe(
+      (items) => {
+        this.wishlistCount = items?.length || 0;
+        this.wishlistLoaded = true;
+        this.checkAllLoaded();
+      },
+    );
   }
 
   ngOnDestroy(): void {
@@ -70,15 +74,15 @@ export class AccountComponent implements OnInit, OnDestroy {
   private loadOrderCount(): void {
     this.orderService.getOrders().subscribe({
       next: (orders) => {
-        this.orderCount   = orders?.length || 0;
+        this.orderCount = orders?.length || 0;
         this.ordersLoaded = true;
         this.checkAllLoaded();
       },
       error: () => {
-        this.orderCount   = 0;
+        this.orderCount = 0;
         this.ordersLoaded = true;
         this.checkAllLoaded();
-      }
+      },
     });
   }
 
@@ -91,14 +95,14 @@ export class AccountComponent implements OnInit, OnDestroy {
   toggleEditMode(): void {
     if (this.isEditMode) {
       this.editedUsername = this.currentUser?.username || '';
-      this.editedEmail    = this.currentUser?.email || '';
-      this.errorMessage   = '';
+      this.editedEmail = this.currentUser?.email || '';
+      this.errorMessage = '';
     }
     this.isEditMode = !this.isEditMode;
   }
 
   saveProfile(): void {
-    this.errorMessage   = '';
+    this.errorMessage = '';
     this.successMessage = '';
 
     if (!this.editedUsername || this.editedUsername.length < 3) {
@@ -116,23 +120,37 @@ export class AccountComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.authService.updateUser({
         username: this.editedUsername,
-        email: this.editedEmail
+        email: this.editedEmail,
       });
 
-      this.isLoading      = false;
+      this.isLoading = false;
       this.successMessage = 'Profile updated successfully!';
-      this.isEditMode      = false;
+      this.isEditMode = false;
 
-      setTimeout(() => { this.successMessage = ''; }, 3000);
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
     }, 500);
   }
 
-  goToForgotPassword(): void { this.router.navigate(['/forgot-password']); }
-  goToOrders(): void { this.router.navigate(['/orders']); }
-  goToWishlist(): void { this.router.navigate(['/wishlist']); }
+  goToForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
+  goToOrders(): void {
+    this.router.navigate(['/orders']);
+  }
+  goToWishlist(): void {
+    this.router.navigate(['/wishlist']);
+  }
 
-  signOut(): void {
-    if (confirm('Are you sure you want to sign out?')) {
+  async signOut(): Promise<void> {
+    const confirmed = await this.confirmService.ask({
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      confirmLabel: 'Sign Out',
+      danger: true,
+    });
+    if (confirmed) {
       this.authService.logout();
       this.router.navigate(['/']);
     }
@@ -141,7 +159,11 @@ export class AccountComponent implements OnInit, OnDestroy {
   private formatDate(dateString?: string): string {
     if (!dateString) return 'Unknown';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   }
 
   private isValidEmail(email: string): boolean {
