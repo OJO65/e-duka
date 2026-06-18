@@ -1,7 +1,7 @@
 <!-- Desktop Sidebar -->
 <aside *ngIf="!isMobile" class="sidebar">
-  <div class="sidebar-header">
-    <h3 class="font-iosevka font-bold text-lg">Filters</h3>
+  <div class="sidebar-header font-iosevka">
+    <h3 class="font-bold text-lg">Filters</h3>
     <button 
       *ngIf="hasActiveFilters"
       (click)="onClearFilters()" 
@@ -12,7 +12,7 @@
   </div>
 
   <!-- Availability Filter -->
-  <div class="filter-section">
+  <div class="filter-section font-iosevka">
     <h4 class="filter-title">Availability</h4>
     <label class="filter-checkbox">
       <input 
@@ -25,7 +25,7 @@
   </div>
 
   <!-- Price Filter -->
-  <div class="filter-section" *ngIf="filterOptions.priceRanges.length > 0">
+  <div class="filter-section font-iosevka" *ngIf="filterOptions.priceRanges.length > 0">
     <h4 class="filter-title">Price Range</h4>
     <div class="filter-options">
       <label 
@@ -43,7 +43,7 @@
   </div>
 
   <!-- Brand Filter -->
-  <div class="filter-section" *ngIf="filterOptions.brands.length > 0">
+  <div class="filter-section font-iosevka" *ngIf="filterOptions.brands.length > 0">
     <h4 class="filter-title">Brand</h4>
     <div class="filter-options">
       <label 
@@ -61,7 +61,7 @@
   </div>
 
   <!-- Tags Filter -->
-  <div class="filter-section" *ngIf="filterOptions.tags.length > 0">
+  <div class="filter-section font-iosevka" *ngIf="filterOptions.tags.length > 0">
     <h4 class="filter-title">Categories</h4>
     <div class="filter-options">
       <label 
@@ -80,15 +80,15 @@
 </aside>
 
 <!-- Mobile Filter Panel -->
-<div *ngIf="isMobile" class="mobile-filter-panel">
+<div *ngIf="isMobile" class="mobile-filter-panel font-iosevka">
   <div class="mobile-filter-header">
-    <h3 class="font-iosevka font-bold text-lg">Filters</h3>
+    <h3 class="font-bold text-lg">Filters</h3>
     <button (click)="onClose()" class="close-btn">✕</button>
   </div>
 
-  <div class="mobile-filter-content">
+  <div class="mobile-filter-content font-iosevka">
     <!-- Availability Filter -->
-    <div class="filter-section">
+    <div class="filter-section font-iosevka">
       <h4 class="filter-title">Availability</h4>
       <label class="filter-checkbox">
         <input 
@@ -101,7 +101,7 @@
     </div>
 
     <!-- Price Filter -->
-    <div class="filter-section" *ngIf="filterOptions.priceRanges.length > 0">
+    <div class="filter-section font-iosevka" *ngIf="filterOptions.priceRanges.length > 0">
       <h4 class="filter-title">Price Range</h4>
       <div class="filter-options">
         <label *ngFor="let range of filterOptions.priceRanges" class="filter-checkbox">
@@ -116,7 +116,7 @@
     </div>
 
     <!-- Brand Filter -->
-    <div class="filter-section" *ngIf="filterOptions.brands.length > 0">
+    <div class="filter-section font-iosevka" *ngIf="filterOptions.brands.length > 0">
       <h4 class="filter-title">Brand</h4>
       <div class="filter-options">
         <label *ngFor="let brand of filterOptions.brands" class="filter-checkbox">
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Tags Filter -->
-    <div class="filter-section" *ngIf="filterOptions.tags.length > 0">
+    <div class="filter-section font-iosevka" *ngIf="filterOptions.tags.length > 0">
       <h4 class="filter-title">Categories</h4>
       <div class="filter-options">
         <label *ngFor="let tag of filterOptions.tags" class="filter-checkbox">
@@ -146,7 +146,7 @@
     </div>
   </div>
 
-  <div class="mobile-filter-footer">
+  <div class="mobile-filter-footer font-iosevka">
     <button (click)="onClearFilters()" class="clear-btn">Clear All</button>
     <button (click)="onClose()" class="apply-btn">Apply Filters</button>
   </div>
