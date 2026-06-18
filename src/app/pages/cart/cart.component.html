@@ -8,7 +8,7 @@
 
   <!-- Page Title -->
   <div class="cart-header">
-    <h1 class="cart-title font-advent">Shopping Cart</h1>
+    <h1 class="cart-title font-iosevka">Shopping Cart</h1>
     <button *ngIf="!isLoading && cart.items.length > 0" (click)="clearCart()" class="clear-cart-btn">
       Clear Cart
     </button>
@@ -82,7 +82,7 @@
 
     <!-- Cart Summary -->
     <div class="cart-summary">
-      <h2 class="summary-title font-advent">Order Summary</h2>
+      <h2 class="summary-title font-iosevka">Order Summary</h2>
       <div class="summary-row">
         <span>Subtotal ({{ cart.itemCount }} items)</span>
         <span>{{ formatPrice(cart.subtotal, cart.currency) }}</span>

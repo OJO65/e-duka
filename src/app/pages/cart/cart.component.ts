@@ -6,6 +6,7 @@ import {
   Cart,
   CartItem,
 } from '../../services/cartService/cart.service';
+import { ConfirmService } from '../../services/confirmService/confirm.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,6 +25,7 @@ export class CartComponent implements OnInit, OnDestroy {
   constructor(
     private cartService: CartService,
     private router: Router,
+    private confirmService: ConfirmService,
   ) {}
 
   ngOnInit(): void {
@@ -54,14 +56,26 @@ export class CartComponent implements OnInit, OnDestroy {
       this.cartService.updateQuantity(item.id, item.quantity - 1);
   }
 
-  removeItem(item: CartItem): void {
-    if (confirm('Remove this item from cart?')) {
+  async removeItem(item: CartItem): Promise<void> {
+    const confirmed = await this.confirmService.ask({
+      title: 'Remove Item',
+      message: 'Remove this item from cart?',
+      confirmLabel: 'Remove',
+      danger: true,
+    });
+    if (confirmed) {
       this.cartService.removeFromCart(item.id);
     }
   }
 
-  clearCart(): void {
-    if (confirm('Are you sure you want to clear your cart?')) {
+  async clearCart(): Promise<void> {
+    const confirmed = await this.confirmService.ask({
+      title: 'Clear Cart',
+      message: 'Are you sure you want to clear your cart?',
+      confirmLabel: 'Clear Cart',
+      danger: true,
+    });
+    if (confirmed) {
       this.cartService.clearCart();
     }
   }
