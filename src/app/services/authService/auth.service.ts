@@ -13,6 +13,7 @@ export interface User {
   orders?:     any[];
   wishlist?:   string[];
   createdAt?:  string;
+  role?:       string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -85,6 +86,10 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.isLoggedInSubject.value;
   }
+
+  isAdmin(): boolean {
+  return this.currentUserSubject.value?.role === 'admin';
+}
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
