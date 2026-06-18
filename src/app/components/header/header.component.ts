@@ -13,6 +13,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cartService/cart.service';
 import { SearchService } from '../../services/searchService/search.service';
 import { AuthService, User } from '../../services/authService/auth.service';
+import { ConfirmService } from '../../services/confirmService/confirm.service';
 
 @Component({
   selector: 'app-header',
@@ -42,6 +43,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // SSR-default "Sign In" button from ever being visibly painted when
   // the user is actually logged in.
   authResolved: boolean = false;
+  isAdmin: boolean = false;
 
   private authSubscription?: Subscription;
   private userSubscription?: Subscription;
@@ -50,7 +52,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private cartService: CartService,
     private searchService: SearchService,
-    private authService: AuthService
+    private authService: AuthService,
+    private confirmService: ConfirmService,
   ) {}
 
   ngOnInit() {
@@ -64,13 +67,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cartItemCount = cart.itemCount;
     });
 
-    this.authSubscription = this.authService.isLoggedIn$.subscribe(loggedIn => {
-      this.isLoggedIn    = loggedIn;
-      this.authResolved  = true; // flips true on the FIRST real emission
-    });
+    this.authSubscription = this.authService.isLoggedIn$.subscribe(
+      (loggedIn) => {
+        this.isLoggedIn = loggedIn;
+        this.authResolved = true; // flips true on the FIRST real emission
+      },
+    );
 
-    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+    this.userSubscription = this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
+      this.isAdmin = user?.role === 'admin';
     });
   }
 
@@ -81,22 +87,53 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userSubscription?.unsubscribe();
   }
 
-  toggleMobileMenu()  { this.isMobileMenuOpen  = !this.isMobileMenuOpen; }
-  closeMobileMenu()   { this.isMobileMenuOpen  = false; }
-  toggleAccountMenu() { this.isAccountMenuOpen = !this.isAccountMenuOpen; }
-  closeAccountMenu()  { this.isAccountMenuOpen = false; }
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+  }
+  toggleAccountMenu() {
+    this.isAccountMenuOpen = !this.isAccountMenuOpen;
+  }
+  closeAccountMenu() {
+    this.isAccountMenuOpen = false;
+  }
 
-  searchProducts() { this.searchEvent.emit(this.searchQuery.trim()); }
-  onSearchInput()  { this.searchSubject.next(this.searchQuery.trim()); }
-  clearSearch()    { this.searchQuery = ''; this.searchService.setSearch(''); }
+  searchProducts() {
+    this.searchEvent.emit(this.searchQuery.trim());
+  }
+  onSearchInput() {
+    this.searchSubject.next(this.searchQuery.trim());
+  }
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchService.setSearch('');
+  }
 
-  goHome()       { this.router.navigate(['/']); }
-  goToCart()     { this.router.navigate(['/cart']); }
-  goToLogin()    { this.closeAccountMenu(); this.router.navigate(['/login']); }
-  goToRegister() { this.closeAccountMenu(); this.router.navigate(['/register']); }
+  goHome() {
+    this.router.navigate(['/']);
+  }
+  goToCart() {
+    this.router.navigate(['/cart']);
+  }
+  goToLogin() {
+    this.closeAccountMenu();
+    this.router.navigate(['/login']);
+  }
+  goToRegister() {
+    this.closeAccountMenu();
+    this.router.navigate(['/register']);
+  }
 
-  signOut() {
-    if (confirm('Are you sure you want to sign out?')) {
+  async signOut(): Promise<void> {
+    const confirmed = await this.confirmService.ask({
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      confirmLabel: 'Sign Out',
+      danger: true,
+    });
+    if (confirmed) {
       this.authService.logout();
       this.closeAccountMenu();
       this.router.navigate(['/']);
