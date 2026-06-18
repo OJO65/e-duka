@@ -86,7 +86,6 @@ export class CartService {
 
 addToCart(product: any, quantity: number = 1): boolean {
   if (!this.auth.isLoggedIn()) {
-    alert('Please log in to add items to your cart.');
     return false;
   }
   const variant = product.variants?.nodes?.[0];
