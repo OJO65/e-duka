@@ -12,6 +12,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ProductDetailSkeletonComponent } from '../../components/product-detail-skeleton/product-detail-skeleton.component';
 import { ProductService } from '../../services/productService/product.service';
 import { CartService } from '../../services/cartService/cart.service';
+import { AuthService } from '../../services/authService/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -38,6 +39,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
+    private authService: AuthService,
     private cartService: CartService,
     private meta: Meta,
     private titleService: Title,
@@ -208,14 +210,16 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     return added;
   }
 
-  buyNow(): void {
-    const added = this.addToCart();
-    if (added) {
-      setTimeout(() => {
-        this.router.navigate(['/cart']);
-      }, 500);
-    }
+buyNow(): void {
+  if (!this.authService.isLoggedIn()) {
+    this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } });
+    return;
   }
+  const added = this.addToCart();
+  if (added) {
+    setTimeout(() => { this.router.navigate(['/cart']); }, 500);
+  }
+}
 
   goBack(): void {
     this.router.navigate(['/']);
