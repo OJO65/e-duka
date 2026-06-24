@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/authService/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -82,6 +83,10 @@ export class LoginComponent implements OnInit {
     this.email = demo.email;
     this.password = demo.password;
   }
+
+  signInWithGoogle(): void {
+  window.location.href = `${environment.apiUrl}/auth/google`;
+}
 
   private isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
