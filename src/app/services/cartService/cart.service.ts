@@ -25,6 +25,8 @@ export interface Cart {
   currency: string;
 }
 
+const GUEST_CART_KEY = 'gnet_guest_cart';
+
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly api = environment.apiUrl;
@@ -42,13 +44,19 @@ export class CartService {
     private auth: AuthService,
   ) {
     if (!this.auth.isLoggedIn()) {
+      // Load guest cart from localStorage on init
+      this.loadGuestCart();
       this.readySubject.next(true);
     }
 
     this.auth.isLoggedIn$.pipe(skip(1)).subscribe((loggedIn) => {
-      if (loggedIn) this.fetchCart();
-      else {
+      if (loggedIn) {
+        // Merge guest cart first, then fetch real cart
+        this.mergeGuestCartIntoUser().then(() => this.fetchCart());
+      } else {
+        // On logout, clear backend cart state and load guest cart
         this.cartSubject.next(this.emptyCart());
+        this.loadGuestCart();
         this.readySubject.next(true);
       }
     });
@@ -61,6 +69,7 @@ export class CartService {
   getCurrentCart(): Cart {
     return this.cartSubject.value;
   }
+
   isPending(_id: string): boolean {
     return false;
   }
@@ -84,19 +93,13 @@ export class CartService {
       });
   }
 
-addToCart(product: any, quantity: number = 1): boolean {
-  if (!this.auth.isLoggedIn()) {
-    return false;
-  }
-  const variant = product.variants?.nodes?.[0];
-  if (!variant?.id) return false;
+  addToCart(product: any, quantity: number = 1): boolean {
+    const variant = product.variants?.nodes?.[0];
+    if (!variant?.id) return false;
 
-  const current = this.cartSubject.value;
-  const existing = current.items.find((i) => i.productId === product.id);
+    const current = this.cartSubject.value;
+    const existing = current.items.find((i) => i.productId === product.id);
 
-  if (existing) {
-    this.applyUpdate(existing.id, existing.quantity + quantity);
-  } else {
     const newItem: CartItem = {
       id: `temp-${Date.now()}`,
       productId: product.id,
@@ -109,27 +112,38 @@ addToCart(product: any, quantity: number = 1): boolean {
       quantity,
       availableForSale: true,
     };
-    this.cartSubject.next(
-      this.recalculate({
-        ...current,
-        items: [...current.items, newItem],
-      }),
-    );
+
+    if (existing) {
+      this.applyUpdate(existing.id, existing.quantity + quantity);
+    } else {
+      this.cartSubject.next(
+        this.recalculate({
+          ...current,
+          items: [...current.items, newItem],
+        }),
+      );
+    }
+
+    if (!this.auth.isLoggedIn()) {
+      // Guest — persist to localStorage only
+      this.saveGuestCart();
+      return true;
+    }
+
+    // Logged in — persist to backend
+    this.http
+      .post<any>(
+        `${this.api}/cart`,
+        { product_id: product.id, variant_id: variant.id, quantity },
+        { headers: this.headers() },
+      )
+      .subscribe({
+        next: () => {},
+        error: () => this.fetchCart(),
+      });
+
+    return true;
   }
-
-  this.http
-    .post<any>(
-      `${this.api}/cart`,
-      { product_id: product.id, variant_id: variant.id, quantity },
-      { headers: this.headers() },
-    )
-    .subscribe({
-      next: () => {},
-      error: () => this.fetchCart(),
-    });
-
-  return true;
-}
 
   updateQuantity(cartItemId: string, quantity: number): void {
     if (quantity <= 0) {
@@ -137,6 +151,12 @@ addToCart(product: any, quantity: number = 1): boolean {
       return;
     }
     this.applyUpdate(cartItemId, quantity);
+
+    if (!this.auth.isLoggedIn()) {
+      this.saveGuestCart();
+      return;
+    }
+
     this.http
       .patch<any>(
         `${this.api}/cart/${cartItemId}`,
@@ -156,6 +176,12 @@ addToCart(product: any, quantity: number = 1): boolean {
         items: current.items.filter((i) => i.id !== cartItemId),
       }),
     );
+
+    if (!this.auth.isLoggedIn()) {
+      this.saveGuestCart();
+      return;
+    }
+
     this.http
       .delete(`${this.api}/cart/${cartItemId}`, { headers: this.headers() })
       .subscribe({ error: () => this.fetchCart() });
@@ -163,15 +189,78 @@ addToCart(product: any, quantity: number = 1): boolean {
 
   clearCart(): void {
     this.cartSubject.next(this.emptyCart());
+    this.clearGuestCart();
+
+    if (!this.auth.isLoggedIn()) return;
+
     this.http
       .delete(`${this.api}/cart`, { headers: this.headers() })
       .subscribe({ error: () => this.fetchCart() });
   }
 
+  async mergeGuestCartIntoUser(): Promise<void> {
+    const guestItems = this.readGuestCart();
+    if (!guestItems.length) return;
+
+    const token = this.auth.getToken();
+    if (!token) return;
+
+    // Post each guest item to the backend cart sequentially
+    for (const item of guestItems) {
+      try {
+        await this.http
+          .post<any>(
+            `${this.api}/cart`,
+            { product_id: item.productId, variant_id: item.variantId, quantity: item.quantity },
+            { headers: this.headers() },
+          )
+          .toPromise();
+      } catch {
+        // If one item fails, continue with the rest
+      }
+    }
+
+    // Clear guest cart after successful merge
+    this.clearGuestCart();
+  }
+
   setUser(_userId: any): void {
     if (this.auth.isLoggedIn()) this.fetchCart();
   }
-  mergeGuestCartIntoUser(_userId: any): void {}
+
+  private loadGuestCart(): void {
+    const items = this.readGuestCart();
+    if (items.length) {
+      this.cartSubject.next(this.recalculate({
+        items,
+        itemCount: 0,
+        subtotal: 0,
+        currency: 'KES',
+      }));
+    }
+  }
+
+  private saveGuestCart(): void {
+    try {
+      const items = this.cartSubject.value.items;
+      localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
+    } catch {}
+  }
+
+  private readGuestCart(): CartItem[] {
+    try {
+      const raw = localStorage.getItem(GUEST_CART_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private clearGuestCart(): void {
+    try {
+      localStorage.removeItem(GUEST_CART_KEY);
+    } catch {}
+  }
 
   private applyUpdate(cartItemId: string, quantity: number): void {
     const current = this.cartSubject.value;
