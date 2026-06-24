@@ -21,7 +21,7 @@ import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.co
 import { ContactComponent } from './pages/contact/contact.component';
 import { PaymentDeliveryComponent } from './pages/payment-delivery/payment-delivery.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
-
+import { EmailVerifiedComponent } from './pages/email-verified/email-verified.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -31,6 +31,8 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent },
   { path: 'product/:productId', component: ProductDetailComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
+  { path: 'email-verified', component: EmailVerifiedComponent },
+  
 
   { path: 'careers', component: CareersComponent },
   { path: 'terms', component: TermsComponent },

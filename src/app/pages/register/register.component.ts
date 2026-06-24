@@ -83,11 +83,8 @@ export class RegisterComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isLoading = false;
-          this.successMessage = 'Account created! Logging you in...';
-          this.authService.login(this.email, this.password).subscribe({
-            next: () => this.router.navigate([this.returnUrl]),
-            error: () => this.router.navigate(['/login']),
-          });
+          this.successMessage =
+            'Account created! Please check your email to verify your account before logging in.';
         },
         error: (err) => {
           this.isLoading = false;
