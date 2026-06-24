@@ -33,9 +33,6 @@ export class AuthCallbackComponent implements AfterViewInit {
       const accessToken  = params.get('access_token');
       const refreshToken = params.get('refresh_token');
 
-      console.log('hash:', hash);
-      console.log('accessToken:', accessToken ? 'EXISTS' : 'MISSING');
-
       if (!accessToken) {
         this.router.navigate(['/login'], { queryParams: { error: 'google_auth_failed' } });
         return;
@@ -49,7 +46,6 @@ export class AuthCallbackComponent implements AfterViewInit {
           this.router.navigate(['/']);
         },
         error: (err) => {
-          console.log('Error fetching user:', err.status, err.error);
           this.router.navigate(['/login'], { queryParams: { error: 'google_auth_failed' } });
         }
       });
