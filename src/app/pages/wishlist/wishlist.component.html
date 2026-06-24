@@ -40,7 +40,7 @@
         saved
       </p>
     </div>
-    <div class="header-actions" *ngIf="!loading && wishlistProducts.length > 0">
+    <div class="header-actions font-iosevka" *ngIf="!loading && wishlistProducts.length > 0">
       <button (click)="addAllToCart()" class="btn-add-all">
         <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -71,16 +71,16 @@
   </div>
 
   <!-- Wishlist Grid -->
-  <div *ngIf="!loading && wishlistProducts.length > 0" class="wishlist-grid">
+  <div *ngIf="!loading && wishlistProducts.length > 0" class="wishlist-grid font-iosevka">
     <div *ngFor="let product of wishlistProducts" class="wishlist-item">
       <div class="product-image-container" (click)="viewProduct(product.id)">
         <img [src]="getProductImage(product)" [alt]="product.title" class="product-image"/>
-        <div class="image-overlay">
+        <div class="image-overlay font-iosevka">
           <span class="view-text">View Details</span>
         </div>
       </div>
 
-      <div class="product-info">
+      <div class="product-in fofont-iosevka">
         <h3 class="product-title" (click)="viewProduct(product.id)">
           {{ product.title }}
         </h3>
@@ -99,7 +99,7 @@
         </p>
       </div>
 
-      <div class="product-actions">
+      <div class="product-actions font-iosevka">
         <button (click)="addToCart(product)" class="btn-add-to-cart" [disabled]="!product.availableForSale">
           <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -119,8 +119,8 @@
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!loading && wishlistProducts.length === 0" class="empty-state">
-    <div class="empty-icon">
+  <div *ngIf="!loading && wishlistProducts.length === 0" class="empty-state font-iosevka">
+    <div class="empty-icon font-iosevka">
       <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
