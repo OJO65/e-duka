@@ -204,8 +204,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       this.showToastMessage(
         `${this.quantity} × ${this.product.title} added to cart!`,
       );
-    } else {
-      this.showToastMessage('Please log in to add items to your cart');
     }
     return added;
   }
