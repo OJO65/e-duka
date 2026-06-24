@@ -2,7 +2,8 @@
 <div class="toast-notification" [class.show]="showToast">
   {{ toastMessage }}
 </div>
-<div class="card">
+
+<div class="card" (click)="onViewDetails()">
   <!-- Wishlist button -->
   <button
     class="wishlist-btn"
@@ -10,55 +11,39 @@
     [class.in-wishlist]="isInWishlist"
     [title]="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
   >
-    <!-- Filled heart when in wishlist -->
     <svg *ngIf="isInWishlist" class="heart-icon" fill="currentColor" viewBox="0 0 20 20">
       <path fill-rule="evenodd"
         d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
         clip-rule="evenodd" />
     </svg>
-
-    <!-- Outline heart when not in wishlist -->
     <svg *ngIf="!isInWishlist" class="heart-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
     </svg>
   </button>
 
-  <div class="card-inner">
-    <!-- Front -->
-    <div class="card-front">
-      <div class="image-container">
-        <div class="image-placeholder" *ngIf="!imageLoaded">
-          <div class="spinner"></div>
-        </div>
-        <img
-          [src]="productImage"
-          [alt]="product.title"
-          (load)="onImageLoad()"
-          (error)="onImageError()"
-          [class.loaded]="imageLoaded"
-        />
-      </div>
-      <div class="product-info">
-        <h3 class="product-title font-iosevka">{{ product.title }}</h3>
-        <p class="product-price">{{ formattedPrice }}</p>
-      </div>
+  <!-- Image -->
+  <div class="image-container">
+    <div class="image-placeholder" *ngIf="!imageLoaded">
+      <div class="spinner"></div>
     </div>
-
-    <!-- Back -->
-    <div class="card-back">
-      <div class="back-content">
-        <h3 class="back-title font-iosevka">{{ product.title }}</h3>
-        <p class="back-price">{{ formattedPrice }}</p>
-        <div class="button-group">
-          <button class="btn-primary" (click)="onAddToCart()">
-            <i class="fa fa-shopping-cart"></i> Add to Cart
-          </button>
-          <button class="btn-secondary" (click)="onViewDetails()">
-            View Details
-          </button>
-        </div>
-      </div>
-    </div>
+    <img
+      [src]="productImage"
+      [alt]="product.title"
+      (load)="onImageLoad()"
+      (error)="onImageError()"
+      [class.loaded]="imageLoaded"
+    />
   </div>
+
+  <!-- Info -->
+  <div class="product-info">
+    <h3 class="product-title font-iosevka">{{ product.title }}</h3>
+    <p class="product-price">{{ formattedPrice }}</p>
+  </div>
+
+  <!-- Add to Cart button — stopPropagation prevents card click from firing -->
+  <button class="btn-add-to-cart" (click)="onAddToCart(); $event.stopPropagation()">
+    <i class="fa fa-shopping-cart"></i> Add to Cart
+  </button>
 </div>
