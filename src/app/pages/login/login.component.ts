@@ -12,23 +12,24 @@ import { AuthService } from '../../services/authService/auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  email:        string  = '';
-  password:     string  = '';
-  rememberMe:   boolean = false;
-  errorMessage: string  = '';
-  isLoading:    boolean = false;
+  email: string = '';
+  password: string = '';
+  rememberMe: boolean = false;
+  errorMessage: string = '';
+  isLoading: boolean = false;
   showPassword: boolean = false;
-  returnUrl:    string  = '/';
+  returnUrl: string = '/';
 
   constructor(
-    private router:      Router,
-    private route:       ActivatedRoute,
+    private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    if (this.authService.isLoggedIn()) this.router.navigateByUrl(this.returnUrl);
+    if (this.authService.isLoggedIn())
+      this.router.navigateByUrl(this.returnUrl);
   }
 
   onSubmit(): void {
@@ -47,7 +48,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate([this.returnUrl]);
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: (err) => {
         this.isLoading = false;
@@ -56,21 +57,29 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  togglePasswordVisibility(): void { this.showPassword = !this.showPassword; }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   goToForgotPassword(): void {
-    this.router.navigate(['/forgot-password'], { queryParams: { returnUrl: this.returnUrl } });
+    this.router.navigate(['/forgot-password'], {
+      queryParams: { returnUrl: this.returnUrl },
+    });
   }
 
   goToRegister(): void {
-    this.router.navigate(['/register'], { queryParams: { returnUrl: this.returnUrl } });
+    this.router.navigate(['/register'], {
+      queryParams: { returnUrl: this.returnUrl },
+    });
   }
 
-  goHome(): void { this.router.navigate(['/']); }
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
 
   fillDemoCredentials(): void {
-    const demo    = this.authService.getDemoCredentials();
-    this.email    = demo.email;
+    const demo = this.authService.getDemoCredentials();
+    this.email = demo.email;
     this.password = demo.password;
   }
 
