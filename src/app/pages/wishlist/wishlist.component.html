@@ -7,8 +7,14 @@
 <div *ngIf="authChecking" class="wishlist-container font-iosevka">
   <div class="wishlist-header">
     <div>
-      <div class="skeleton-text skeleton-title" style="width: 200px; height: 28px; margin-bottom: 8px;"></div>
-      <div class="skeleton-text skeleton-price" style="width: 100px; height: 16px;"></div>
+      <div
+        class="skeleton-text skeleton-title"
+        style="width: 200px; height: 28px; margin-bottom: 8px"
+      ></div>
+      <div
+        class="skeleton-text skeleton-price"
+        style="width: 100px; height: 16px"
+      ></div>
     </div>
   </div>
   <div class="wishlist-skeleton">
@@ -40,11 +46,23 @@
         saved
       </p>
     </div>
-    <div class="header-actions font-iosevka" *ngIf="!loading && wishlistProducts.length > 0">
+    <div
+      class="header-actions font-iosevka"
+      *ngIf="!loading && wishlistProducts.length > 0"
+    >
       <button (click)="addAllToCart()" class="btn-add-all">
-        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        <svg
+          class="btn-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
         Add All to Cart
       </button>
@@ -71,59 +89,35 @@
   </div>
 
   <!-- Wishlist Grid -->
-  <div *ngIf="!loading && wishlistProducts.length > 0" class="wishlist-grid font-iosevka">
-    <div *ngFor="let product of wishlistProducts" class="wishlist-item">
-      <div class="product-image-container" (click)="viewProduct(product.id)">
-        <img [src]="getProductImage(product)" [alt]="product.title" class="product-image"/>
-        <div class="image-overlay font-iosevka">
-          <span class="view-text">View Details</span>
-        </div>
-      </div>
-
-      <div class="product-in fofont-iosevka">
-        <h3 class="product-title" (click)="viewProduct(product.id)">
-          {{ product.title }}
-        </h3>
-        <p class="product-price">
-          {{ formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode) }}
-        </p>
-
-        <p class="availability" [class.in-stock]="product.availableForSale" [class.out-of-stock]="!product.availableForSale">
-          <svg class="availability-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path *ngIf="product.availableForSale" fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            <path *ngIf="!product.availableForSale" fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-          </svg>
-          {{ product.availableForSale ? "In Stock" : "Out of Stock" }}
-        </p>
-      </div>
-
-      <div class="product-actions font-iosevka">
-        <button (click)="addToCart(product)" class="btn-add-to-cart" [disabled]="!product.availableForSale">
-          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-          </svg>
-          Add to Cart
-        </button>
-        <button (click)="removeFromWishlist(product.id)" class="btn-remove">
-          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-          Remove
-        </button>
-      </div>
-    </div>
+  <div
+    *ngIf="!loading && wishlistProducts.length > 0"
+    class="wishlist-grid font-iosevka"
+  >
+    <app-product-card
+      *ngFor="let product of wishlistProducts"
+      [product]="product"
+    >
+    </app-product-card>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!loading && wishlistProducts.length === 0" class="empty-state font-iosevka">
+  <div
+    *ngIf="!loading && wishlistProducts.length === 0"
+    class="empty-state font-iosevka"
+  >
     <div class="empty-icon font-iosevka">
-      <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+      <svg
+        class="w-24 h-24 text-gray-300"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
       </svg>
     </div>
     <h2 class="empty-title">Your Wishlist is Empty</h2>
@@ -131,9 +125,18 @@
       Save your favorite items by clicking the heart icon on products
     </p>
     <button (click)="continueShopping()" class="shop-now-btn">
-      <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      <svg
+        class="btn-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        />
       </svg>
       Start Shopping
     </button>

@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { AuthService } from '../../services/authService/auth.service';
 import { CartService } from '../../services/cartService/cart.service';
+import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductCardComponent],
   templateUrl: './wishlist.component.html',
   styleUrls: ['./wishlist.component.css'],
 })
