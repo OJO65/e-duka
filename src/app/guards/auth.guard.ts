@@ -1,12 +1,11 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/authService/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   private isBrowser: boolean;
-
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -15,19 +14,16 @@ export class AuthGuard implements CanActivate {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  canActivate(): boolean {
-    console.log('[AUTH GUARD] isBrowser:', this.isBrowser, '| isLoggedIn:', this.auth.isLoggedIn());
+  canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    if (!this.isBrowser) return true;
 
-    if (!this.isBrowser) {
-      console.log('[AUTH GUARD] SSR — allowing through');
-      return true;
-    }
     if (!this.auth.isLoggedIn()) {
-      console.log('[AUTH GUARD] Not logged in — REDIRECTING to /login');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: state.url }
+      });
       return false;
     }
-    console.log('[AUTH GUARD] Logged in — allowing through');
+
     return true;
   }
 }
