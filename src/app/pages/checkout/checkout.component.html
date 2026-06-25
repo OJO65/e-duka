@@ -19,9 +19,8 @@
     <p>{{ error }}</p>
   </div>
 
-  <!-- ── STEP 1: ORDER SUMMARY ─────────────────────────────────────────── -->
+  <!-- ── STEP 1: ORDER SUMMARY ── -->
   <div *ngIf="step === 'summary'" class="checkout-grid">
-
     <!-- Order Summary -->
     <div class="order-summary">
       <h2 class="section-title font-iosevka-advent">Order Summary</h2>
@@ -44,6 +43,38 @@
           <span>Subtotal</span>
           <span>{{ formatPrice(cart.subtotal, cart.currency) }}</span>
         </div>
+
+        <!-- Coupon Input -->
+        <div class="coupon-row">
+          <div class="coupon-input-wrap">
+            <input
+              type="text"
+              [(ngModel)]="couponCode"
+              placeholder="Coupon code"
+              class="coupon-input"
+              [disabled]="couponApplied"
+              (keyup.enter)="validateCoupon()"
+            />
+            <button
+              *ngIf="!couponApplied"
+              class="coupon-btn"
+              (click)="validateCoupon()"
+              [disabled]="couponLoading || !couponCode">
+              {{ couponLoading ? 'Checking...' : 'Apply' }}
+            </button>
+            <button
+              *ngIf="couponApplied"
+              class="coupon-remove-btn"
+              (click)="removeCoupon()">
+              Remove
+            </button>
+          </div>
+          <p class="coupon-error" *ngIf="couponError">{{ couponError }}</p>
+          <p class="coupon-success" *ngIf="couponApplied">
+            {{ couponDiscount }}% off applied!
+          </p>
+        </div>
+
         <div class="total-row">
           <span>Shipping</span>
           <span class="free-badge">FREE</span>
@@ -52,59 +83,45 @@
           <span>Tax</span>
           <span>Included</span>
         </div>
+
+        <div class="total-row discount-row" *ngIf="couponApplied">
+          <span>Discount ({{ couponDiscount }}%)</span>
+          <span class="discount-amount">- {{ formatPrice(discountAmount, cart.currency) }}</span>
+        </div>
+
         <div class="total-divider"></div>
         <div class="total-row total">
           <span>Total</span>
-          <span class="total-amount">{{ formatPrice(cart.subtotal, cart.currency) }}</span>
+          <span class="total-amount">{{ formatPrice(finalTotal, cart.currency) }}</span>
         </div>
       </div>
     </div>
 
     <!-- Delivery + Place Order -->
     <div class="checkout-actions">
-
-      <!-- Delivery Details -->
       <div class="delivery-form">
         <h3 class="section-title font-iosevka-advent">Delivery Details</h3>
-
         <div class="form-group">
           <label>Phone Number (M-Pesa)</label>
-          <input
-            type="tel"
-            [(ngModel)]="phone"
-            placeholder="e.g. 0712345678"
-            class="form-input"
-          />
+          <input type="tel" [(ngModel)]="phone" placeholder="e.g. 0712345678" class="form-input"/>
         </div>
-
         <div class="form-group">
           <label>Delivery Address</label>
-          <input
-            type="text"
-            [(ngModel)]="deliveryStreet"
-            placeholder="Street / Building / Area"
-            class="form-input"
-          />
+          <input type="text" [(ngModel)]="deliveryStreet" placeholder="Street / Building / Area" class="form-input"/>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label>City</label>
-            <input type="text" [(ngModel)]="deliveryCity" class="form-input" />
+            <input type="text" [(ngModel)]="deliveryCity" class="form-input"/>
           </div>
           <div class="form-group">
             <label>County</label>
-            <input type="text" [(ngModel)]="deliveryCounty" class="form-input" />
+            <input type="text" [(ngModel)]="deliveryCounty" class="form-input"/>
           </div>
         </div>
       </div>
 
-      <!-- Place Order Button -->
-      <button
-        (click)="placeOrder()"
-        class="checkout-btn"
-        [disabled]="loading || cart.items.length === 0"
-      >
+      <button (click)="placeOrder()" class="checkout-btn" [disabled]="loading || cart.items.length === 0">
         <span *ngIf="!loading">
           <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -120,11 +137,8 @@
         </span>
       </button>
 
-      <button (click)="goToCart()" class="back-btn" [disabled]="loading">
-        Back to Cart
-      </button>
+      <button (click)="goToCart()" class="back-btn" [disabled]="loading">Back to Cart</button>
 
-      <!-- Trust Badges -->
       <div class="trust-section">
         <div class="trust-badges">
           <div class="badge">
@@ -153,24 +167,20 @@
     </div>
   </div>
 
-  <!-- ── STEP 2: M-PESA PAYMENT ─────────────────────────────────────────── -->
+  <!-- ── STEP 2: M-PESA PAYMENT ── -->
   <div *ngIf="step === 'payment'" class="mpesa-step">
-
     <div class="mpesa-card">
-      <!-- Header -->
       <div class="mpesa-header">
         <div class="mpesa-logo">M-PESA</div>
         <h2 class="font-iosevka-advent">Complete Your Payment</h2>
         <p class="mpesa-subtitle">Your order has been created. Pay via M-Pesa to confirm.</p>
       </div>
 
-      <!-- Amount -->
       <div class="mpesa-amount">
         <span class="amount-label">Amount to Pay</span>
-        <span class="amount-value">{{ formatPrice(orderTotal, 'KES') }}</span>
+        <span class="amount-value">{{ formatPrice(finalTotal, 'KES') }}</span>
       </div>
 
-      <!-- Till Number -->
       <div class="till-section">
         <div class="till-card">
           <p class="till-label">Buy Goods Till Number</p>
@@ -179,38 +189,18 @@
         </div>
       </div>
 
-      <!-- Steps -->
       <div class="mpesa-steps">
         <h3>How to pay:</h3>
         <ol class="steps-list">
-          <li>
-            <span class="step-num">1</span>
-            <span>Go to <strong>M-Pesa</strong> on your phone</span>
-          </li>
-          <li>
-            <span class="step-num">2</span>
-            <span>Select <strong>Lipa na M-Pesa</strong></span>
-          </li>
-          <li>
-            <span class="step-num">3</span>
-            <span>Select <strong>Buy Goods and Services</strong></span>
-          </li>
-          <li>
-            <span class="step-num">4</span>
-            <span>Enter Till Number: <strong>{{ tillNumber }}</strong></span>
-          </li>
-          <li>
-            <span class="step-num">5</span>
-            <span>Enter Amount: <strong>{{ formatPrice(orderTotal, 'KES') }}</strong></span>
-          </li>
-          <li>
-            <span class="step-num">6</span>
-            <span>Enter your <strong>M-Pesa PIN</strong> and confirm</span>
-          </li>
+          <li><span class="step-num">1</span><span>Go to <strong>M-Pesa</strong> on your phone</span></li>
+          <li><span class="step-num">2</span><span>Select <strong>Lipa na M-Pesa</strong></span></li>
+          <li><span class="step-num">3</span><span>Select <strong>Buy Goods and Services</strong></span></li>
+          <li><span class="step-num">4</span><span>Enter Till Number: <strong>{{ tillNumber }}</strong></span></li>
+          <li><span class="step-num">5</span><span>Enter Amount: <strong>{{ formatPrice(finalTotal, 'KES') }}</strong></span></li>
+          <li><span class="step-num">6</span><span>Enter your <strong>M-Pesa PIN</strong> and confirm</span></li>
         </ol>
       </div>
 
-      <!-- Confirm Button -->
       <button (click)="confirmPayment()" class="confirm-btn">
         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -218,29 +208,27 @@
         I Have Paid
       </button>
 
-      <p class="mpesa-note">
-        Our team will verify your payment and confirm your order within 30 minutes.
-        You will receive an SMS confirmation.
-      </p>
+      <p class="mpesa-note">Our team will verify your payment and confirm your order within 30 minutes. You will receive an SMS confirmation.</p>
     </div>
   </div>
 
-  <!-- ── STEP 3: CONFIRMED ──────────────────────────────────────────────── -->
+  <!-- ── STEP 3: CONFIRMED ── -->
   <div *ngIf="step === 'confirmed'" class="confirmed-step">
     <div class="confirmed-card">
       <div class="confirmed-icon">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </div>
       <h2 class="font-iosevka-advent">Payment Submitted!</h2>
       <p>Thank you for your order. Our team will verify your M-Pesa payment and confirm your order shortly.</p>
       <p class="confirmed-note">You'll receive an SMS once your order is confirmed.</p>
-
       <div class="confirmed-actions">
         <button (click)="goToOrders()" class="view-orders-btn">View My Orders</button>
         <button (click)="continueShopping()" class="continue-btn">Continue Shopping</button>
       </div>
     </div>
   </div>
+
 </div>
