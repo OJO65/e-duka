@@ -15,6 +15,7 @@ import { CartService } from '../../services/cartService/cart.service';
 import { AuthService } from '../../services/authService/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { CartDrawerService } from '../../services/cartDrawer/cart-drawer.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -46,6 +47,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   hoverRating = 0;
 
   private routeSubscription?: Subscription;
+
   private toastTimeout: any;
 
   constructor(
@@ -56,6 +58,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private meta: Meta,
     private titleService: Title,
+    private cartDrawer: CartDrawerService,
     private http: HttpClient,
 
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -220,9 +223,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     };
     const added = this.cartService.addToCart(cartProduct, this.quantity);
     if (added) {
-      this.showToastMessage(
-        `${this.quantity} × ${this.product.title} added to cart!`,
-      );
+      this.cartDrawer.open();
     }
     return added;
   }
