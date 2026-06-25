@@ -8,12 +8,13 @@ import { AuthService } from './services/authService/auth.service';
 import { CartService } from './services/cartService/cart.service';
 import { Subscription } from 'rxjs';
 import { filter, skip } from 'rxjs/operators';
-import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component'
+import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component';
+import { CartDrawerComponent } from './components/cart-drawer/cart-drawer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent, ConfirmModalComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent, ConfirmModalComponent, CartDrawerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

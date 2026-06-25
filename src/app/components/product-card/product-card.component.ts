@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cartService/cart.service';
 import { WishlistService } from '../../services/wishlistService/wishlist.service';
 import { AuthService } from '../../services/authService/auth.service';
+import { CartDrawerService } from '../../services/cartDrawer/cart-drawer.service';
 
 @Component({
   selector: 'app-product-card',
@@ -36,11 +37,13 @@ export class ProductCardComponent implements OnInit, OnDestroy {
   private toastTimeout: any;
   private authSub?: Subscription;
   private wishlistSub?: Subscription;
+  
 
   constructor(
     private cartService: CartService,
     private wishlistService: WishlistService,
     private authService: AuthService,
+    private cartDrawer: CartDrawerService,
     private router: Router,
   ) {}
 
@@ -89,7 +92,7 @@ export class ProductCardComponent implements OnInit, OnDestroy {
   onAddToCart(): void {
     const added = this.cartService.addToCart(this.product);
     if (added) {
-      this.showToastMessage(`${this.product.title} added to cart`);
+      this.cartDrawer.open();
     }
   }
 
