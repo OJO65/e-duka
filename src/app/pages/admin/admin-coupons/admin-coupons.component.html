@@ -1,0 +1,81 @@
+<div class="coupons-page font-iosevka">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Coupon Codes</h1>
+      <p class="page-subtitle">Create and manage discount codes</p>
+    </div>
+    <button class="btn-create" (click)="showForm = !showForm">
+      {{ showForm ? 'Cancel' : '+ New Coupon' }}
+    </button>
+  </div>
+
+  <!-- Success / Error -->
+  <div *ngIf="success" class="alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert-error">{{ error }}</div>
+
+  <!-- Create Form -->
+  <div *ngIf="showForm" class="create-form">
+    <h2 class="form-title">New Coupon</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Code</label>
+        <input type="text" [(ngModel)]="newCode" placeholder="e.g. SAVE10" class="form-input" style="text-transform:uppercase"/>
+      </div>
+      <div class="form-group">
+        <label>Discount (%)</label>
+        <input type="number" [(ngModel)]="newDiscount" min="1" max="100" class="form-input"/>
+      </div>
+      <div class="form-group">
+        <label>Max Uses</label>
+        <input type="number" [(ngModel)]="newMaxUses" min="1" class="form-input"/>
+      </div>
+      <div class="form-group">
+        <label>Expires At (optional)</label>
+        <input type="date" [(ngModel)]="newExpiresAt" class="form-input"/>
+      </div>
+    </div>
+    <button class="btn-submit" (click)="createCoupon()" [disabled]="submitting">
+      {{ submitting ? 'Creating...' : 'Create Coupon' }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div *ngFor="let i of [1,2,3]" class="skeleton-row"></div>
+  </div>
+
+  <!-- Coupons Table -->
+  <div *ngIf="!loading" class="coupons-table">
+    <div class="table-header">
+      <span>Code</span>
+      <span>Discount</span>
+      <span>Uses</span>
+      <span>Expires</span>
+      <span>Status</span>
+      <span>Action</span>
+    </div>
+
+    <div *ngFor="let coupon of coupons" class="table-row">
+      <span class="coupon-code">{{ coupon.code }}</span>
+      <span class="coupon-discount">{{ coupon.discount_percent }}% off</span>
+      <span class="coupon-uses">{{ coupon.uses_count }} / {{ coupon.max_uses }}</span>
+      <span class="coupon-expiry" [class.expired]="isExpired(coupon)">
+        {{ formatDate(coupon.expires_at) }}
+      </span>
+      <span class="coupon-status">
+        <span class="status-badge" [class.active]="coupon.active && !isExpired(coupon)" [class.inactive]="!coupon.active || isExpired(coupon)">
+          {{ coupon.active && !isExpired(coupon) ? 'Active' : isExpired(coupon) ? 'Expired' : 'Inactive' }}
+        </span>
+      </span>
+      <span>
+        <button class="btn-toggle" (click)="toggleActive(coupon)" [disabled]="isExpired(coupon)">
+          {{ coupon.active ? 'Deactivate' : 'Activate' }}
+        </button>
+      </span>
+    </div>
+
+    <div *ngIf="coupons.length === 0" class="empty-state">
+      No coupons yet. Create your first one!
+    </div>
+  </div>
+</div>
