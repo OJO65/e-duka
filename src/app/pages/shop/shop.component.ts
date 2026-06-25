@@ -31,8 +31,10 @@ interface Product {
     minVariantPrice: { amount: string; currencyCode: string };
     maxVariantPrice: { amount: string; currencyCode: string };
   };
+  variants: {
+    nodes: Array<{ id: string; price?: number; availableForSale?: boolean }>;
+  };
 }
-
 @Component({
   selector: 'app-shop',
   standalone: true,
