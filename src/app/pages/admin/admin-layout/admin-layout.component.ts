@@ -21,10 +21,6 @@ export class AdminLayoutComponent implements OnInit {
     { label: 'Orders', path: '/admin/orders', icon: 'orders' },
     { label: 'Products', path: '/admin/products', icon: 'box' },
     { label: 'Customers', path: '/admin/customers', icon: 'users' },
-    { label: 'Overview', path: '/admin/overview', icon: 'grid' },
-    { label: 'Orders', path: '/admin/orders', icon: 'orders' },
-    { label: 'Products', path: '/admin/products', icon: 'box' },
-    { label: 'Customers', path: '/admin/customers', icon: 'users' },
     { label: 'Coupons', path: '/admin/coupons', icon: 'tag' },
   ];
   constructor(
