@@ -7,7 +7,9 @@ import { AuthService } from '../../services/authService/auth.service';
 import { OrderService } from '../../services/orderService/order.service';
 import { Cart, CartItem } from '../../services/cartService/cart.service';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-checkout',
@@ -29,6 +31,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   deliveryCity = 'Nairobi';
   deliveryCounty = 'Nairobi';
 
+  // Coupon
+  couponCode = '';
+  couponLoading = false;
+  couponApplied = false;
+  couponError = '';
+  couponDiscount = 0;
+  couponId = '';
+
   // GNET Till Number
   readonly tillNumber = '5120455';
   orderId = '';
@@ -41,6 +51,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private authService: AuthService,
     private orderService: OrderService,
+    private http: HttpClient,
     private router: Router,
   ) {}
 
@@ -110,13 +121,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         next: (res: any) => {
           this.loading = false;
           this.orderId = res.order?.id || '';
-          this.orderTotal = this.cart.subtotal;
+          this.orderTotal = this.finalTotal;
           this.step = 'payment';
-        },
-        error: (err: any) => {
-          this.loading = false;
-          this.error =
-            err?.error?.error || 'Failed to place order. Please try again.';
+
+          // Mark coupon as used if one was applied
+          if (this.couponId) {
+            const token = this.authService.getToken();
+            this.http
+              .post(
+                `${environment.apiUrl}/coupons/apply`,
+                { coupon_id: this.couponId },
+                { headers: { Authorization: `Bearer ${token}` } },
+              )
+              .subscribe();
+          }
         },
       });
   }
@@ -135,5 +153,47 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
   goToOrders(): void {
     this.router.navigate(['/orders']);
+  }
+
+  get discountAmount(): number {
+    return Math.round((this.cart.subtotal * this.couponDiscount) / 100);
+  }
+
+  get finalTotal(): number {
+    return this.cart.subtotal - this.discountAmount;
+  }
+
+  validateCoupon(): void {
+    if (!this.couponCode.trim()) return;
+    this.couponLoading = true;
+    this.couponError = '';
+
+    const token = this.authService.getToken();
+    this.http
+      .post<any>(
+        `${environment.apiUrl}/coupons/validate`,
+        { code: this.couponCode },
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      .subscribe({
+        next: (res) => {
+          this.couponApplied = true;
+          this.couponDiscount = res.discount_percent;
+          this.couponId = res.coupon_id;
+          this.couponLoading = false;
+        },
+        error: (err) => {
+          this.couponError = err?.error?.error || 'Invalid coupon code';
+          this.couponLoading = false;
+        },
+      });
+  }
+
+  removeCoupon(): void {
+    this.couponApplied = false;
+    this.couponDiscount = 0;
+    this.couponId = '';
+    this.couponCode = '';
+    this.couponError = '';
   }
 }
