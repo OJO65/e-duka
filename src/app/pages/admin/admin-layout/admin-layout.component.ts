@@ -13,29 +13,48 @@ import { AuthService } from '../../../services/authService/auth.service';
 })
 export class AdminLayoutComponent implements OnInit {
   currentRoute = '';
-  sidebarOpen  = true;
+  sidebarOpen = true;
   mobileSidebarOpen = false;
   currentUser: any;
   navItems = [
-    { label: 'Overview',  path: '/admin/overview',  icon: 'grid' },
-    { label: 'Orders',    path: '/admin/orders',    icon: 'orders' },
-    { label: 'Products',  path: '/admin/products',  icon: 'box' },
+    { label: 'Overview', path: '/admin/overview', icon: 'grid' },
+    { label: 'Orders', path: '/admin/orders', icon: 'orders' },
+    { label: 'Products', path: '/admin/products', icon: 'box' },
     { label: 'Customers', path: '/admin/customers', icon: 'users' },
+    { label: 'Overview', path: '/admin/overview', icon: 'grid' },
+    { label: 'Orders', path: '/admin/orders', icon: 'orders' },
+    { label: 'Products', path: '/admin/products', icon: 'box' },
+    { label: 'Customers', path: '/admin/customers', icon: 'users' },
+    { label: 'Coupons', path: '/admin/coupons', icon: 'tag' },
   ];
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(
+    private router: Router,
+    private auth: AuthService,
+  ) {}
   ngOnInit(): void {
-    this.currentUser  = this.auth.getCurrentUser();
+    this.currentUser = this.auth.getCurrentUser();
     this.currentRoute = this.router.url;
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe((e: any) => {
-      this.currentRoute = e.url;
-      this.mobileSidebarOpen = false; // auto-close on navigation
-    });
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e: any) => {
+        this.currentRoute = e.url;
+        this.mobileSidebarOpen = false; // auto-close on navigation
+      });
   }
-  isActive(path: string): boolean { return this.currentRoute.startsWith(path); }
-  toggleSidebar(): void { this.sidebarOpen = !this.sidebarOpen; }
-  toggleMobileSidebar(): void { this.mobileSidebarOpen = !this.mobileSidebarOpen; }
-  goToStore(): void { this.router.navigate(['/home']); }
-  signOut(): void { this.auth.logout(); this.router.navigate(['/login']); }
+  isActive(path: string): boolean {
+    return this.currentRoute.startsWith(path);
+  }
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+  toggleMobileSidebar(): void {
+    this.mobileSidebarOpen = !this.mobileSidebarOpen;
+  }
+  goToStore(): void {
+    this.router.navigate(['/home']);
+  }
+  signOut(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 }
