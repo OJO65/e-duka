@@ -13,6 +13,8 @@ import { ProductDetailSkeletonComponent } from '../../components/product-detail-
 import { ProductService } from '../../services/productService/product.service';
 import { CartService } from '../../services/cartService/cart.service';
 import { AuthService } from '../../services/authService/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,6 +33,17 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   quantity: number = 1;
   showToast: boolean = false;
   toastMessage: string = '';
+  reviews: any[] = [];
+  reviewsLoading = false;
+  userReview: any = null;
+  canReview = false;
+  showReviewForm = false;
+  newRating = 0;
+  newComment = '';
+  reviewSubmitting = false;
+  reviewError = '';
+  reviewSuccess = '';
+  hoverRating = 0;
 
   private routeSubscription?: Subscription;
   private toastTimeout: any;
@@ -39,10 +52,12 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private authService: AuthService,
+    public authService: AuthService,
     private cartService: CartService,
     private meta: Meta,
     private titleService: Title,
+    private http: HttpClient,
+
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
@@ -67,6 +82,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
           return;
         }
+        this.loadReviews();
+        this.checkCanReview();
 
         if (this.product?.variants?.nodes?.length) {
           this.selectedVariant = this.product.variants.nodes[0];
@@ -210,16 +227,18 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     return added;
   }
 
-buyNow(): void {
-  if (!this.authService.isLoggedIn()) {
-    this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } });
-    return;
+  buyNow(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart' } });
+      return;
+    }
+    const added = this.addToCart();
+    if (added) {
+      setTimeout(() => {
+        this.router.navigate(['/cart']);
+      }, 500);
+    }
   }
-  const added = this.addToCart();
-  if (added) {
-    setTimeout(() => { this.router.navigate(['/cart']); }, 500);
-  }
-}
 
   goBack(): void {
     this.router.navigate(['/']);
@@ -235,5 +254,106 @@ buyNow(): void {
     this.toastTimeout = setTimeout(() => {
       this.showToast = false;
     }, 2000);
+  }
+
+  loadReviews(): void {
+    this.reviewsLoading = true;
+    this.http
+      .get<any[]>(`${environment.apiUrl}/reviews/${this.productId}`)
+      .subscribe({
+        next: (reviews) => {
+          this.reviews = reviews;
+          this.reviewsLoading = false;
+          // Check if current user already reviewed
+          const userId = this.authService.getCurrentUser()?.id;
+          if (userId) {
+            this.userReview = reviews.find((r) => r.user_id === userId) || null;
+          }
+        },
+        error: () => {
+          this.reviewsLoading = false;
+        },
+      });
+  }
+
+  checkCanReview(): void {
+    if (!this.authService.isLoggedIn()) return;
+    const token = this.authService.getToken();
+    this.http
+      .get<any[]>(`${environment.apiUrl}/orders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .subscribe({
+        next: (orders) => {
+          this.canReview = orders.some(
+            (o) =>
+              ['confirmed', 'shipped', 'delivered'].includes(o.status) &&
+              o.order_items?.some(
+                (item: any) => item.product_id === this.productId,
+              ),
+          );
+        },
+        error: () => {},
+      });
+  }
+
+  submitReview(): void {
+    if (!this.newRating) {
+      this.reviewError = 'Please select a rating';
+      return;
+    }
+    this.reviewSubmitting = true;
+    this.reviewError = '';
+    this.reviewSuccess = '';
+
+    const token = this.authService.getToken();
+    this.http
+      .post<any>(
+        `${environment.apiUrl}/reviews/${this.productId}`,
+        { rating: this.newRating, comment: this.newComment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      .subscribe({
+        next: () => {
+          this.reviewSuccess = 'Review submitted successfully!';
+          this.reviewSubmitting = false;
+          this.showReviewForm = false;
+          this.newRating = 0;
+          this.newComment = '';
+          this.loadReviews();
+        },
+        error: (err) => {
+          this.reviewError = err?.error?.error || 'Failed to submit review';
+          this.reviewSubmitting = false;
+        },
+      });
+  }
+
+  get averageRating(): number {
+    if (!this.reviews.length) return 0;
+    return (
+      Math.round(
+        (this.reviews.reduce((s, r) => s + r.rating, 0) / this.reviews.length) *
+          10,
+      ) / 10
+    );
+  }
+
+  setRating(rating: number): void {
+    this.newRating = rating;
+  }
+  setHover(rating: number): void {
+    this.hoverRating = rating;
+  }
+  clearHover(): void {
+    this.hoverRating = 0;
+  }
+
+  formatReviewDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-KE', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
   }
 }
