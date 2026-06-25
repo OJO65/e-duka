@@ -64,7 +64,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.cartSub = this.cartService.cart$.subscribe((cart) => {});
+    this.cartSub = this.cartService.cart$.subscribe((cart) => {
+      this.cart = cart;
+      if (!this.loading && cart.items.length === 0 && this.step === 'summary') {
+        this.router.navigate(['/cart']);
+      }
+    });
 
     this.userSub = this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
