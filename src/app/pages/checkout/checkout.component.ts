@@ -69,7 +69,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.cartSub = this.cartService.cart$.subscribe((cart) => {
       this.cart = cart;
       if (!this.loading && cart.items.length === 0 && this.step === 'summary') {
-        this.router.navigate(['/cart']);
+        this.error = 'Cart is empty';
       }
     });
 
@@ -112,6 +112,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
     if (!this.deliveryStreet) {
       this.error = 'Please enter your delivery address';
+      return;
+    }
+    if (!this.deliveryCity) {
+      this.error = 'Please enter your city';
+      return;
+    }
+    if (!this.deliveryCounty) {
+      this.error = 'Please enter your county';
       return;
     }
 
