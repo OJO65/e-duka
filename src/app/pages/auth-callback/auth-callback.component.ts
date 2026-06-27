@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/authService/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { CartService } from '../../services/cartService/cart.service';
 
 @Component({
   selector: 'app-auth-callback',
@@ -17,6 +18,7 @@ export class AuthCallbackComponent implements AfterViewInit {
     private router: Router,
     private authService: AuthService,
     private http: HttpClient,
+    private cartService: CartService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
@@ -24,31 +26,45 @@ export class AuthCallbackComponent implements AfterViewInit {
     if (!isPlatformBrowser(this.platformId)) return;
 
     setTimeout(() => {
-      const hash   = window.location.hash.substring(1);
+      const hash = window.location.hash.substring(1);
       const search = window.location.search.substring(1);
 
       // Try fragment first, then query params as fallback
       const params = new URLSearchParams(hash || search);
 
-      const accessToken  = params.get('access_token');
+      const accessToken = params.get('access_token');
       const refreshToken = params.get('refresh_token');
 
       if (!accessToken) {
-        this.router.navigate(['/login'], { queryParams: { error: 'google_auth_failed' } });
+        this.router.navigate(['/login'], {
+          queryParams: { error: 'google_auth_failed' },
+        });
         return;
       }
 
-      this.http.get<any>(`${environment.apiUrl}/auth/me`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      }).subscribe({
-        next: (user) => {
-          this.authService.handleGoogleCallback(accessToken, refreshToken ?? '', user);
-          this.router.navigate(['/']);
-        },
-        error: (err) => {
-          this.router.navigate(['/login'], { queryParams: { error: 'google_auth_failed' } });
-        }
-      });
+      this.http
+        .get<any>(`${environment.apiUrl}/auth/me`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .subscribe({
+          next: (user) => {
+            this.authService.handleGoogleCallback(
+              accessToken,
+              refreshToken ?? '',
+              user,
+            );
+            // Explicitly merge guest cart before navigating
+            this.cartService.mergeGuestCartIntoUser().then(() => {
+              this.cartService.fetchCart();
+              this.router.navigate(['/']);
+            });
+          },
+          error: (err) => {
+            this.router.navigate(['/login'], {
+              queryParams: { error: 'google_auth_failed' },
+            });
+          },
+        });
     }, 100);
   }
 }
