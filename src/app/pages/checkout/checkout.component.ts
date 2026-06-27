@@ -9,6 +9,7 @@ import { Cart, CartItem } from '../../services/cartService/cart.service';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/user.model';
+import { timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -28,8 +29,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   // Delivery details
   phone = '';
   deliveryStreet = '';
-  deliveryCity = 'Nairobi';
-  deliveryCounty = 'Nairobi';
+  deliveryCity = 'Kisumu';
+  deliveryCounty = 'Kisumu';
+  loadingMessage = 'Processing your order...';
 
   // Coupon
   couponCode = '';
@@ -124,10 +126,68 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (res: any) => {
-          this.loading = false;
+          this.loading = true;
+          this.error = '';
           this.orderId = res.order?.id || '';
           this.orderTotal = this.finalTotal;
           this.step = 'payment';
+          this.loadingMessage = 'processing your order...';
+
+          // Show reassuring message after 5 seconds if still loading
+          const messageTimer = setTimeout(() => {
+            if (this.loading) {
+              this.loadingMessage = 'Almost there, please wait...';
+            }
+          }, 5000);
+
+          // Show another message after 15 seconds
+          const messageTimer2 = setTimeout(() => {
+            if (this.loading) {
+              this.loadingMessage = 'Still working, hang tight...';
+            }
+          }, 15000);
+
+          this.orderService
+            .createOrder(this.phone, {
+              street: this.deliveryStreet,
+              city: this.deliveryCity,
+              county: this.deliveryCounty,
+            })
+            .pipe(timeout(30000))
+            .subscribe({
+              next: (res: any) => {
+                clearTimeout(messageTimer);
+                clearTimeout(messageTimer2);
+                this.loading = false;
+                this.orderId = res.order?.id || '';
+                this.orderTotal = this.finalTotal;
+                this.step = 'payment';
+
+                if (this.couponId) {
+                  const token = this.authService.getToken();
+                  this.http
+                    .post(
+                      `${environment.apiUrl}/coupons/apply`,
+                      { coupon_id: this.couponId },
+                      { headers: { Authorization: `Bearer ${token}` } },
+                    )
+                    .subscribe();
+                }
+              },
+              error: (err) => {
+                clearTimeout(messageTimer);
+                clearTimeout(messageTimer2);
+                this.loading = false;
+                if (err?.name === 'TimeoutError') {
+                  this.error =
+                    'Request timed out. Please check your connection and try again.';
+                } else {
+                  this.error =
+                    err?.error?.error ||
+                    'Failed to place order. Please try again.';
+                }
+              },
+            });
 
           // Mark coupon as used if one was applied
           if (this.couponId) {
@@ -195,9 +255,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   get vatAmount(): number {
-  const exclusive = this.finalTotal / 1.16;
-  return Math.round(this.finalTotal - exclusive);
-}
+    const exclusive = this.finalTotal / 1.16;
+    return Math.round(this.finalTotal - exclusive);
+  }
 
   removeCoupon(): void {
     this.couponApplied = false;
