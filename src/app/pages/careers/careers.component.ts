@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./careers.component.css']
 })
 export class CareersComponent {
-  careersEmail = 'Info@vince.co.ke';
+  careersEmail = 'Faognet@gmail.com';
 
   sendCV(): void {
     window.location.href = `mailto:${this.careersEmail}?subject=CV Submission - GNET Computers`;

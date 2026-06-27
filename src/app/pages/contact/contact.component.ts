@@ -10,8 +10,8 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./contact.component.css']
 })
 export class ContactComponent {
-  contactEmail   = 'Info@vince.co.ke';
-  whatsappNumber = '254708319767';
+  contactEmail   = 'Faognet@gmail.com';
+  whatsappNumber = '+254711115172';
 
   name    = '';
   email   = '';
