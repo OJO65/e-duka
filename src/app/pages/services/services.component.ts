@@ -10,8 +10,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./services.component.css']
 })
 export class ServicesComponent implements OnInit {
-  whatsappNumber = '+254720385044'; 
-  phoneNumber    = '+254 720 385 044'; 
+  whatsappNumber = '+254711115172'; 
+  phoneNumber    = '+254 720 385 044/+254 711 115 172'; 
 
   constructor(private router: Router) {}
 

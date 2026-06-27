@@ -42,7 +42,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   couponId      = '';
 
   // GNET Till Number
-  readonly tillNumber = '5120455';
+  readonly pochilabiashara = '0717487775';
   orderId    = '';
   orderTotal = 0;
 
