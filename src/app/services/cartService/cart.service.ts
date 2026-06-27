@@ -138,7 +138,18 @@ export class CartService {
         { headers: this.headers() },
       )
       .subscribe({
-        next: () => {},
+        next: (savedItem) => {
+          // Replace temp ID with real database ID
+          const current = this.cartSubject.value;
+          this.cartSubject.next(
+            this.recalculate({
+              ...current,
+              items: current.items.map((i) =>
+                i.id === newItem.id ? { ...i, id: savedItem.id } : i,
+              ),
+            }),
+          );
+        },
         error: () => this.fetchCart(),
       });
 
@@ -211,7 +222,11 @@ export class CartService {
         await this.http
           .post<any>(
             `${this.api}/cart`,
-            { product_id: item.productId, variant_id: item.variantId, quantity: item.quantity },
+            {
+              product_id: item.productId,
+              variant_id: item.variantId,
+              quantity: item.quantity,
+            },
             { headers: this.headers() },
           )
           .toPromise();
@@ -231,12 +246,14 @@ export class CartService {
   private loadGuestCart(): void {
     const items = this.readGuestCart();
     if (items.length) {
-      this.cartSubject.next(this.recalculate({
-        items,
-        itemCount: 0,
-        subtotal: 0,
-        currency: 'KES',
-      }));
+      this.cartSubject.next(
+        this.recalculate({
+          items,
+          itemCount: 0,
+          subtotal: 0,
+          currency: 'KES',
+        }),
+      );
     }
   }
 
