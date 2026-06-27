@@ -23,6 +23,7 @@ import { PaymentDeliveryComponent } from './pages/payment-delivery/payment-deliv
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { EmailVerifiedComponent } from './pages/email-verified/email-verified.component';
 import { AdminCouponsComponent } from './pages/admin/admin-coupons/admin-coupons.component';
+import { AdminOffersComponent } from './pages/admin/admin-offers/admin-offers.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -47,6 +48,7 @@ export const routes: Routes = [
   { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'admin/coupons', component: AdminCouponsComponent, canActivate: [AdminGuard] },
+  { path: 'admin/offers', component: AdminOffersComponent, canActivate: [AdminGuard] },
   { path: 'payment-delivery', component: PaymentDeliveryComponent },
   
   {
