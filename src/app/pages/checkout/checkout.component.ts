@@ -122,6 +122,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.error = 'Please enter your county';
       return;
     }
+    console.log('Token:', this.authService.getToken());
+    console.log('User:', this.currentUser);
+    console.log('Phone:', this.phone);
+    console.log('Street:', this.deliveryStreet);
+    console.log('City:', this.deliveryCity);
+    console.log('County:', this.deliveryCounty);
 
     this.loading = true;
     this.error = '';
