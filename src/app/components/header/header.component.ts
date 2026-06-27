@@ -14,6 +14,8 @@ import { CartService } from '../../services/cartService/cart.service';
 import { SearchService } from '../../services/searchService/search.service';
 import { AuthService, User } from '../../services/authService/auth.service';
 import { ConfirmService } from '../../services/confirmService/confirm.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -28,6 +30,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+
+  offers: any[] = [];
+  duplicatedOffers: any[] = [];
 
   isMobileMenuOpen = false;
   isAccountMenuOpen = false;
@@ -54,6 +59,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private searchService: SearchService,
     private authService: AuthService,
     private confirmService: ConfirmService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -78,6 +84,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.currentUser = user;
       this.isAdmin = user?.role === 'admin';
     });
+
+    this.loadOffers();
   }
 
   ngOnDestroy() {
@@ -124,6 +132,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goToRegister() {
     this.closeAccountMenu();
     this.router.navigate(['/register']);
+  }
+
+  loadOffers(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/offers`).subscribe({
+      next: (offers) => {
+        this.offers = offers;
+        // Duplicate for seamless loop
+        this.duplicatedOffers = [...offers, ...offers];
+      },
+      error: () => {
+        // fallback to empty — ticker just won't show
+      },
+    });
   }
 
   async signOut(): Promise<void> {
