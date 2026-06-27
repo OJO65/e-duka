@@ -223,6 +223,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     };
     const added = this.cartService.addToCart(cartProduct, this.quantity);
     if (added) {
+      this.showToastMessage(`${this.quantity} × ${this.product.title} added to cart!`);
       this.cartDrawer.open();
     }
     return added;
