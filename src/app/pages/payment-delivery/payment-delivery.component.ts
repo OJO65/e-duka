@@ -10,5 +10,5 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./payment-delivery.component.css']
 })
 export class PaymentDeliveryComponent {
-  tillNumber = '5120455';
+  pochilabiashara = '07177487775';
 }
