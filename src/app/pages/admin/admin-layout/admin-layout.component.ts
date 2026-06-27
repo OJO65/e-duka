@@ -22,6 +22,7 @@ export class AdminLayoutComponent implements OnInit {
     { label: 'Products', path: '/admin/products', icon: 'box' },
     { label: 'Customers', path: '/admin/customers', icon: 'users' },
     { label: 'Coupons', path: '/admin/coupons', icon: 'tag' },
+    { label: 'Offers', path: '/admin/offers', icon: 'megaphone' },
   ];
   constructor(
     private router: Router,
