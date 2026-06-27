@@ -217,3 +217,25 @@
 @media (max-width: 480px) {
   .cart-drawer { width: 100vw; }
 }
+
+.item-vendor {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.item-line-total {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}

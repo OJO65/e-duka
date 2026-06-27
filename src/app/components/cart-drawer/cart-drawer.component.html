@@ -1,19 +1,19 @@
 <!-- Backdrop -->
-<div
-  class="drawer-backdrop"
-  [class.open]="isOpen"
-  (click)="close()">
-</div>
+<div class="drawer-backdrop" [class.open]="isOpen" (click)="close()"></div>
 
 <!-- Drawer -->
 <div class="cart-drawer font-iosevka" [class.open]="isOpen">
-
   <!-- Header -->
   <div class="drawer-header">
     <h2 class="drawer-title">Your Cart ({{ cart.itemCount }})</h2>
     <button class="drawer-close" (click)="close()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
       </svg>
     </button>
   </div>
@@ -21,8 +21,12 @@
   <!-- Empty State -->
   <div *ngIf="cart.items.length === 0" class="drawer-empty">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+      />
     </svg>
     <p>Your cart is empty</p>
     <button class="btn-shop" (click)="close()">Continue Shopping</button>
@@ -32,20 +36,40 @@
   <div *ngIf="cart.items.length > 0" class="drawer-body">
     <div class="drawer-items">
       <div *ngFor="let item of cart.items" class="drawer-item">
-        <img [src]="item.image || 'assets/placeholder.jpg'" [alt]="item.title" class="item-img"/>
+        <img
+          [src]="item.image || 'assets/placeholder.jpg'"
+          [alt]="item.title"
+          class="item-img"
+        />
         <div class="item-info">
           <p class="item-title">{{ item.title }}</p>
-          <p class="item-price">{{ formatPrice(item.price) }}</p>
-          <div class="item-qty">
-            <button class="qty-btn" (click)="updateQty(item, -1)" [disabled]="item.quantity <= 1">−</button>
-            <span class="qty-value">{{ item.quantity }}</span>
-            <button class="qty-btn" (click)="updateQty(item, 1)">+</button>
+          <p class="item-vendor" *ngIf="item.vendor">{{ item.vendor }}</p>
+          <p class="item-price">{{ formatPrice(item.price) }} each</p>
+          <div class="item-qty-row">
+            <div class="item-qty">
+              <button
+                class="qty-btn"
+                (click)="updateQty(item, -1)"
+                [disabled]="item.quantity <= 1"
+              >
+                −
+              </button>
+              <span class="qty-value">{{ item.quantity }}</span>
+              <button class="qty-btn" (click)="updateQty(item, 1)">+</button>
+            </div>
+            <p class="item-line-total">
+              {{ formatPrice(item.price * item.quantity) }}
+            </p>
           </div>
         </div>
         <button class="item-remove" (click)="removeItem(item.id)">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
         </button>
       </div>
@@ -57,7 +81,9 @@
         <span>Subtotal</span>
         <span class="subtotal-amount">{{ formatPrice(cart.subtotal) }}</span>
       </div>
-      <button class="btn-checkout" (click)="goToCheckout()">Proceed to Checkout</button>
+      <button class="btn-checkout" (click)="goToCheckout()">
+        Proceed to Checkout
+      </button>
       <button class="btn-view-cart" (click)="goToCart()">View Full Cart</button>
     </div>
   </div>
