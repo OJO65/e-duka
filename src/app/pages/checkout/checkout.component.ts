@@ -194,6 +194,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       });
   }
 
+  get vatAmount(): number {
+  const exclusive = this.finalTotal / 1.16;
+  return Math.round(this.finalTotal - exclusive);
+}
+
   removeCoupon(): void {
     this.couponApplied = false;
     this.couponDiscount = 0;

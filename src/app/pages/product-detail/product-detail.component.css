@@ -18,8 +18,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Container */
@@ -80,8 +84,6 @@
   position: sticky;
   top: 20px;
   height: fit-content;
- 
-  
 }
 
 /* Remove sticky positioning on mobile */
@@ -397,15 +399,15 @@
   .product-title {
     font-size: 24px;
   }
-  
+
   .product-price {
     font-size: 22px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .thumbnail-list {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -420,7 +422,7 @@
   color: white;
   padding: 12px 24px;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 9999;
   font-size: 14px;
   font-weight: 500;
@@ -499,7 +501,9 @@
   transition: background 0.15s ease;
   white-space: nowrap;
 }
-.btn-write-review:hover { background: #1e3a8a; }
+.btn-write-review:hover {
+  background: #1e3a8a;
+}
 
 /* Review Form */
 .review-form {
@@ -531,7 +535,9 @@
   user-select: none;
 }
 
-.star-pick.active { color: #f59e0b; }
+.star-pick.active {
+  color: #f59e0b;
+}
 
 .review-textarea {
   width: 100%;
@@ -546,7 +552,9 @@
   box-sizing: border-box;
 }
 
-.review-textarea:focus { border-color: #1a56db; }
+.review-textarea:focus {
+  border-color: #1a56db;
+}
 
 .review-form-error {
   color: #e02424;
@@ -571,8 +579,13 @@
   cursor: pointer;
   transition: background 0.15s ease;
 }
-.btn-submit-review:hover:not(:disabled) { background: #1e3a8a; }
-.btn-submit-review:disabled { background: #9ca3af; cursor: not-allowed; }
+.btn-submit-review:hover:not(:disabled) {
+  background: #1e3a8a;
+}
+.btn-submit-review:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
 
 .btn-cancel-review {
   padding: 10px 20px;
@@ -585,7 +598,9 @@
   cursor: pointer;
   transition: background 0.15s ease;
 }
-.btn-cancel-review:hover { background: #f3f4f6; }
+.btn-cancel-review:hover {
+  background: #f3f4f6;
+}
 
 .review-success {
   background: #dcfce7;
@@ -699,12 +714,26 @@
   border-radius: 4px;
 }
 
+.vat-note {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 4px 0 0;
+}
+
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @media (max-width: 600px) {
-  .reviews-section { padding: 0 12px; }
-  .reviews-header { flex-direction: column; }
+  .reviews-section {
+    padding: 0 12px;
+  }
+  .reviews-header {
+    flex-direction: column;
+  }
 }
