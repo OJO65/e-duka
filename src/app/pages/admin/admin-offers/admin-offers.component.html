@@ -1,0 +1,65 @@
+<div class="offers-page font-iosevka">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Daily Offers</h1>
+      <p class="page-subtitle">Manage the scrolling ticker offers shown to customers</p>
+    </div>
+    <button class="btn-create" (click)="showForm = !showForm">
+      {{ showForm ? 'Cancel' : '+ New Offer' }}
+    </button>
+  </div>
+
+  <div *ngIf="success" class="alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert-error">{{ error }}</div>
+
+  <!-- Create Form -->
+  <div *ngIf="showForm" class="create-form">
+    <h2 class="form-title">New Offer</h2>
+    <div class="form-group">
+      <label>Offer Text</label>
+      <input type="text" [(ngModel)]="newText" placeholder="e.g. 10% off all Laptops today only!" class="form-input"/>
+    </div>
+    <div class="form-group" style="max-width: 200px;">
+      <label>Sort Order</label>
+      <input type="number" [(ngModel)]="newSortOrder" min="0" class="form-input"/>
+    </div>
+    <button class="btn-submit" (click)="createOffer()" [disabled]="submitting">
+      {{ submitting ? 'Creating...' : 'Create Offer' }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div *ngFor="let i of [1,2,3]" class="skeleton-row"></div>
+  </div>
+
+  <!-- Offers List -->
+  <div *ngIf="!loading" class="offers-table">
+    <div class="table-header">
+      <span>Order</span>
+      <span>Offer Text</span>
+      <span>Status</span>
+      <span>Actions</span>
+    </div>
+
+    <div *ngFor="let offer of offers" class="table-row">
+      <span class="offer-order">{{ offer.sort_order }}</span>
+      <span class="offer-text">{{ offer.text }}</span>
+      <span>
+        <span class="status-badge" [class.active]="offer.active" [class.inactive]="!offer.active">
+          {{ offer.active ? 'Active' : 'Inactive' }}
+        </span>
+      </span>
+      <span class="offer-actions">
+        <button class="btn-toggle" (click)="toggleActive(offer)">
+          {{ offer.active ? 'Deactivate' : 'Activate' }}
+        </button>
+        <button class="btn-delete" (click)="deleteOffer(offer.id)">Delete</button>
+      </span>
+    </div>
+
+    <div *ngIf="offers.length === 0" class="empty-state">
+      No offers yet. Create your first one!
+    </div>
+  </div>
+</div>
