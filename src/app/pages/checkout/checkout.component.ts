@@ -100,6 +100,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   // Step 1 → Step 2: create order then show M-Pesa instructions
   placeOrder(): void {
+    if (this.loading) return;
     if (!this.currentUser) {
       this.router.navigate(['/login'], {
         queryParams: { returnUrl: '/checkout' },
