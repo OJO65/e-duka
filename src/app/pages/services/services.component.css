@@ -412,9 +412,12 @@
     padding: 36px 24px;
   }
 
-  .bottom-cta {
-    padding: 56px 18px;
-  }
+ .bottom-cta {
+  text-align: center;
+  padding: 70px 30px;
+  background: white;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
 
   .cta-actions {
     flex-direction: column;
@@ -474,7 +477,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 32px 28px;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, opacity 0.8s ease, transform 0.8s ease;
 }
 
 .about-card:hover {
