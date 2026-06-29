@@ -24,6 +24,7 @@ import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.compo
 import { EmailVerifiedComponent } from './pages/email-verified/email-verified.component';
 import { AdminCouponsComponent } from './pages/admin/admin-coupons/admin-coupons.component';
 import { AdminOffersComponent } from './pages/admin/admin-offers/admin-offers.component';
+import { ReturnPolicyComponent } from './pages/return-policy/return-policy.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -40,6 +41,7 @@ export const routes: Routes = [
   { path: 'terms', component: TermsComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'contact', component: ContactComponent },
+  { path: 'return-policy', component: ReturnPolicyComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
