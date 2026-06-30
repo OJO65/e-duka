@@ -33,6 +33,10 @@
   gap: 28px;
 }
 
+.legal-section {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
 .legal-section h2 {
   font-size: 17px;
   font-weight: 700;
