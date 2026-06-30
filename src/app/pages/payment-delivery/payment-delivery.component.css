@@ -9,6 +9,10 @@
   margin-bottom: 48px;
 }
 
+.pd-header, .pd-card, .pd-note, .pd-cta {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
 .page-eyebrow {
   font-size: 12.5px;
   font-weight: 700;
