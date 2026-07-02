@@ -14,6 +14,8 @@ export class ServicesComponent implements OnInit {
   whatsappNumber = '+254711115172'; 
   phoneNumber    = '+254 717 487 775/+254 711 115 172'; 
 
+  heroImageLoaded = false;
+
   constructor(private router: Router) {}
 
   ngOnInit(): void {}

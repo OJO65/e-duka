@@ -18,13 +18,17 @@
   </div>
 
   <div class="hero-visual">
-    <img
-      src="/service_images/andras-vas-Bd7gNnWJBkU-unsplash.jpg"
-      alt="GNET Computers IT solutions"
-      class="hero-image"
-      loading="lazy"
-    />
-  </div>
+  <div class="hero-img-skeleton" *ngIf="!heroImageLoaded"></div>
+  <img
+    src="/service_images/andras-vas-Bd7gNnWJBkU-unsplash.jpg"
+    alt="GNET Computers IT solutions"
+    class="hero-image"
+    [class.loaded]="heroImageLoaded"
+    (load)="heroImageLoaded = true"
+    loading="eager"
+    fetchpriority="high"
+  />
+</div>
 </section>
 
 <!-- WHO WE ARE -->
